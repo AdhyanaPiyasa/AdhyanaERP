@@ -1,4 +1,4 @@
-package com.adhyana.student.utils; // Change as appropriate for each service
+package com.adhyana.administration.utils; // Change as appropriate for each service
 
 import java.io.BufferedReader;
 import java.io.IOException;

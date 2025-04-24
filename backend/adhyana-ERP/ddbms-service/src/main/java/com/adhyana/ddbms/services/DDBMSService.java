@@ -46,7 +46,7 @@ public class DDBMSService {
                 }
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error authenticating service: " + serviceName, e);
         }
 
@@ -113,7 +113,7 @@ public class DDBMSService {
                 return rs.next(); // If a record exists, the service has access
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error checking table access", e);
             return false;
         }
@@ -125,7 +125,7 @@ public class DDBMSService {
      * @param request The update request containing the record data
      * @return true if the update was successful, false otherwise
      */
-    private boolean updateLocalRecord(UpdateRequest request) throws SQLException {
+    private boolean updateLocalRecord(UpdateRequest request) throws Exception {
         Connection conn = null;
         PreparedStatement stmt = null;
 
@@ -154,7 +154,7 @@ public class DDBMSService {
             LOGGER.info("Local update completed: " + affectedRows + " rows affected");
             return affectedRows > 0;
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             if (conn != null) {
                 try {
                     conn.rollback();
@@ -408,7 +408,7 @@ public class DDBMSService {
                 }
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error getting services using table: " + tableName, e);
         }
 
@@ -443,7 +443,7 @@ public class DDBMSService {
 
             stmt.executeUpdate();
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error logging sync operation", e);
         }
     }
@@ -470,7 +470,7 @@ public class DDBMSService {
                 ));
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error getting table mappings", e);
         }
 
@@ -500,7 +500,7 @@ public class DDBMSService {
                 ));
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error getting services", e);
         }
 
