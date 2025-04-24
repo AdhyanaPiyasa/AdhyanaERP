@@ -1,43 +1,47 @@
+// student-service/src/main/java/com/adhyana/studnet/utils/DatabaseConnection.java
 package com.adhyana.ddbms.utils;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Properties;
 
-/**
- * Utility class for managing database connections to the DDBMS database
- */
 public class DatabaseConnection {
-    private static final Logger LOGGER = Logger.getLogger(DatabaseConnection.class.getName());
     private static final String URL = "jdbc:mysql://localhost:3306/adhyana_ddbms";
-    private static final String USER = "root";
-    private static final String PASSWORD = "";
+    private static String USER;
+    private static String PASSWORD;
 
     static {
         try {
+            // Load database driver
             Class.forName("com.mysql.cj.jdbc.Driver");
-            LOGGER.info("MySQL driver loaded successfully");
+
+            // Load credentials from properties file
+            loadCredentials();
         } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Failed to load MySQL driver", e);
             throw new RuntimeException("Failed to load MySQL driver", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load database credentials", e);
         }
     }
 
-    /**
-     * Get a database connection to the DDBMS database
-     * @return A connection to the DDBMS database
-     * @throws SQLException If a database access error occurs
-     */
-    public static Connection getConnection() throws SQLException {
-        try {
-            Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            LOGGER.fine("Database connection established");
-            return conn;
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Failed to establish database connection", e);
-            throw e;
+    private static void loadCredentials() throws Exception {
+        Properties prop = new Properties();
+        try (InputStream input = DatabaseConnection.class.getClassLoader().getResourceAsStream("application.properties")) {
+            if (input == null) {
+                throw new Exception("Unable to find application.properties");
+            }
+            prop.load(input);
+            USER = prop.getProperty("db.user");
+            PASSWORD = prop.getProperty("db.password");
+
+            if (USER == null || PASSWORD == null) {
+                throw new Exception("Database credentials not found in application.properties");
+            }
         }
+    }
+
+    public static Connection getConnection() throws Exception {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }
