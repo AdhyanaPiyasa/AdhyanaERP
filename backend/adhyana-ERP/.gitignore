@@ -36,3 +36,20 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### DBConnections ###
+/ddmbs-service/src/main/java/com/adhyana/ddbms/utils/DatabaseConnection.java
+/auth-service/src/main/java/com/adhyana/auth/utils/DatabaseConnection.java
+/administration-service/src/main/java/com/adhyana/administration/utils/DatabaseConnection.java
+/course-service/src/main/java/com/adhyana/course/utils/DatabaseConnection.java
+/exam-service/src/main/java/com/adhyana/exam/utils/DatabaseConnection.java
+/student-service/src/main/java/com/adhyana/student/utils/DatabaseConnection.java
+
+### Target Folders ###
+/ddbms-service/target
+/api-gateway/target
+/auth-service/target
+/administration-service/target
+/course-service/target
+/exam-service/target
+/student-service/target
