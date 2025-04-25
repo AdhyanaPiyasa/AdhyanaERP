@@ -72,3 +72,15 @@ CREATE TABLE  IF NOT EXISTS reports(
 INSERT INTO reports(reportId, course_name, exam_name, name, date) VALUES
     (1,'DSA','AY21SEM2','Shashika','2025-04-11');
 
+CREATE TABLE IF NOT EXISTS reportfile(
+    reportNo INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL ,
+    indexNo INT NOT NULL ,
+    examName VARCHAR(100) NOT NULL ,
+    semester VARCHAR(100) not null,
+    courseName VARCHAR(100) NOT NULL ,
+    courseCode INT NOT NULL ,
+    grade VARCHAR(50) NOT NULL
+
+);
+INSERT INTO reportfile VALUES (1,'Shashika',221049,'AY1','sem1','DSA',2211,'A');
