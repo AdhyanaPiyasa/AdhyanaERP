@@ -13,11 +13,10 @@
         <module>api-gateway</module>
         <module>auth-service</module>
         <module>student-service</module>
-        <module>faculty-service</module>
         <module>course-service</module>
         <module>exam-service</module>
         <module>administration-service</module>
-        <module>ddmbs-service</module>
+        <module>ddbms-service</module>
     </modules>
 
     <properties>

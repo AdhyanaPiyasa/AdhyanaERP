@@ -9,7 +9,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="" />
+    <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,6 +24,14 @@
         <option value="Class" />
       </list>
     </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/../.." value="administration-service" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -61,8 +72,9 @@
     &quot;Tomcat Server.Exam Service.executor&quot;: &quot;Run&quot;,
     &quot;Tomcat Server.Faculty Service.executor&quot;: &quot;Run&quot;,
     &quot;Tomcat Server.Student Service.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;administration-service&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/UCSC/VLE/Y2_Sem1/SCS2202 Group Project/Work/Development/Dinithi's Work/backend&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -104,7 +116,7 @@
       <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
-  <component name="RunManager" selected="Tomcat Server.Student Service">
+  <component name="RunManager" selected="Database Script.course_schema.sql">
     <configuration name="admin_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" />
       <script-mode>FILE</script-mode>
@@ -498,9 +510,9 @@
       <option name="BROWSER_ID" value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
-        <artifact name="ddmbs-service:war exploded">
+        <artifact name="ddbms-service:war exploded">
           <settings>
-            <option name="CONTEXT_PATH" value="" />
+            <option name="CONTEXT_PATH" value="/ddbms_service_war_exploded" />
           </settings>
         </artifact>
       </deployment>
@@ -580,7 +592,7 @@
       <method v="2">
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
-          <artifact name="ddmbs-service:war exploded" />
+          <artifact name="ddbms-service:war exploded" />
         </option>
       </method>
     </configuration>
@@ -780,11 +792,11 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Database Script.ddbms_schema.sql" />
         <item itemvalue="Database Script.course_schema.sql" />
+        <item itemvalue="Database Script.admin_schema.sql" />
+        <item itemvalue="Database Script.ddbms_schema.sql" />
         <item itemvalue="Database Script.exam_schema.sql" />
         <item itemvalue="Database Script.auth_schema.sql" />
-        <item itemvalue="Database Script.admin_schema.sql" />
       </list>
     </recent_temporary>
   </component>
@@ -839,6 +851,11 @@
       <workItem from="1745488723789" duration="4640000" />
       <workItem from="1745494120750" duration="1628000" />
       <workItem from="1745506098657" duration="5325000" />
+      <workItem from="1745518276178" duration="2509000" />
+      <workItem from="1745520908567" duration="127000" />
+      <workItem from="1745521057931" duration="4840000" />
+      <workItem from="1745553306170" duration="745000" />
+      <workItem from="1745555737841" duration="1774000" />
     </task>
     <servers />
   </component>

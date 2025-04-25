@@ -3,7 +3,7 @@ package com.adhyana.administration.services;
 import com.adhyana.administration.models.Staff;
 import com.adhyana.administration.models.StaffRole;
 import com.adhyana.administration.utils.DatabaseConnection;
-import com.adhyana.student.utils.DDBMSClient;
+import com.adhyana.administration.utils.DDBMSClient;
 
 import java.sql.*;
 import java.util.ArrayList;
