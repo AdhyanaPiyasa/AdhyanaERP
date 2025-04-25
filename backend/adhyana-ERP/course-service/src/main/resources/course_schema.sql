@@ -4,11 +4,9 @@ CREATE DATABASE IF NOT EXISTS adhyana_course;
 USE adhyana_course;
 
 CREATE TABLE IF NOT EXISTS courses (
-                                       id INT PRIMARY KEY AUTO_INCREMENT,
-                                       code INT NOT NULL UNIQUE,
+                                       code VARCHAR(7) PRIMARY KEY,
                                        name VARCHAR(100) NOT NULL,
                                        year INT NOT NULL,
-                                       semester INT NOT NULL,
                                        credits INT NOT NULL,
                                        duration INT NOT NULL,
                                        avg_rating DECIMAL(3,2) DEFAULT NULL,  -- Added avg_rating column
@@ -16,55 +14,45 @@ CREATE TABLE IF NOT EXISTS courses (
                                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- Insert sample courses
+INSERT INTO courses (code, name, year, credits, duration) VALUES
+                                                              ('CS1101', 'Introduction to Programming', 1, 3, 45),
+                                                              ('CS2101', 'Data Structures', 1, 4, 60),
+                                                              ('ENG1001', 'Calculus I', 2, 3, 45);
 
 
-
-CREATE TABLE batches (
-                         id INT PRIMARY KEY AUTO_INCREMENT,
-                         batch_name VARCHAR(50) NOT NULL,
-                         start_date DATE,
-                         end_date DATE,
-                         course_id INT, -- Assuming this might relate to a separate 'courses' table (not defined here)
-                         capacity INT,
-                         status ENUM('ACTIVE', 'COMPLETED', 'CANCELLED') DEFAULT 'ACTIVE',
-                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+CREATE TABLE batch_courses (
+                               batch_id VARCHAR(7) NOT NULL,
+                               course_id VARCHAR(7) NOT NULL,
+                               PRIMARY KEY (batch_id, course_id),
+                               FOREIGN KEY (course_id) REFERENCES courses(code) ON DELETE CASCADE ON UPDATE CASCADE
 );
--- Insert into batches table
-INSERT INTO batches (batch_name, start_date, end_date, course_id, capacity, status) VALUES
-                                                                                        ('CS-2024-F', '2024-02-15', '2025-02-14', 101, 50, 'ACTIVE'), -- Assuming course_id 101 is Computer Science Full Time
-                                                                                        ('BM-2023-P', '2023-09-01', '2025-08-31', 205, 40, 'ACTIVE'), -- Assuming course_id 205 is Business Management Part Time
-                                                                                        ('ENG-2023-F', '2023-03-01', '2024-02-28', 310, 60, 'COMPLETED'), -- Assuming course_id 310 is Engineering Full Time
-                                                                                        ('IT-2024-SUM', '2024-06-01', '2024-08-31', 102, 30, 'CANCELLED'); -- Assuming course_id 102 is IT Summer Course
+
+INSERT INTO batch_courses (batch_id, course_id) VALUES
+                                                                                                         ('CSE2025', 'CS1101');
+
 
 
 CREATE TABLE IF NOT EXISTS students (
-                                        id INT PRIMARY KEY AUTO_INCREMENT,
+                                        index_number INT PRIMARY KEY,
+                                        registration_number VARCHAR(20) NOT NULL UNIQUE,
                                         name VARCHAR(100) NOT NULL,
                                         email VARCHAR(100) NOT NULL UNIQUE,
-                                        degree_id VARCHAR(50) NOT NULL,
-                                        degree_program VARCHAR(100) NOT NULL,
-                                        index_number VARCHAR(20) NOT NULL UNIQUE,
-                                        registration_number VARCHAR(20) NOT NULL UNIQUE,
-                                        mobile_number VARCHAR(20),
-                                        birth_date DATE NOT NULL,
-                                        state VARCHAR(50) NOT NULL,
+                                        batch_id VARCHAR(50) NOT NULL,
                                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-INSERT INTO students (name, email, degree_id,degree_program, index_number, registration_number, mobile_number, birth_date, state) VALUES
-                                                                                                                                      ('John Doe', 'john.doe@university.com','CS2022' ,'Computer Science', 'CS2024001', 'REG2024001', '1234567890', '2000-01-15', 'Active'),
-                                                                                                                                      ('Jane Smith', 'jane.smith@university.com','CS2022', 'Electrical Engineering', 'EE2024001', 'REG2024002', '9876543210', '1999-08-22', 'Active'),
-                                                                                                                                      ('dinithi', 'dinithi@university.com','CS2022' ,'Computer Science', 'CS2024005', 'REG2024003', '9854632876', '2000-01-20', 'Active');
+-- Insert sample student data
+INSERT INTO students (index_number, registration_number, name, email, batch_id) VALUES
+                                                            ('202500001', '2025CSE001','John Doe' ,'john.doe@email.com', 'CSE2025');
 
 
 
-
+-- Staff table
 CREATE TABLE staff (
                        id INT PRIMARY KEY AUTO_INCREMENT,
-                       first_name VARCHAR(50) NOT NULL,
-                       last_name VARCHAR(50) NOT NULL,
+                       name VARCHAR(50) NOT NULL,
                        email VARCHAR(100) UNIQUE NOT NULL,
                        phone VARCHAR(15),
                        department VARCHAR(50),
@@ -74,74 +62,57 @@ CREATE TABLE staff (
                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-INSERT INTO staff (first_name, last_name, email, phone, department, position, hire_date, status) VALUES
-                                                                                                     ('Bimal', 'Silva', 'bimal.s@adhyana.lk', '0719876543', 'Academics', 'Lecturer', '2021-05-20', 'ACTIVE'),
-                                                                                                     ('Bimal', 'Silva', 'bimal.s@adhyana.lk', '0719876543', 'Academics', 'Lecturer', '2021-05-20', 'ACTIVE'),
-                                                                                                     ('Bimal', 'Silva', 'bimal.s@adhyana.lk', '0719876543', 'Academics', 'Lecturer', '2021-05-20', 'ACTIVE');
 
-
-
-
-
+-- First make sure we have the right staff members with unique emails
+INSERT INTO staff (name, email, phone, department, position, hire_date) VALUES
+                                                                                                         ('Dr. Robert Johnson', 'robert.johnson@email.com', '1234567890', 'Computer Science', 'teacher', '2020-01-15');
 
 
 -- Feedback table for course-related feedback
 CREATE TABLE IF NOT EXISTS feedbacks (
                                          id INT PRIMARY KEY AUTO_INCREMENT,
-                                         courseId INT NOT NULL,
-                                         studentId INT, -- NULL if anonymous
-                                         teacher VARCHAR(100) NOT NULL,
+                                         course_code INT NOT NULL,
+                                         student_index INT, -- NULL if anonymous
+                                         semester_id VARCHAR(5) NOT NULL,
                                          rating_content TINYINT CHECK (rating_content BETWEEN 1 AND 5),
                                          rating_instructor TINYINT CHECK (rating_instructor BETWEEN 1 AND 5),
-                                         rating_lms TINYINT CHECK (rating_lms BETWEEN 1 AND 5),
                                          comment TEXT,
                                          is_anonymous BOOLEAN DEFAULT FALSE,
                                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                         FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE,
-                                         FOREIGN KEY (studentId) REFERENCES students(id) ON DELETE SET NULL
+                                         FOREIGN KEY (course_code) REFERENCES courses(code) ON DELETE CASCADE,
+                                         FOREIGN KEY (student_index) REFERENCES students(index_number) ON DELETE SET NULL
 );
 
 
 CREATE TABLE IF NOT EXISTS announcements(
-                                            id INT PRIMARY KEY AUTO_INCREMENT,
-                                            courseId INT,
-                                            title VARCHAR(100),
-                                            content TEXT NOT NULL,
-                                            author VARCHAR(100),
-                                            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                            FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE
+                                            id        INT PRIMARY KEY AUTO_INCREMENT,
+                                            course_id  INT,
+                                            title     VARCHAR(100),
+                                            content   TEXT NOT NULL,
+                                            author    VARCHAR(100),
+                                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                            FOREIGN KEY (course_id) REFERENCES courses(code) ON DELETE CASCADE
 );
 
 
 
 CREATE TABLE IF NOT EXISTS semesters (
-                                         id INT PRIMARY KEY AUTO_INCREMENT,
-                                         batchId INT NOT NULL,
-                                         courseId INT NOT NULL,
-                                         teacherId INT NOT NULL,
-                                         year INT NOT NULL,
-                                         semester INT NOT NULL,
-                                         rating DECIMAL(3,2) DEFAULT NULL,  -- Added avg_rating column
+                                         id         VARCHAR(5) PRIMARY KEY,
+                                         batch_id    INT NOT NULL,
+                                         course_code   INT NOT NULL,
+                                         teacher_id  INT NOT NULL,
+                                         year       TINYINT CHECK (year BETWEEN 1 AND 4),
+                                         semester   TINYINT CHECK (semester BETWEEN 1 AND 2),
                                          started_at DATE,
-                                         ended_at DATE,
+                                         ended_at   DATE,
                                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                         FOREIGN KEY (batchId) REFERENCES batches(id) ON DELETE CASCADE,
-                                         FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE,
-                                         FOREIGN KEY (teacherId) REFERENCES staff(id) ON DELETE CASCADE
+                                         FOREIGN KEY (batch_id) REFERENCES batch_courses(batch_id) ON DELETE CASCADE,
+                                         FOREIGN KEY (course_code) REFERENCES courses(code) ON DELETE CASCADE,
+                                         FOREIGN KEY (teacher_id) REFERENCES staff(id) ON DELETE CASCADE
 );
-
-
-
-
-
-
-
-
-
-
-
 
 
 -- Insert sample courses
@@ -158,17 +129,37 @@ INSERT INTO announcements (courseId, title, content, author) VALUES
                                                                  (1, 'Inclass', 'Your next inclass is scheduled to february 5th', 'Dr. John Smith'),
                                                                  (4, 'Tutorial', 'tutorials on 30th January has been cancelled', 'Prof. William Brown');
 
--- Insert sample feedbacks
-INSERT INTO feedbacks (courseId, studentId, teacher, rating_content, rating_instructor, rating_lms, comment, is_anonymous) VALUES
-                                                                                                                               (1, 1, 'Nimal Perera', 5, 5, 4, 'Very informative course. The instructor was great!', false),
-                                                                                                                               (2, 2, 'Dr. Robert Johnson', 4, 4, 3, 'Helpful content, but the platform was a bit slow.', false),
-                                                                                                                               (3, NULL, 'Nimal Perera', 3, 4, 5, 'Good course. Preferred more examples though.', true),
-                                                                                                                               (4, 1, 'Dr. John Smith', 5, 5, 5, 'Excellent explanation and resources.', false),
-                                                                                                                               (5, NULL, 'Prof. William Brown', 4, 3, 4, 'Instructor was okay, content could be clearer.', true);
+
+
+-- Insert sample data into feedbacks table
+INSERT INTO feedbacks (courseCode, studentId, year, semester, teacher, rating_content, rating_instructor, rating_lms, comment, is_anonymous) VALUES
+                                                                                                                                                 (101, 1, 1, 1, 'Dr. Robert Johnson', 4, 5, 3, 'Great course content, but the LMS could use some improvements.', FALSE),
+                                                                                                                                                 (101, 2, 1, 1, 'Dr. Robert Johnson', 5, 5, 4, 'Excellent teaching and content. Highly recommended!', FALSE),
+                                                                                                                                                 (201, 1, 1, 2, 'Dr. John Smith', 3, 4, 4, 'The data structures course was challenging but very informative.', FALSE),
+                                                                                                                                                 (301, 3, 2, 1, 'Prof. William Brown', 4, 3, 4, 'The calculus course was well-structured, but sometimes the instructor went too fast.', FALSE),
+                                                                                                                                                 (401, 2, 2, 2, 'Dr. Emily Davis', 5, 5, 5, 'Physics course was perfect in every aspect!', FALSE),
+                                                                                                                                                 (501, NULL, 3, 1, 'Dr. Sarah Thompson', 2, 3, 3, 'The English composition course needs more practical examples.', TRUE),
+                                                                                                                                                 (201, 3, 1, 2, 'Dr. John Smith', 4, 5, 4, 'Great teaching style and very helpful instructor.', FALSE),
+                                                                                                                                                 (301, 1, 2, 1, 'Prof. William Brown', 3, 3, 2, 'The LMS for calculus needs significant improvements.', FALSE),
+                                                                                                                                                 (401, 3, 2, 2, 'Dr. Emily Davis', 4, 4, 4, 'Consistently good quality throughout the physics course.', FALSE),
+                                                                                                                                                 (101, NULL, 1, 1, 'Dr. Robert Johnson', 2, 2, 1, 'Not satisfied with this programming course overall.', TRUE);
+-- Then insert the semesters with valid teacher IDs
+INSERT INTO semesters (batchId, courseId, teacherId, year, semester, started_at, ended_at) VALUES
+                                                                                               (1, 1, 1, 1, 1, '2024-01-15', '2024-05-30'),
+                                                                                               (1, 2, 2, 1, 2, '2024-06-15', '2024-10-30'),
+                                                                                               (2, 3, 3, 2, 1, '2023-09-01', '2024-01-15'),
+                                                                                               (2, 4, 1, 2, 2, '2024-02-01', '2024-06-15'),
+                                                                                               (3, 5, 2, 3, 1, '2023-03-15', '2023-07-30'),
+                                                                                               (1, 3, 3, 1, 1, '2024-01-15', '2024-05-30'),
+                                                                                               (2, 1, 1, 1, 1, '2023-09-01', '2024-01-15'),
+                                                                                               (3, 2, 2, 2, 1, '2023-03-15', '2023-07-30'),
+                                                                                               (1, 4, 3, 1, 2, '2024-06-15', '2024-10-30'),
+                                                                                               (2, 5, 1, 2, 2, '2024-02-01', '2024-06-15');
+
 
 -- Create a function to calculate average rating for a course
 DELIMITER //
-CREATE FUNCTION calculate_course_avg_rating(course_id INT)
+CREATE FUNCTION calculate_course_avg_rating(course_code INT)
     RETURNS DECIMAL(3,2)
     READS SQL DATA
 BEGIN
@@ -176,7 +167,7 @@ BEGIN
 
     SELECT AVG(rating_content) INTO avg_rating
     FROM feedbacks
-    WHERE courseId = course_id;
+    WHERE courseCode = course_code;
 
     RETURN avg_rating;
 END //
@@ -191,8 +182,8 @@ CREATE TRIGGER after_feedback_insert
     FOR EACH ROW
 BEGIN
     UPDATE courses
-    SET avg_rating = calculate_course_avg_rating(NEW.courseId)
-    WHERE id = NEW.courseId;
+    SET avg_rating = calculate_course_avg_rating(NEW.courseCode)
+    WHERE code = NEW.courseCode;
 END //
 DELIMITER ;
 
@@ -203,15 +194,15 @@ CREATE TRIGGER after_feedback_update
     FOR EACH ROW
 BEGIN
     -- If the courseId has changed, update both old and new courses
-    IF OLD.courseId <> NEW.courseId THEN
+    IF OLD.courseCode <> NEW.courseCode THEN
         UPDATE courses
-        SET avg_rating = calculate_course_avg_rating(OLD.courseId)
-        WHERE id = OLD.courseId;
+        SET avg_rating = calculate_course_avg_rating(OLD.courseCode)
+        WHERE code = OLD.courseCode;
     END IF;
 
     UPDATE courses
-    SET avg_rating = calculate_course_avg_rating(NEW.courseId)
-    WHERE id = NEW.courseId;
+    SET avg_rating = calculate_course_avg_rating(NEW.courseCode)
+WHERE code = NEW.courseCode;
 END //
 DELIMITER ;
 
@@ -222,8 +213,8 @@ CREATE TRIGGER after_feedback_delete
     FOR EACH ROW
 BEGIN
     UPDATE courses
-    SET avg_rating = calculate_course_avg_rating(OLD.courseId)
-    WHERE id = OLD.courseId;
+    SET avg_rating = calculate_course_avg_rating(OLD.courseCode)
+    WHERE code = OLD.courseCode;
 END //
 DELIMITER ;
 
@@ -232,5 +223,5 @@ UPDATE courses c
 SET c.avg_rating = (
     SELECT AVG(rating_content)
     FROM feedbacks f
-    WHERE f.courseId = c.id
+    WHERE f.courseCode = c.code
 );
