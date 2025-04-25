@@ -1,11 +1,12 @@
-// components/Administrator/other/scholarship/AdminApplicationsList.js
+// components/Administrator/scholarship/ScholarshipApplicationsList.js
 const AdminApplicationsList = () => {
     const [applications, setApplications] = MiniReact.useState([]);
     const [loading, setLoading] = MiniReact.useState(true);
     const [error, setError] = MiniReact.useState(null);
-    const [showViewModal, setShowViewModal] = MiniReact.useState(false);
     const [selectedApplication, setSelectedApplication] = MiniReact.useState(null);
-    const [filterStatus, setFilterStatus] = MiniReact.useState('all');
+    const [showViewModal, setShowViewModal] = MiniReact.useState(false);
+
+ 
 
     // Fetch applications from the API
     const fetchApplications = async () => {
@@ -49,7 +50,8 @@ const AdminApplicationsList = () => {
         }
     };
 
-    MiniReact.useEffect(() => {
+       // Fetch all scholarship applications from the server
+       MiniReact.useEffect(() => {
         fetchApplications();
     }, []);
 
@@ -58,136 +60,90 @@ const AdminApplicationsList = () => {
         setShowViewModal(true);
     };
 
-    const handleApprove = (application) => {
-        console.log('Approved application:', application.id);
+    const handleCloseModal = () => {
         setShowViewModal(false);
-        // Here you would update the application status in a real system
     };
 
-    const handleReject = (application) => {
-        console.log('Rejected application:', application.id);
-        setShowViewModal(false);
-        // Here you would update the application status in a real system
-    };
+    // Process all pending applications for a specific scholarship
+    const handleProcessApplications = async (scholarshipId) => {
+        try {
+            setLoading(true);
+            
+            // API call to process applications automatically
+            // POST to /api/scholarship/scholarships/process/{scholarshipId}
+            // In real implementation:
+            const token = localStorage.getItem('token');
+             const response = await fetch(`http://localhost:8081/api/api/students/scholarships/process/${scholarshipId}`, {
+                 method: 'POST',
+                 headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+            });
 
-    // Map backend status values to frontend values
-    const getNormalizedStatus = (backendStatus) => {
-        // Default to 'pending' for null/undefined
-        if (!backendStatus) return 'pending';
-    
-        // Convert to lowercase
-        const status = backendStatus.toLowerCase();
-    
-        // Map different potential statuses
-        if (status.includes('pend') || status === 'new' || status === 'submitted') 
-            return 'pending';
-        if (status.includes('approv') || status === 'accepted')
-            return 'approved';
-        if (status.includes('reject') || status === 'denied')
-            return 'rejected';
-        
-        return status; // Use as-is if no mapping found
-    };
-
-    const filteredApplications = applications.filter(app => {
-        const appStatus = getNormalizedStatus(app.status);
-        return filterStatus === 'all' || appStatus === filterStatus;
-    });
-
-    const getStatusStyle = (status) => {
-        const normalizedStatus = getNormalizedStatus(status);
-        switch (normalizedStatus) {
-            case 'approved':
-                return { color: theme.colors.success };
-            case 'rejected':
-                return { color: theme.colors.error };
-            case 'pending':
-                return { color: theme.colors.warning };
-            default:
-                return {};
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+             const data = await response.json();
+            
+            // After processing, refresh the applications list
+            await fetchApplications();
+            
+        } catch (err) {
+            setError('Failed to process applications: ' + err.message);
+            console.error('Error processing applications:', err);
+        } finally {
+            setLoading(false);
         }
     };
 
-    // Helper function to get scholarship name (simplified for now)
-    const getScholarshipName = (scholarshipId) => {
-        // This would normally lookup from a scholarships array
-        return scholarshipId || 'Unknown Scholarship';
+    // Get status color based on application status
+    const getStatusColor = (status) => {
+        // Check if status exists before calling toLowerCase()
+        if (!status) {
+            // Return a default style for undefined/null status
+            return { backgroundColor: '#f5f5f5', color: '#757575' }; // Light gray
+        }
+        
+        switch(status.toLowerCase()) {
+            case 'approved':
+                return { backgroundColor: '#e8f5e9', color: '#2e7d32' }; // Light green
+            case 'rejected':
+                return { backgroundColor: '#ffebee', color: '#c62828' }; // Light red
+            case 'pending':
+            default:
+                return { backgroundColor: '#fff9c4', color: '#f57f17' }; // Light yellow
+        }
     };
 
     return {
         type: 'div',
         props: {
             children: [
-                // Header and Filters
+                // Header Section
                 {
                     type: Card,
                     props: {
                         variant: 'elevated',
                         children: [
                             {
-                                type: 'h1',
+                                type: Card,
                                 props: {
-                                    style: { marginBottom: theme.spacing.md },
-                                    children: ['Scholarship Applications']
-                                }
-                            },
-                            // Search and filter controls
-                            {
-                                type: 'div',
-                                props: {
-                                    style: {
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: theme.spacing.md,
-                                        marginBottom: theme.spacing.lg
-                                    },
+                                    variant: 'ghost',
+                                    noPadding: true,
                                     children: [
                                         {
-                                            type: 'div',
+                                            type: 'h1',
                                             props: {
-                                                children: ['Status:']
+                                                style: { marginBottom: theme.spacing.md },
+                                                children: ['Scholarship Applications']
                                             }
                                         },
                                         {
-                                            type: 'select',
+                                            type: 'div',
                                             props: {
-                                                value: filterStatus,
-                                                onchange: (e) => setFilterStatus(e.target.value),
-                                                style: {
-                                                    padding: theme.spacing.sm,
-                                                    borderRadius: theme.borderRadius.sm,
-                                                    border: `1px solid ${theme.colors.border}`
-                                                },
-                                                children: [
-                                                    {
-                                                        type: 'option',
-                                                        props: {
-                                                            value: 'all',
-                                                            children: ['All Applications']
-                                                        }
-                                                    },
-                                                    {
-                                                        type: 'option',
-                                                        props: {
-                                                            value: 'pending',
-                                                            children: ['Pending']
-                                                        }
-                                                    },
-                                                    {
-                                                        type: 'option',
-                                                        props: {
-                                                            value: 'approved',
-                                                            children: ['Approved']
-                                                        }
-                                                    },
-                                                    {
-                                                        type: 'option',
-                                                        props: {
-                                                            value: 'rejected',
-                                                            children: ['Rejected']
-                                                        }
-                                                    }
-                                                ]
+                                                style: { color: theme.colors.textSecondary },
+                                                children: ['Applications are automatically processed based on GPA requirements']
                                             }
                                         }
                                     ]
@@ -197,34 +153,80 @@ const AdminApplicationsList = () => {
                     }
                 },
 
-                // Applications Table
-                {
+                // Error Message (if any)
+                error && {
                     type: Card,
                     props: {
+                        style: { backgroundColor: '#ffebee', marginTop: theme.spacing.md },
                         children: [
+                            {
+                                type: 'div',
+                                props: {
+                                    style: { color: theme.colors.error },
+                                    children: [error]
+                                }
+                            }
+                        ]
+                    }
+                },
+
+                // Loading Indicator
+                loading && {
+                    type: Card,
+                    props: {
+                        style: { marginTop: theme.spacing.md, textAlign: 'center' },
+                        children: [
+                            {
+                                type: LoadingSpinner,
+                                props: {}
+                            },
+                            {
+                                type: 'div',
+                                props: {
+                                    children: ['Loading applications...']
+                                }
+                            }
+                        ]
+                    }
+                },
+
+                // Applications Table
+                !loading && !error && {
+                    type: Card,
+                    props: {
+                        style: { marginTop: theme.spacing.md },
+                        children: [
+                            // Table view of applications
                             {
                                 type: Table,
                                 props: {
-                                    headers: ['Scholarship ID', 'Student ID', 'GPA', 'Program', 'Status', 'Actions'],
-                                    data: filteredApplications.map(app => ({
-                                        'Student ID': app.studentId,
-                                        'Scholarship ID': getScholarshipName(app.scholarshipId),
+                                    headers: ['ID', 'Student ID', 'Scholarship', 'GPA', 'Degree', 'Application Date', 'Status', 'Actions'],
+                                    data: applications.map(app => ({
+                                        'ID': app.id,
+                                        'Student ID': app.studentIndexNumber,
+                                        'Scholarship': app.scholarshipId,
                                         'GPA': app.studentGpa,
-                                        'Program': `${app.studentDegree} (${app.studentBatch})`,
+                                        'Degree': app.studentDegree,
+                                        'Application Date': app.applicationDate,
                                         'Status': {
-                                            type: 'span',
+                                            type: 'div',
                                             props: {
-                                                style: getStatusStyle(app.status),
-                                                children: [app.status.charAt(0).toUpperCase() + app.status.slice(1)]
+                                                style: {
+                                                    padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+                                                    borderRadius: theme.borderRadius.sm,
+                                                    display: 'inline-block',
+                                                    ...getStatusColor(app.status)
+                                                },
+                                                children: [app.status]
                                             }
                                         },
                                         'Actions': {
                                             type: Button,
                                             props: {
-                                                onClick: () => handleViewApplication(app),
                                                 variant: 'secondary',
                                                 size: 'small',
-                                                children: 'View'
+                                                onClick: () => handleViewApplication(app),
+                                                children: ['View']
                                             }
                                         }
                                     }))
@@ -234,17 +236,56 @@ const AdminApplicationsList = () => {
                     }
                 },
 
+                // Process Applications Button (for any pending applications)
+                !loading && applications.some(app => app.status && app.status.toLowerCase() === 'pending') && {
+                    type: Card,
+                    props: {
+                        style: { marginTop: theme.spacing.md },
+                        children: [
+                            {
+                                type: 'div',
+                                props: {
+                                    style: {
+                                        padding: theme.spacing.md,
+                                        backgroundColor: '#f5f5f5',
+                                        borderRadius: theme.borderRadius.md
+                                    },
+                                    children: [
+                                        {
+                                            type: 'p',
+                                            props: {
+                                                style: { marginBottom: theme.spacing.md },
+                                                children: ['There are pending applications that need to be processed automatically based on GPA requirements.']
+                                            }
+                                        },
+                                        {
+                                            type: Button,
+                                            props: {
+                                                onClick: (e) => {
+                                                    // Prevent default and stop propagation
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    handleProcessApplications(1);
+                                                },
+                                                children: ['Process Pending Applications']
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+
                 // View Application Modal
                 showViewModal && {
-                    type:ViewScholarshipApplication,
+                    type: ViewScholarshipApplication,
                     props: {
                         application: selectedApplication,
-                        onClose: () => setShowViewModal(false),
-                        onApprove: () => handleApprove(selectedApplication),
-                        onReject: () => handleReject(selectedApplication)
+                        onClose: handleCloseModal
                     }
                 }
-            ]
+            ].filter(Boolean)
         }
     };
 };

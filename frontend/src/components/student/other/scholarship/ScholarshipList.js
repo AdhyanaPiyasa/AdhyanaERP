@@ -2,7 +2,7 @@
 const ScholarshipList = () => {
     // State for storing scholarships data
     const [scholarships, setScholarships] = MiniReact.useState([]);
-    const [isLoading, setIsLoading] = MiniReact.useState(true);
+    const [loading, setLoading] = MiniReact.useState(true);
     const [error, setError] = MiniReact.useState(null);
     const [showDetailModal, setShowDetailModal] = MiniReact.useState(false);
     const [selectedScholarship, setSelectedScholarship] = MiniReact.useState(null);
@@ -11,49 +11,43 @@ const ScholarshipList = () => {
     
     
     const fetchScholarships = async () => {
-        setIsLoading(true);
+        setLoading(true);
         try {
-            // In a real implementation, this would be an API call
-            // const response = await fetch('/api/students/scholarships');
-            // const data = await response.json();
+            // Get the stored auth token
+            const token = localStorage.getItem('token');
             
-            // For demo purposes, we'll use mock data
-            setTimeout(() => {
-                const mockData = [
-                    {
-                        id: 1,
-                        name: "Academic Excellence Scholarship",
-                        description: "For students with outstanding academic performance",
-                        minGpa: 3.8,
-                        amount: 5000,
-                        applicationDeadline: "2025-06-30",
-                        status: "Apply"
-                    },
-                    {
-                        id: 2,
-                        name: "Financial Need Scholarship",
-                        description: "For students requiring financial assistance",
-                        minGpa: 3.0,
-                        amount: 3000,
-                        applicationDeadline: "2025-07-15",
-                        status: "Apply"
-                    },
-                    {
-                        id: 3,
-                        name: "Improve Leadership Scholarship",
-                        description: "For students who have demonstrated leadership qualities",
-                        minGpa: 3.5,
-                        amount: 4000,
-                        applicationDeadline: "2025-06-15",
-                        status: "Apply"
-                    }
-                ];
-                setScholarships(mockData);
-                setIsLoading(false);
-            }, 800);
-        } catch (err) {
-            setError("Failed to load scholarships");
-            setIsLoading(false);
+            const response = await fetch(`http://localhost:8081/api/api/students/scholarships/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            console.log("Response status:", response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log("Received data:", data);
+            
+            if (data.success) {
+                // Ensure data.data exists and is an array
+                if (!data.data || !Array.isArray(data.data)) {
+                    throw new Error("Invalid response format: expected an array of scholarships");
+                }
+                
+                setScholarships(data.data);
+            } else {
+                setError(data.message || "Failed to fetch scholarship");
+            }
+        } catch (error) {
+            setError(error.message);
+            console.error("Error fetching scholarship:", error);
+        } finally {
+            setLoading(false);
         }
     };
 

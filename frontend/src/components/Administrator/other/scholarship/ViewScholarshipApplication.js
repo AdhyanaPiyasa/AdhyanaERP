@@ -1,15 +1,6 @@
-// components/reviewer/scholarships/ScholarshipApplicationView.js
+// components/Administrator/scholarship/ScholarshipApplicationView.js
 const ViewScholarshipApplication = ({ application, onClose }) => {
-    const [showAcceptModal, setShowAcceptModal] = MiniReact.useState(false);
-    const [showRejectModal, setShowRejectModal] = MiniReact.useState(false);
-
-    const handleAcceptClick = () => {
-        setShowAcceptModal(true);
-    };
-
-    const handleRejectClick = () => {
-        setShowRejectModal(true);
-    };
+    if (!application) return null;
 
     const renderInfoSection = (title, items) => ({
         type: Card,
@@ -43,7 +34,7 @@ const ViewScholarshipApplication = ({ application, onClose }) => {
                                 type: 'div',
                                 props: {
                                     style: { 
-                                        width: '30%', 
+                                        width: '40%', 
                                         fontWeight: 'bold',
                                         color: theme.colors.textSecondary
                                     },
@@ -53,7 +44,7 @@ const ViewScholarshipApplication = ({ application, onClose }) => {
                             {
                                 type: 'div',
                                 props: {
-                                    style: { width: '70%' },
+                                    style: { width: '60%' },
                                     children: [value || '-']
                                 }
                             }
@@ -64,7 +55,7 @@ const ViewScholarshipApplication = ({ application, onClose }) => {
         }
     });
 
-    const renderPersonalStatement = () => ({
+    const renderCommentsSection = () => ({
         type: Card,
         props: {
             variant: 'outlined',
@@ -79,7 +70,7 @@ const ViewScholarshipApplication = ({ application, onClose }) => {
                             color: theme.colors.primary,
                             padding: `${theme.spacing.sm} 0`
                         },
-                        children: ['Personal Statement']
+                        children: ['System Comments']
                     }
                 },
                 {
@@ -91,182 +82,124 @@ const ViewScholarshipApplication = ({ application, onClose }) => {
                             borderRadius: theme.borderRadius.md,
                             borderLeft: '4px solid ' + theme.colors.primary
                         },
-                        children: [application.comments || '-']
+                        children: [application.comments || 'No comments available']
                     }
                 }
             ]
         }
     });
 
+    // Get status color for badge
+    const getStatusColor = (status) => {
+        switch((status || '').toLowerCase()) {
+            case 'approved':
+                return { backgroundColor: '#e8f5e9', color: '#2e7d32' }; // Light green
+            case 'rejected':
+                return { backgroundColor: '#ffebee', color: '#c62828' }; // Light red
+            case 'pending':
+            default:
+                return { backgroundColor: '#fff9c4', color: '#f57f17' }; // Light yellow
+        }
+    };
+
     // Main page layout
     return {
-        type: 'div',
+        type: Modal,
         props: {
-            style: { 
-                maxWidth: '1200px', 
-                margin: '0 auto',
-                padding: theme.spacing.lg
-            },
+            isOpen: true,
+            onClose: onClose,
+            title: 'Scholarship Application Details',
             children: [
-                // Header with back button and status
+                // Main Content
                 {
                     type: 'div',
                     props: {
-                        style: {
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            marginBottom: theme.spacing.lg
-                        },
+                        style: { maxWidth: '100%' },
                         children: [
-                            // Back button
-                            {
-                                type: Button,
-                                props: {
-                                    variant: 'secondary',
-                                    onClick: onClose,
-                                    children: ['← Back to Scholarship Applications']
-                                }
-                            },
-                            // Application status badge
+                            // Header with application ID and status
                             {
                                 type: 'div',
                                 props: {
                                     style: {
-                                        padding: `${theme.spacing.xs} ${theme.spacing.md}`,
-                                        backgroundColor: (application.status || 'pending').toLowerCase() === 'pending' 
-                                            ? '#fff9c4' // Light yellow for pending
-                                            : (application.status || '').toLowerCase() === 'approved'
-                                                ? '#e8f5e9' // Light green for approved
-                                                : '#ffebee', // Light red for rejected
-                                        borderRadius: theme.borderRadius.sm,
-                                        fontWeight: 'bold'
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        marginBottom: theme.spacing.lg
                                     },
-                                    children: [application.status ? application.status.toUpperCase() : 'PENDING']
+                                    children: [
+                                        // Application ID
+                                        {
+                                            type: 'h2',
+                                            props: {
+                                                style: { fontWeight: 'bold' },
+                                                children: [`Application #${application.id}`]
+                                            }
+                                        },
+                                        // Application status badge
+                                        {
+                                            type: 'div',
+                                            props: {
+                                                style: {
+                                                    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+                                                    borderRadius: theme.borderRadius.sm,
+                                                    fontWeight: 'bold',
+                                                    ...getStatusColor(application.status)
+                                                },
+                                                children: [application.status ? application.status.toUpperCase() : 'PENDING']
+                                            }
+                                        }
+                                    ]
                                 }
-                            }
-                        ]
-                    }
-                },
-                
-                // Main title
-                {
-                    type: 'h1',
-                    props: {
-                        style: { 
-                            marginBottom: theme.spacing.lg,
-                            fontSize: '24px',
-                            fontWeight: 'bold',
-                            color: theme.colors.textPrimary
-                        },
-                        children: [`Scholarship Application: ${application.scholarshipId || 'Scholarship'}`]
-                    }
-                },
-                
-                // Application submission info
-                {
-                    type: 'div',
-                    props: {
-                        style: {
-                            marginBottom: theme.spacing.lg,
-                            color: theme.colors.textSecondary,
-                            fontSize: '14px'
-                        },
-                        children: [`Submitted on: ${application.applicationDate || 'N/A'}`]
-                    }
-                },
-                
-                // Two column layout for information
-                {
-                    type: 'div',
-                    props: {
-                        style: {
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(1, 1fr)',
-                            gap: theme.spacing.lg,
-                            marginBottom: theme.spacing.xl
-                        },
-                        children: [
-                            {// Left column
+                            },
+                            
+                            // Application submission info
+                            {
                                 type: 'div',
                                 props: {
+                                    style: {
+                                        marginBottom: theme.spacing.lg,
+                                        color: theme.colors.textSecondary,
+                                        fontSize: '14px'
+                                    },
+                                    children: [`Submitted on: ${application.applicationDate || 'N/A'}`]
+                                }
+                            },
+                            
+                            // Student Information
+                            renderInfoSection('Student Information', [
+                                ['Student ID', application.studentId],
+                                ['Scholarship', application.scholarshipId],
+                                ['GPA', application.studentGpa],
+                                ['Degree Program', application.studentDegree],
+                                ['Batch', application.studentBatch],
+                            ]),
+                            
+                            // Comments Section (System feedback)
+                            renderCommentsSection(),
+                            
+                            // Action Button (Close)
+                            {
+                                type: 'div',
+                                props: {
+                                    style: {
+                                        padding: theme.spacing.md,
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        gap: theme.spacing.md,
+                                        borderTop: `1px solid ${theme.colors.border}`
+                                    },
                                     children: [
-                                        // Student Information
-                                        renderInfoSection('Student Information', [
-                                            ['Student ID', application.studentId],
-                                            ['Scholarship ID', application.scholarshipId],
-                                            ['GPA', application.studentGpa],
-                                            ['Degree Program', application.studentDegree],
-                                            ['Batch', application.studentBatch],
-                                        ])
+                                        {
+                                            type: Button,
+                                            props: {
+                                                onClick: onClose,
+                                                children: ['Close']
+                                            }
+                                        }
                                     ]
                                 }
                             }
-
                         ]
-                    }
-                },
-                
-                // Personal Statement (full width)
-                renderPersonalStatement(),
-                
-                
-                // Accept/Reject Modals
-                showAcceptModal && {
-                    type: AcceptScholarshipApplication,
-                    props: {
-                        application: application,
-                        onClose: () => setShowAcceptModal(false)
-                    }
-                },
-                
-                showRejectModal && {
-                    type: RejectScholarshipApplication,
-                    props: {
-                        application: application,
-                        onClose: () => setShowRejectModal(false)
-                    }
-                },
-                
-                // Action Buttons (full width)
-                {
-                    type: Card,
-                    props: {
-                        variant: 'elevated',
-                        style: {
-                            padding: theme.spacing.lg,
-                            marginTop: theme.spacing.xl,
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            gap: theme.spacing.lg
-                        },
-                        children: [
-                            {
-                                type: Button,
-                                props: {
-                                    variant: 'secondary',
-                                    onClick: onClose,
-                                    children: ['Close']
-                                }
-                            },
-                            // Only show if status is pending or not set
-                            (!application.status || application.status.toLowerCase() === 'pending') && {
-                                type: Button,
-                                props: {
-                                    style: { backgroundColor: '#ffebee', color: theme.colors.error },
-                                    onClick: handleRejectClick,
-                                    children: ['Reject Application']
-                                }
-                            },
-                            (!application.status || application.status.toLowerCase() === 'pending') && {
-                                type: Button,
-                                props: {
-                                    style: { backgroundColor: theme.colors.success },
-                                    onClick: handleAcceptClick,
-                                    children: ['Approve Application']
-                                }
-                            }
-                        ].filter(Boolean)
                     }
                 }
             ]
