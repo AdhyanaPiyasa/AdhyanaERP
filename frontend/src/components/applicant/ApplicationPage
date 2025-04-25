@@ -1,0 +1,78 @@
+// components/public/ApplicationPage.js
+const ApplicationPage = () => {
+    const [isSubmitted, setIsSubmitted] = MiniReact.useState(false);
+    const [applicationId, setApplicationId] = MiniReact.useState('');
+    
+    // Handle successful submission
+    const handleSuccess = (id) => {
+        setIsSubmitted(true);
+        setApplicationId(id);
+        // Scroll to top of page
+        window.scrollTo(0, 0);
+    };
+    
+    return {
+        type: 'div',
+        props: {
+            style: {
+                maxWidth: '800px',
+                margin: '0 auto',
+                padding: theme.spacing.lg
+            },
+            children: [
+                // Header
+                {
+                    type: 'div',
+                    props: {
+                        style: {
+                            textAlign: 'center',
+                            marginBottom: theme.spacing.xl
+                        },
+                        children: [
+                            {
+                                type: 'h1',
+                                props: {
+                                    style: {
+                                        color: theme.colors.primary,
+                                        fontSize: '28px',
+                                        marginBottom: theme.spacing.md
+                                    },
+                                    children: ['ADHYANA - Student Application Form']
+                                }
+                            },
+                            !isSubmitted && {
+                                type: 'p',
+                                props: {
+                                    style: {
+                                        fontSize: '16px',
+                                        color: theme.colors.textSecondary,
+                                        maxWidth: '600px',
+                                        margin: '0 auto'
+                                    },
+                                    children: ['Please fill out all the required information to apply for admission to ADHYANA Learning Management System.']
+                                }
+                            }
+                        ]
+                    }
+                },
+                
+                // If application is submitted, show success message
+                isSubmitted ? {
+                    type: SuccessMessage,
+                    props: {
+                        applicationId: applicationId
+                    }
+                } : {
+                    // Otherwise show the application form
+                    type: StudentApplicationForm,
+                    props: {
+                        isStandalone: true,
+                        onSuccess: handleSuccess
+                    }
+                }
+            ]
+        }
+    };
+};
+
+window.ApplicationPage = ApplicationPage;
