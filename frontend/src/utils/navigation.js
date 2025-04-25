@@ -93,6 +93,7 @@ const navigation = {
                 label: 'Other', 
                 path: 'other',
                 subItems: [
+                    { label: 'Batch', path: 'other/batch' },
                     { label: 'Exams', path: 'other/exams' },
                     { label: 'Calendar', path: 'other/events' },
                     { label: 'Announcements', path: 'other/announcements' },

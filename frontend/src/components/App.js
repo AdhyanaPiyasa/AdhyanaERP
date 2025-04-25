@@ -147,7 +147,12 @@ const App = () => {
                 return { type: StaffList };
             case 'other':
                 return { type: OtherMain }; 
-            case 'other/exams':
+                case 'other/batch':
+                    return { type: batchList };
+                case (route.match(/^other\/batch\/\w+$/) || {}).input:
+                    const batchId = route.split('/')[2];
+                    return { type: batchDetails, props: { batchId: batchId } };
+                case 'other/exams':
                 return { type: ExamMain };
                 case 'other/exams/RoomAssignments':
                 return { type: RoomAssignments };
@@ -161,12 +166,6 @@ const App = () => {
                    return { type: AannouncementList };
             case 'other/hostel':
                     return { type: AdminHostelInfo };
-            case 'other/hostel/assign':
-                    return { type: AssignRoom };
-            case 'pther/hostel/room-information':
-                    return { type: RoomInformation };
-            case 'other/hostel/leaving-requests':
-                    return { type: LeavingRequests };
             case 'other/scholarship':
                 return { type: ScholarshipMain };
             case 'other/scholarship/applications':
