@@ -1,6 +1,12 @@
 const OtherMain = () => {
     const options = [
         {
+            id: 'batch',
+            title: 'Batch Management',
+            path: 'other/batch',
+            icon: '👨‍🎓👩‍🎓'
+        },
+        {
             id: 'exams',
             title: 'Exams',
             path: 'other/exams',

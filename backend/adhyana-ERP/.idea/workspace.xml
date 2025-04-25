@@ -11,11 +11,6 @@
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/StaffService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/StaffService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exam-service/src/main/resources/exam_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/exam-service/src/main/resources/exam_schema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
