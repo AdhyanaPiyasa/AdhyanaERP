@@ -3,7 +3,7 @@ package com.adhyana.administration.services;
 import com.adhyana.administration.models.Staff;
 import com.adhyana.administration.models.StaffRole;
 import com.adhyana.administration.utils.DatabaseConnection;
-import com.adhyana.student.utils.DDBMSClient;
+import com.adhyana.administration.utils.DDBMSClient;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -130,52 +130,6 @@ public class StaffService {
 
             // Notify DDBMS about the staff deletion
             DDBMSClient.notifyDDBMS("staff", id, "DELETE", null);
-        }
-    }
-
-    // Staff Role methods
-    public void assignRole(StaffRole role) throws Exception {
-        String query = "INSERT INTO staff_roles (staff_id, role, assigned_date) VALUES (?, ?, ?)";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, role.getStaffId());
-            stmt.setString(2, role.getRole());
-            stmt.setDate(3, new java.sql.Date(role.getAssignedDate().getTime()));
-
-            stmt.executeUpdate();
-        }
-    }
-
-    public List<StaffRole> getStaffRoles(int staffId) throws Exception {
-        List<StaffRole> roles = new ArrayList<>();
-        String query = "SELECT * FROM staff_roles WHERE staff_id = ? ORDER BY assigned_date DESC";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, staffId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                roles.add(mapResultSetToStaffRole(rs));
-            }
-        }
-        return roles;
-    }
-
-    public void removeRole(int roleId) throws Exception {
-        String query = "DELETE FROM staff_roles WHERE id = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, roleId);
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows == 0) {
-                throw new Exception("Role not found with id: " + roleId);
-            }
         }
     }
 

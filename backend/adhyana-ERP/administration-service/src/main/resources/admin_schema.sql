@@ -5,8 +5,7 @@ USE adhyana_admin;
 -- Staff table
 CREATE TABLE staff (
                        id INT PRIMARY KEY AUTO_INCREMENT,
-                       first_name VARCHAR(50) NOT NULL,
-                       last_name VARCHAR(50) NOT NULL,
+                       name VARCHAR(50) NOT NULL,
                        email VARCHAR(100) UNIQUE NOT NULL,
                        phone VARCHAR(15),
                        department VARCHAR(50),
@@ -15,17 +14,6 @@ CREATE TABLE staff (
                        status ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE',
                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
--- Staff roles table
-CREATE TABLE staff_roles (
-                             id INT PRIMARY KEY AUTO_INCREMENT,
-                             staff_id INT NOT NULL,
-                             role VARCHAR(50) NOT NULL,
-                             assigned_date DATE NOT NULL,
-                             FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE, -- Added ON DELETE CASCADE
-                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Payroll table
@@ -44,32 +32,35 @@ CREATE TABLE payroll (
                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS courses (
+                                       code VARCHAR(7) PRIMARY KEY,
+                                       name VARCHAR(100) NOT NULL,
+                                       year INT NOT NULL,
+                                       credits INT NOT NULL,
+                                       duration INT NOT NULL,
+                                       avg_rating DECIMAL(3,2) DEFAULT NULL,  -- Added avg_rating column
+                                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- Batch table
 CREATE TABLE batches (
                          id INT PRIMARY KEY AUTO_INCREMENT,
                          batch_name VARCHAR(50) NOT NULL,
                          start_date DATE,
                          end_date DATE,
-                         course_id INT, -- Assuming this might relate to a separate 'courses' table (not defined here)
                          capacity INT,
                          status ENUM('ACTIVE', 'COMPLETED', 'CANCELLED') DEFAULT 'ACTIVE',
                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Batch-Faculty assignments table
-CREATE TABLE batch_faculty_assignments (
-                                           id INT PRIMARY KEY AUTO_INCREMENT,
-                                           batch_id INT NOT NULL,
-                                           staff_id INT NOT NULL,
-                                           subject VARCHAR(100),
-                                           assignment_date DATE NOT NULL,
-                                           end_date DATE,
-                                           status ENUM('ACTIVE', 'COMPLETED', 'CANCELLED') DEFAULT 'ACTIVE',
-                                           FOREIGN KEY (batch_id) REFERENCES batches(id) ON DELETE CASCADE, -- Added ON DELETE CASCADE
-                                           FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE, -- Added ON DELETE CASCADE
-                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+CREATE TABLE batch_courses (
+                               batch_id INT NOT NULL,
+                               course_id INT NOT NULL,
+                               PRIMARY KEY (batch_id, course_id),
+                               FOREIGN KEY (batch_id) REFERENCES batches(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                               FOREIGN KEY (course_id) REFERENCES courses(code) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Announcements table
@@ -133,7 +124,7 @@ INSERT INTO payroll (staff_id, salary_month, basic_salary, allowances, deduction
                                                                                                                                  (4, '2025-04-01', 70000.00, 4000.00, 3000.00, 71000.00, 'PAID', '2025-04-30'),
                                                                                                                                  (5, '2025-04-01', 55000.00, 3000.00, 2000.00, 56000.00, 'PENDING', NULL),
                                                                                                                                  (6, '2025-04-01', 75000.00, 5000.00, 3500.00, 76500.00, 'PENDING', NULL);
--- No payroll for inactive staff (Gamini - 7)
+-- No payroll for inactive staff
 
 -- Insert into batches table
 INSERT INTO batches (batch_name, start_date, end_date, course_id, capacity, status) VALUES
@@ -141,15 +132,6 @@ INSERT INTO batches (batch_name, start_date, end_date, course_id, capacity, stat
                                                                                         ('BM-2023-P', '2023-09-01', '2025-08-31', 205, 40, 'ACTIVE'), -- Assuming course_id 205 is Business Management Part Time
                                                                                         ('ENG-2023-F', '2023-03-01', '2024-02-28', 310, 60, 'COMPLETED'), -- Assuming course_id 310 is Engineering Full Time
                                                                                         ('IT-2024-SUM', '2024-06-01', '2024-08-31', 102, 30, 'CANCELLED'); -- Assuming course_id 102 is IT Summer Course
-
--- Insert into batch_faculty_assignments table
--- Assigning faculty to active batches
-INSERT INTO batch_faculty_assignments (batch_id, staff_id, subject, assignment_date, end_date, status) VALUES
-                                                                                                           (1, 2, 'Introduction to Programming', '2024-02-15', '2024-06-30', 'ACTIVE'), -- Bimal teaching in CS-2024-F
-                                                                                                           (1, 3, 'Data Structures and Algorithms', '2024-07-01', '2024-12-15', 'ACTIVE'), -- Chandra teaching in CS-2024-F
-                                                                                                           (1, 6, 'Database Management Systems', '2025-01-10', '2025-02-14', 'ACTIVE'), -- Fathima teaching in CS-2024-F
-                                                                                                           (2, 3, 'Principles of Management', '2023-09-01', '2024-02-28', 'COMPLETED'), -- Chandra taught in BM-2023-P (completed subject)
-                                                                                                           (2, 2, 'Marketing Fundamentals', '2024-03-01', '2024-08-31', 'ACTIVE'); -- Bimal teaching in BM-2023-P
 
 -- Insert into announcements table
 INSERT INTO announcements (title, content, category, posted_by, valid_from, valid_until, status) VALUES
@@ -168,6 +150,5 @@ INSERT INTO academic_calendar (event_title, description, event_date, event_type,
 -- Create indexes for better query performance
 CREATE INDEX idx_staff_email ON staff(email);
 CREATE INDEX idx_payroll_staff_month ON payroll(staff_id, salary_month);
-CREATE INDEX idx_batch_faculty ON batch_faculty_assignments(batch_id, staff_id);
 CREATE INDEX idx_announcements_dates ON announcements(valid_from, valid_until);
 CREATE INDEX idx_calendar_date ON academic_calendar(event_date);
