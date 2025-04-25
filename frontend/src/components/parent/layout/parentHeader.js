@@ -1,0 +1,193 @@
+// components/parent/layout/parentHeader.js
+const parentHeader = () => {
+    const [showProfileMenu, setShowProfileMenu] = MiniReact.useState(false);
+    const currentRoute = navigation.getCurrentRoute();
+
+    const styles = {
+        header: {
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 24px',
+            backgroundColor: '#e6e6fa',
+            height: '80px',
+            borderBottom: `1px solid ${theme.colors.border}`,
+            position: 'fixed',
+            top: 0,
+            left: 0,    
+            right: 0,
+            zIndex: 1000
+        },
+        brandSection: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+        },
+        logo: {
+            width: '24px',
+            height: '24px'
+        },
+        brandName: {
+            fontSize: '18px',
+            fontWeight: 'bold',
+            color: '#0066CC'
+        },
+        mainSection: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            flex: 1,
+            marginLeft: '48px'
+        },
+        nav: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '32px',
+            marginRight: '32px'
+        },
+        navItem: {
+            padding: '8px',
+            color: '#333',
+            textDecoration: 'none',
+            fontSize: '15px',
+            fontWeight: 'bold',
+            position: 'relative',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+        },
+        activeNavItem: {
+            color: '#0066CC',
+            fontWeight: '500'
+        },
+        activeIndicator: {
+            position: 'absolute',
+            bottom: '-1px',
+            left: 0,
+            right: 0,
+            height: '2px',
+            backgroundColor: '#0066CC',
+            borderRadius: '2px 2px 0 0'
+        },
+        avatar: {
+            width: '32px',
+            height: '32px',
+            borderRadius: '50%',
+            backgroundColor: '#E0E0E0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+        },
+        icon: {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '25px',
+            width: '25px',
+            height: '25px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+        }
+    };
+
+    // Navigation items with icons
+    const navItems = [
+        { label: 'Dashboard', path: 'dashboard', icon: '⌂' },
+        { label: 'Student Profile', path: 'studentProfile', icon: '👨‍🎓' },
+        { label: 'Hostel', path: 'hostel', icon: '🏠' },
+        { label: 'Events', path: 'events', icon: '📅' }
+    ];
+
+    return {
+        type: 'header',
+        props: {
+            style: styles.header,
+            children: [
+                {
+                    type: 'div',
+                    props: {
+                        style: styles.brandSection,
+                        children: [
+                            {
+                                type: 'div',
+                                props: {
+                                    style: styles.logo,
+                                    children: ['🏫'] // School icon
+                                }
+                            },
+                            {
+                                type: 'span',
+                                props: {
+                                    style: styles.brandName,
+                                    children: ['ADHYANA']
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    type: 'div',
+                    props: {
+                        style: styles.mainSection,
+                        children: [
+                            {
+                                type: 'nav',
+                                props: {
+                                    style: styles.nav,
+                                    children: navItems.map(item => ({
+                                        type: 'a',
+                                        props: {
+                                            style: {
+                                                ...styles.navItem,
+                                                ...(currentRoute === item.path ? styles.activeNavItem : {})
+                                            },
+                                            href: '#',
+                                            onclick: (e) => {
+                                                e.preventDefault();
+                                                navigation.navigate(item.path);
+                                            },
+                                            children: [
+                                                {
+                                                    type: 'span',
+                                                    props: {
+                                                        style: styles.icon,
+                                                        children: [item.icon]
+                                                    }
+                                                },
+                                                item.label,
+                                                currentRoute === item.path && {
+                                                    type: 'div',
+                                                    props: {
+                                                        style: styles.activeIndicator
+                                                    }
+                                                }
+                                            ].filter(Boolean)
+                                        }
+                                    }))
+                                }
+                            },
+                            {
+                                type: Button,
+                                props: {
+                                    style: styles.profileButton,
+                                    onClick: () => navigation.navigate('profile'),
+                                    children: [
+                                        'Profile',
+                                        {
+                                            type: 'div',
+                                            props: {
+                                                style: styles.avatar,
+                                                children: ['👤'] // User icon
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    };
+};
+
+window.parentHeader = parentHeader;
