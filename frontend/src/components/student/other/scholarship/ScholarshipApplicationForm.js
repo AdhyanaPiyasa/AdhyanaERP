@@ -1,20 +1,24 @@
 // components/student/other/scholarship/ScholarshipApplicationForm.js
-const ScholarshipApplicationForm = ({ scholarship, onClose }) => {
+const ScholarshipApplicationForm = ({ scholarship, onClose, onSuccess }) => {
     const [formData, setFormData] = MiniReact.useState({
         studentId: 1, // Would typically get from current user context
         scholarshipId: scholarship.id,
+        studentIndexNumber: '',
         studentBatch: '',
         studentDegree: '',
         studentGpa: '',
-        personalStatement: '',
-        agreeToTerms: false
     });
+    // Loading and error states to handle API interactions
     const [errors, setErrors] = MiniReact.useState({});
-    const [isSubmitting, setIsSubmitting] = MiniReact.useState(false);
+    const [loading, setLoading] = MiniReact.useState(false);
     const [submitSuccess, setSubmitSuccess] = MiniReact.useState(false);
     
     const validateForm = () => {
         const newErrors = {};
+
+        if (!formData.studentIndexNumber) {
+            newErrors.studentIndexNumber = 'Index number is required';
+        }
         
         if (!formData.studentBatch) {
             newErrors.studentBatch = 'Batch is required';
@@ -28,16 +32,7 @@ const ScholarshipApplicationForm = ({ scholarship, onClose }) => {
             newErrors.studentGpa = 'GPA is required';
         } else if (isNaN(formData.studentGpa) || parseFloat(formData.studentGpa) < 0 || parseFloat(formData.studentGpa) > 4.0) {
             newErrors.studentGpa = 'GPA must be a number between 0 and 4.0';
-        } else if (parseFloat(formData.studentGpa) < scholarship.minGpa) {
-            newErrors.studentGpa = `GPA does not meet the minimum requirement of ${scholarship.minGpa}`;
-        }
-        
-        if (!formData.personalStatement) {
-            newErrors.personalStatement = 'Personal statement is required';
-        } else if (formData.personalStatement.length < 100) {
-            newErrors.personalStatement = 'Personal statement must be at least 100 characters';
-        }
-        
+        } 
         
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -48,28 +43,60 @@ const ScholarshipApplicationForm = ({ scholarship, onClose }) => {
             return;
         }
         
-        setIsSubmitting(true);
+        setLoading(true);
+        setErrors({});
         
         try {
-            // In a real implementation, this would be an API call
-            // const response = await fetch('/api/students/applications', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify({
-            //         studentId: formData.studentId,
-            //         scholarshipId: formData.scholarshipId,
-            //         studentBatch: formData.studentBatch,
-            //         studentDegree: formData.studentDegree,
-            //         studentGpa: parseFloat(formData.studentGpa)
-            //     })
-            // });
-            
-            // For demo purposes, simulate API call
-        } catch (err) {
-            setIsSubmitting(false);
-            setErrors({ submit: 'Failed to submit application. Please try again.' });
+            // Create a submission data structure that matches backend expectations
+            const submissionData = {
+                studentIndexNumber: formData.studentIndexNumber,
+                scholarshipId: scholarship.id,
+                studentBatch: formData.studentBatch,
+                studentDegree: formData.studentDegree,
+                studentGpa: formData.studentGpa
+            };
+
+            console.log("Submitting scholarship data:", submissionData);
+
+            // Send POST request to the API endpoint
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:8081/api/api/students/applications', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(submissionData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Set success state first
+                setSubmitSuccess(true);
+                
+                // Call onSuccess if provided
+                if (onSuccess) {
+                    onSuccess(data.data);
+                }
+                
+                // No need to call onClose here as we show the success message
+                // Wait a moment before calling refreshPage (if defined)
+                if (typeof refreshPage === 'function') {
+                    setTimeout(refreshPage, 3000);
+                }
+            } else {
+                setErrors({ general: data.message || "Failed to create application" });
+            }
+        } catch (error) {
+            setErrors({ general: error.message || "An error occurred while applying to the scholarship" });
+            console.error("Error applying:", error);
+        } finally {
+            setLoading(false);
         }
     };
     
@@ -117,6 +144,16 @@ const ScholarshipApplicationForm = ({ scholarship, onClose }) => {
                                 type: 'p',
                                 props: {
                                     children: ['Your application has been received and is under review.']
+                                }
+                            },
+                            {
+                                type: Button,
+                                props: {
+                                    onClick: onClose,
+                                    style: {
+                                        marginTop: theme.spacing.md
+                                    },
+                                    children: ['Close']
                                 }
                             }
                         ]
@@ -171,8 +208,33 @@ const ScholarshipApplicationForm = ({ scholarship, onClose }) => {
                                     ]
                                 }
                             },
+                            errors.general && {
+                                type: 'div',
+                                props: {
+                                    style: {
+                                        color: theme.colors.error,
+                                        fontSize: theme.typography.caption.fontSize,
+                                        marginTop: theme.spacing.xs,
+                                        padding: theme.spacing.sm,
+                                        backgroundColor: `${theme.colors.error}10`,
+                                        borderRadius: theme.borderRadius.sm
+                                    },
+                                    children: [errors.general]
+                                }
+                            },
                             
                             // Student Information Fields
+                            {
+                                type: TextField,
+                                props: {
+                                    label: 'Index Number',
+                                    name: 'studentIndexNumber',
+                                    value: formData.studentIndexNumber,
+                                    placeholder: 'e.g., 123456',
+                                    onChange: handleChange,
+                                    error: errors.studentIndexNumber
+                                }
+                            },
                             {
                                 type: TextField,
                                 props: {
@@ -206,34 +268,7 @@ const ScholarshipApplicationForm = ({ scholarship, onClose }) => {
                                     error: errors.studentGpa
                                 }
                             },
-                            {
-                                type: TextField,
-                                props: {
-                                    label: 'Personal Statement',
-                                    name: 'personalStatement',
-                                    value: formData.personalStatement,
-                                    placeholder: 'Explain why you deserve this scholarship...',
-                                    multiline: true,
-                                    onChange: handleChange,
-                                    error: errors.personalStatement
-                                }
-                            },
 
-                            // Submit Error (if any)
-                            errors.submit && {
-                                type: 'div',
-                                props: {
-                                    style: {
-                                        color: theme.colors.error,
-                                        padding: theme.spacing.sm,
-                                        backgroundColor: `${theme.colors.error}10`,
-                                        borderRadius: theme.borderRadius.sm,
-                                        marginBottom: theme.spacing.md
-                                    },
-                                    children: [errors.submit]
-                                }
-                            },
-                            
                             // Form Actions
                             {
                                 type: 'div',
@@ -241,7 +276,8 @@ const ScholarshipApplicationForm = ({ scholarship, onClose }) => {
                                     style: {
                                         display: 'flex',
                                         justifyContent: 'flex-end',
-                                        gap: theme.spacing.md
+                                        gap: theme.spacing.md,
+                                        marginTop: theme.spacing.md
                                     },
                                     children: [
                                         {
@@ -249,17 +285,21 @@ const ScholarshipApplicationForm = ({ scholarship, onClose }) => {
                                             props: {
                                                 variant: 'secondary',
                                                 onClick: onClose,
-                                                disabled: isSubmitting,
+                                                disabled: loading,
                                                 children: ['Cancel']
                                             }
                                         },
                                         {
                                             type: Button,
                                             props: {
-                                                onClick: handleSubmit,
-                                                disabled: isSubmitting,
-                                                loading: isSubmitting,
-                                                children: [isSubmitting ? 'Submitting...' : 'Submit Application']
+                                                onClick: (e) => {
+                                                    // Prevent default and stop propagation
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    handleSubmit();
+                                                },
+                                                disabled: loading,
+                                                children: loading ? 'Submitting...' : 'Submit Application'
                                             }
                                         }
                                     ]
