@@ -6,14 +6,14 @@ CREATE TABLE IF NOT EXISTS courses (
                                        id INT PRIMARY KEY AUTO_INCREMENT,
                                        code INT NOT NULL UNIQUE,
                                        name VARCHAR(100) NOT NULL,
-                                        year INT NOT NULL,
-                                        semester INT NOT NULL,
-                                        credits INT NOT NULL,
-                                        duration INT NOT NULL,
-                                        avg_rating DECIMAL(3,2) DEFAULT NULL,  -- Added avg_rating column
-                                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                                        );
+                                       year INT NOT NULL,
+                                       semester INT NOT NULL,
+                                       credits INT NOT NULL,
+                                       duration INT NOT NULL,
+                                       avg_rating DECIMAL(3,2) DEFAULT NULL,  -- Added avg_rating column
+                                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
 
 
@@ -23,26 +23,53 @@ CREATE TABLE IF NOT EXISTS feedbacks (
                                          courseId INT NOT NULL,
                                          studentId INT, -- NULL if anonymous
                                          teacher VARCHAR(100) NOT NULL,
-                                        rating_content TINYINT CHECK (rating_content BETWEEN 1 AND 5),
-                                        rating_instructor TINYINT CHECK (rating_instructor BETWEEN 1 AND 5),
-                                        rating_lms TINYINT CHECK (rating_lms BETWEEN 1 AND 5),
-                                        comment TEXT,
-                                        is_anonymous BOOLEAN DEFAULT FALSE,
-                                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                        FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE,
-                                        FOREIGN KEY (studentId) REFERENCES students(id) ON DELETE SET NULL
-                                        );
+                                         rating_content TINYINT CHECK (rating_content BETWEEN 1 AND 5),
+                                         rating_instructor TINYINT CHECK (rating_instructor BETWEEN 1 AND 5),
+                                         rating_lms TINYINT CHECK (rating_lms BETWEEN 1 AND 5),
+                                         comment TEXT,
+                                         is_anonymous BOOLEAN DEFAULT FALSE,
+                                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                         FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE,
+                                         FOREIGN KEY (studentId) REFERENCES students(id) ON DELETE SET NULL
+);
 
 CREATE TABLE IF NOT EXISTS announcements(
-                                        id INT PRIMARY KEY AUTO_INCREMENT,
-                                         courseId INT,
-                                        title VARCHAR(100),
-                                        content TEXT NOT NULL,
-                                        author VARCHAR(100),
-                                        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                        FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE
+                                            id INT PRIMARY KEY AUTO_INCREMENT,
+                                            courseId INT,
+                                            title VARCHAR(100),
+                                            content TEXT NOT NULL,
+                                            author VARCHAR(100),
+                                            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                            FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE
+);
+
+
+batchId,courseId,teacherId,year, semester, startAt,endAt,rating.
+CREATE TABLE IF NOT EXISTS semesters (
+                                       id INT PRIMARY KEY AUTO_INCREMENT,
+                                       batchId INT NOT NULL,
+                                       courseId INT NOT NULL,
+                                        teacherId INT NOT NULL,
+                                        year INT NOT NULL,
+                                        semester INT NOT NULL,
+                                        rating DECIMAL(3,2) DEFAULT NULL,  -- Added avg_rating column
+                                        started_at DATE,
+                                        ended_at DATE,
+                                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                                         FOREIGN KEY (batchId) REFERENCES batches(id) ON DELETE CASCADE,
+                                        FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE,
+                                        FOREIGN KEY (teacherId) REFERENCES teachers(id) ON DELETE CASCADE
                                         );
+
+
+
+
+
+
+
+
 
 -- Insert sample courses
 INSERT INTO courses (code, name, year, semester, credits, duration) VALUES
@@ -74,11 +101,11 @@ CREATE FUNCTION calculate_course_avg_rating(course_id INT)
 BEGIN
     DECLARE avg_rating DECIMAL(3,2);
 
-SELECT AVG(rating_content) INTO avg_rating
-FROM feedbacks
-WHERE courseId = course_id;
+    SELECT AVG(rating_content) INTO avg_rating
+    FROM feedbacks
+    WHERE courseId = course_id;
 
-RETURN avg_rating;
+    RETURN avg_rating;
 END //
 DELIMITER ;
 
@@ -104,14 +131,14 @@ CREATE TRIGGER after_feedback_update
 BEGIN
     -- If the courseId has changed, update both old and new courses
     IF OLD.courseId <> NEW.courseId THEN
-    UPDATE courses
-    SET avg_rating = calculate_course_avg_rating(OLD.courseId)
-    WHERE id = OLD.courseId;
-END IF;
+        UPDATE courses
+        SET avg_rating = calculate_course_avg_rating(OLD.courseId)
+        WHERE id = OLD.courseId;
+    END IF;
 
-UPDATE courses
-SET avg_rating = calculate_course_avg_rating(NEW.courseId)
-WHERE id = NEW.courseId;
+    UPDATE courses
+    SET avg_rating = calculate_course_avg_rating(NEW.courseId)
+    WHERE id = NEW.courseId;
 END //
 DELIMITER ;
 
