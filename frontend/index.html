@@ -3,30 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Calculator</title>
+    <title>ADHYANA - Learning Management System</title>
+    
+    <!-- Reset CSS -->
     <link rel="stylesheet" href="src/styles/reset.css">
-    <link rel="stylesheet" href="src/styles/main.css">
-</head>
-<body>
-    <div id="root"></div>
 
-    <!-- Core -->
+    <!-- Core Libraries -->
     <script src="src/core/MiniReact.js"></script>
     
-    <!-- Utils -->
+    <!-- Utilities -->
     <script src="src/utils/theme.js"></script>
-    
+    <script src="src/utils/dateUtils.js"></script>
+    <script src="src/utils/validators.js"></script>
+    <script src="src/utils/navigation.js"></script>
+
+    <!-- Auth Service-->
+    <script src="src/service/authService.js"></script>
+
     <!-- Common Components -->
     <script src="src/components/common/Button.js"></script>
-    <script src="src/components/common/TextField.js"></script>
-    <script src="src/components/common/Select.js"></script>
     <script src="src/components/common/Card.js"></script>
+    <script src="src/components/common/LoadingSpinner.js"></script>
+    <script src="src/components/common/Modal.js"></script>
+    <script src="src/components/common/Select.js"></script>
+    <script src="src/components/common/Table.js"></script>
+    <script src="src/components/common/TextField.js"></script>
+    <script src="src/components/common/BarChart.js"></script>
+
+
+
+    <!-- Communication Components -->
+    <script src="src/components/common/communication/EmailList.js"></script>
+    <script src="src/components/common/communication/EmailDetail.js"></script>
+    <script src="src/components/common/communication/EmailCompose.js"></script>
+    <script src="src/components/common/communication/NewEmail.js"></script>
     
-    <!-- Calculator Components -->
-    <script src="src/components/Calculator/CalculatorHistory.js"></script>
-    <script src="src/components/Calculator/Calculator.js"></script>
+    <!-- Event Components -->
+    <script src="src/components/common/events/Calendar.js"></script>
+    <script src="src/components/common/events/EventList.js"></script>
+    <script src="src/components/common/events/EventsMain.js"></script>
+
+    <!-- Student Components -->
+    <script src="src/components/student/layout/StudentLayout.js"></script>
+    <script src="src/components/student/layout/StudentHeader.js"></script>
+    <script src="src/components/student/dashboard/Dashboard.js"></script>
+    <script src="src/components/student/dashboard/AnnouncementList.js"></script>
+    <script src="src/components/student/dashboard/Timetable.js"></script>
+    <script src="src/components/student/dashboard/UpcomingEvents.js"></script>
+    <script src="src/components/student/dashboard/AttendanceChart.js"></script>
+    <script src="src/components/student/courses/CourseList.js"></script>
+    <script src="src/components/student/courses/CourseCard.js"></script>
+    <script src="src/components/student/courses/CourseDetail/CourseDetail.js"></script>
+    <script src="src/components/student/courses/CourseDetail/Assignments.js"></script>
+    <script src="src/components/student/courses/CourseDetail/CourseAnnouncements.js"></script>
+    <script src="src/components/student/courses/CourseDetail/CourseGrades.js"></script>
+    <script src="src/components/student/courses/CourseDetail/StudyMaterials.js"></script>
+    <script src="src/components/student/other/HostelInfo.js"></script>
+    <script src="src/components/student/other/OtherPage.js"></script>
+    <script src="src/components/student/other/attendance/AttendanceReport.js"></script>
+    <script src="src/components/student/other/attendance/AttendanceTracker.js"></script>
+    <script src="src/components/student/other/grades/GradeBook.js"></script>
+    <script src="src/components/student/other/grades/GradeReport.js"></script>
+    <script src="src/components/student/other/scholarship/ScholarshipList.js"></script>
+    <script src="src/components/student/other/scholarship/ScholarshipApplicationForm.js"></script>
+    <script src="src/components/student/profile/StudentProfile.js"></script>
+    <script src="src/components/student/profile/StudentProfileEdit.js"></script>
+    <script src="src/components/student/profile/StudentCourseProfile.js"></script>
+ 
+
+    <!-- Teacher Components -->
+    <script src="src/components/teacher/layout/TeacherLayout.js"></script>
+    <script src="src/components/teacher/layout/TeacherHeader.js"></script>
+    <script src="src/components/teacher/dashboard/TeacherDashboard.js"></script>
+    <script src="src/components/teacher/dashboard/CourseSchedule.js"></script>
+    <script src="src/components/teacher/dashboard/RecentAssignments.js"></script>
+    <script src="src/components/teacher/dashboard/TeacherAnnouncements.js"></script>
+    <script src="src/components/teacher/courses/TeacherCourseList.js"></script>
+    <script src="src/components/teacher/courses/TeacherCourseDetail/TeacherCourseDetail.js"></script>
+    <script src="src/components/teacher/courses/TeacherCourseDetail/Attendance/AttendanceManager.js"></script>
+    <script src="src/components/teacher/courses/TeacherCourseDetail/Attendance/AttendanceSheet.js"></script>
+    <script src="src/components/teacher/courses/TeacherCourseDetail/Grades/GradeManager.js"></script>
+    <script src="src/components/teacher/courses/TeacherCourseDetail/Grades/GradingSheet.js"></script>
+    <script src="src/components/teacher/courses/TeacherCourseDetail/Materials/MaterialList.js"></script>
+    <script src="src/components/teacher/courses/TeacherCourseDetail/Materials/MaterialUpload.js"></script>
+    <script src="src/components/teacher/courses/TeacherCourseDetail/StudentList/StudentDetails.js"></script>
+    <script src="src/components/teacher/courses/TeacherCourseDetail/StudentList/StudentList.js"></script>
+    <script src="src/components/teacher/profile/TeacherProfile.js"></script>
+    <script src="src/components/teacher/profile/TeacherProfileEdit.js"></script>
+    <script src="src/components/teacher/profile/TeacherCourseProfile.js"></script>
+
+    <!-- Parent Components -->
+    <script src="src/components/parent/layout/parentLayout.js"></script>
+    <script src="src/components/parent/layout/parentHeader.js"></script>
+    <script src="src/components/parent/hostel/PHostelInfo.js"></script>
+    <script src="src/components/parent/dashboard/ParentDashboard.js"></script>
+    <script src="src/components/parent/dashboard/ChildrenOverview.js"></script>
+    <script src="src/components/parent/dashboard/AttendanceOverview.js"></script>
+    <script src="src/components/parent/dashboard/PaymentHistory.js"></script>
+    <script src="src/components/parent/dashboard/RecentActivities.js"></script>
+    <script src="src/components/parent/profile/parentProfile.js"></script>
+    <script src="src/components/parent/profile/parentProfileEdit.js"></script>
+    <script src="src/components/parent/studentProfile/PStudentProfile.js"></script>
+    <script src="src/components/parent/studentProfile/PStudentCourseProfile.js"></script>
+
+     <!-- Administrator Components (Full System Management) -->
+    <script src="src/components/Administrator/layout/AdministratorLayout.js"></script>
+    <script src="src/components/Administrator/layout/AdministratorHeader.js"></script>
+    <script src="src/components/Administrator/dashboard/StudentStatistics.js"></script>
+    <script src="src/components/Administrator/dashboard/AdministratorDashboard.js"></script>
+    <script src="src/components/Administrator/dashboard/AdministratorRecentActivities.js"></script>
+    <script src="src/components/Administrator/dashboard/AdministratorStats.js"></script>
+    <script src="src/components/Administrator/courses/AdministratorDegreeList.js"></script>
+
+
+    <script src="src/components/Administrator/courses/AdministratorCourseList.js"></script>
+    <script src="src/components/Administrator/courses/AddCourse.js"></script>
+    <script src="src/components/Administrator/courses/EditCourse.js"></script>
+    <script src="src/components/Administrator/courses/coursesDeleteConfirmation.js"></script>
+    <script src="src/components/Administrator/students/StudentMain.js"></script>
+    <script src="src/components/Administrator/students/ApplicantDetail.js"></script>
+    <script src="src/components/Administrator/students/ApplicantList.js"></script>
+    <script src="src/components/Administrator/students/EnrollStudents.js"></script>
+    <script src="src/components/Administrator/students/StudentDegree.js"></script>
+    <script src="src/components/Administrator/students/AddStudent.js"></script>
+    <script src="src/components/Administrator/students/studentsDeleteConfirmation.js"></script>
+    <script src="src/components/Administrator/students/EditStudent.js"></script>
+    <script src="src/components/Administrator/students/AdministratorStudentList.js"></script>
+    <script src="src/components/Administrator/students/ViewStudent.js"></script>
+    <script src="src/components/Administrator/staff/StaffMain.js"></script>
+    <script src="src/components/Administrator/staff/StaffList.js"></script>
+    <script src="src/components/Administrator/staff/AddStaff.js"></script>
+    <script src="src/components/Administrator/staff/StaffDeleteConfirmation.js"></script>
+    <script src="src/components/Administrator/staff/EditStaff.js"></script>
+    <script src="src/components/Administrator/other/exams/ExamMain.js"></script>
+    <script src="src/components/Administrator/other/exams/CreateExam.js"></script>
+    <script src="src/components/Administrator/other/exams/examsDeleteConfirmation.js"></script>
+    <script src="src/components/Administrator/other/exams/EditExam.js"></script>
+    <script src="src/components/Administrator/other/exams/ExamList.js"></script>
+    <script src="src/components/Administrator/other/exams/FinalTimetable.js"></script>
+    <script src="src/components/Administrator/other/exams/RoomAssignments.js"></script>
+    <script src="src/components/Administrator/other/events/EventsMain.js"></script>
+    <script src="src/components/Administrator/other/events/CreateEvent.js"></script>
+    <script src="src/components/Administrator/other/events/EditEvent.js"></script>
+    <script src="src/components/Administrator/other/events/eventDeleteConfirmation.js"></script>
+    <script src="src/components/Administrator/other/events/AdministratorEventList.js"></script>
+    <script src="src/components/Administrator/other/events/AdministratorEventCalendar.js"></script>
+    <script src="src/components/Administrator/other/announcements/AannouncementList.js"></script>
+    <script src="src/components/Administrator/other/announcements/CreateAnnouncement.js"></script>
+    <script src="src/components/Administrator/other/announcements/EditAnnouncement.js"></script>
+    <script src="src/components/Administrator/other/announcements/DeleteAnnouncement.js"></script>
+    <script src="src/components/Administrator/other/OtherMain.js"></script>
+    <script src="src/components/Administrator/other/hostel/AddStudentToHostel.js"></script>
+     <script src="src/components/Administrator/other/hostel/AdminHostelInfo.js"></script>
+     <script src="src/components/Administrator/other/hostel/HostelEdit.js"></script>
+     <script src="src/components/Administrator/other/scholarship/ScholarshipMain.js"></script>
+     <script src="src/components/Administrator/other/scholarship/AdminApplicationsList.js"></script>
+     <script src="src/components/Administrator/other/scholarship/ViewScholarshipApplication.js"></script>
+    <script src="src/components/Administrator/other/scholarship/AdminCreateScholarship.js"></script>
+    <script src="src/components/Administrator/other/scholarship/AdminEditScholarship.js"></script>
+    <script src="src/components/Administrator/other/scholarship/AdminScholarshipList.js"></script>
+    <script src="src/components/Administrator/other/scholarship/viewScholarship.js"></script>
+    <script src="src/components/Administrator/other/scholarship/ScholarshipDeleteConfirmation.js"></script>
+    <script src="src/components/Administrator/other/scholarship/AcceptScholarshipApplication.js"></script>
+    <script src="src/components/Administrator/other/scholarship/RejectScholarshipApplication.js"></script>
+    <script src="src/components/Administrator/profile/AdministratorProfile.js"></script>
+    <script src="src/components/Administrator/profile/AdministratorProfileEdit.js"></script>
+
+
+    <!-- Reviewer Components (Full System Management) -->
+    <script src="src/components/Reviewer/layout/ReviewerLayout.js"></script>
+    <script src="src/components/Reviewer/layout/ReviewerHeader.js"></script>
+    <script src="src/components/Reviewer/dashboard/ReviewerDashboard.js"></script>
+    <script src="src/components/Reviewer/profile/ReviewerProfile.js"></script>
+    <script src="src/components/Reviewer/profile/ReviewerProfileEdit.js"></script>
+    <script src="src/components/Reviewer/applications/AcceptRejectButtons .js"></script>
+    <script src="src/components/Reviewer/applications/ApplicationList.js"></script>
+    <script src="src/components/Reviewer/applications/ViewApplication.js"></script>
+    <script src="src/components/Reviewer/applications/RejectApplication.js"></script>
+    <script src="src/components/Reviewer/applications/AcceptApplication.js"></script>
+
+
+    <!-- Applicant Components (Full System Management) -->
+    <script src="src/components/applicant/ApplicationPage"></script>
+    <script src="src/components/applicant/StudentApplicationForm.js"></script>
+    <script src="src/components/applicant/SuccessMessage.js"></script>
+
     
-    <!-- Main -->
+   
+
+    <!-- Main App Component -->
+    <script src="src/components/Login.js"></script>
+    <script src="src/components/App.js"></script>
+    
+    <!-- Application Entry Point -->
     <script src="src/index.js"></script>
+
+    <style>
+        /* Base Styles */
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        #root {
+            min-height: 100vh;
+        }
+
+        /* Loading Spinner Animation */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Role-specific Theme Classes */
+        .theme-student { --primary-color: #1976d2; }
+        .theme-teacher { --primary-color: #2e7d32; }
+        .theme-parent { --primary-color: #7b1fa2; }
+        .theme-administrator { --primary-color: #d32f2f; }
+
+        /* Common Layout Classes */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-4 { gap: 1rem; }
+    </style>
+</head>
+<body>
+    <!-- Application Root -->
+    <div id="root"></div>
+
+    <script>
+        // Prevent multiple observer initializations
+        let observerInitialized = false;
+        
+        const initObserver = () => {
+            if (observerInitialized) return;
+            
+            const observer = new MutationObserver(() => {
+                if (window.AppState?.currentUser) {
+                    setThemeClass();
+                    observer.disconnect();
+                }
+            });
+    
+            observer.observe(document.body, { 
+                childList: true, 
+                subtree: true 
+            });
+            
+            observerInitialized = true;
+        };
+    
+        // Initialize only once when DOM is ready
+        document.addEventListener('DOMContentLoaded', initObserver, { once: true });
+    </script>
 </body>
 </html>
