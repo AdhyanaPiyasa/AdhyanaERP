@@ -10,31 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8/storage_v2/_src_/schema/adhyana_course.Wgi8Mg.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8/storage_v2/_src_/schema/adhyana_course.Wgi8Mg.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/StaffService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/StaffService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/utils/DDBMSClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/utils/DDBMSClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/course-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/src/main/java/com/adhyana/ddbms/DDBMSServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/DDBMSServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/src/main/java/com/adhyana/ddbms/controllers/SyncController.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/controllers/SyncController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/src/main/java/com/adhyana/ddbms/filters/CORSFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/filters/CORSFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/src/main/java/com/adhyana/ddbms/models/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/models/ApiResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/src/main/java/com/adhyana/ddbms/models/ServiceInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/models/ServiceInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/src/main/java/com/adhyana/ddbms/models/TableMapping.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/models/TableMapping.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/src/main/java/com/adhyana/ddbms/models/UpdateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/models/UpdateRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/src/main/java/com/adhyana/ddbms/services/DDBMSService.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/services/DDBMSService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/src/main/java/com/adhyana/ddbms/utils/DatabaseConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/utils/DatabaseConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/src/main/java/com/adhyana/ddbms/utils/HttpClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/utils/HttpClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/src/main/resources/ddbms_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/resources/ddbms_schema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddmbs-service/src/main/webapp/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exam-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/exam-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +72,7 @@
     &quot;Tomcat Server.Exam Service.executor&quot;: &quot;Run&quot;,
     &quot;Tomcat Server.Faculty Service.executor&quot;: &quot;Run&quot;,
     &quot;Tomcat Server.Student Service.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;administration-service&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -877,6 +854,8 @@
       <workItem from="1745518276178" duration="2509000" />
       <workItem from="1745520908567" duration="127000" />
       <workItem from="1745521057931" duration="4840000" />
+      <workItem from="1745553306170" duration="745000" />
+      <workItem from="1745555737841" duration="1774000" />
     </task>
     <servers />
   </component>
