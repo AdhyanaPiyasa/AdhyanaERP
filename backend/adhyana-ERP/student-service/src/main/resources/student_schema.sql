@@ -2,84 +2,56 @@ CREATE DATABASE IF NOT EXISTS adhyana_student;
 USE adhyana_student;
 
 CREATE TABLE IF NOT EXISTS students (
-                                        id INT PRIMARY KEY AUTO_INCREMENT,
+                                        index_number INT PRIMARY KEY,
+                                        registration_number VARCHAR(20) NOT NULL UNIQUE,
                                         name VARCHAR(100) NOT NULL,
                                         email VARCHAR(100) NOT NULL UNIQUE,
-                                        degree_id VARCHAR(50) NOT NULL,
-                                        degree_program VARCHAR(100) NOT NULL,
-                                        index_number VARCHAR(20) NOT NULL UNIQUE,
-                                        registration_number VARCHAR(20) NOT NULL UNIQUE,
-                                        mobile_number VARCHAR(20),
-                                        birth_date DATE NOT NULL,
-                                        state VARCHAR(50) NOT NULL,
+                                        batch_id VARCHAR(50) NOT NULL,
                                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Insert sample student data
-INSERT INTO students (name, email, degree_id,degree_program, index_number, registration_number, mobile_number, birth_date, state) VALUES
-                                                                                                                                      ('John Doe', 'john.doe@university.com','CS2022' ,'Computer Science', 'CS2024001', 'REG2024001', '1234567890', '2000-01-15', 'Active'),
-                                                                                                                                      ('Jane Smith', 'jane.smith@university.com','CS2022', 'Electrical Engineering', 'EE2024001', 'REG2024002', '9876543210', '1999-08-22', 'Active'),
-                                                                                                                                      ('dinithi', 'dinithi@university.com','CS2022' ,'Computer Science', 'CS2024005', 'REG2024003', '9854632876', '2000-01-20', 'Active');
+INSERT INTO students (index_number, registration_number, name, email, batch_id) VALUES
+                                                                                        ('202500001', '2025CSE001','John Doe' ,'john.doe@email.com', 'CSE2025');
+
 
 -- Table for storing individual attendance records
 CREATE TABLE IF NOT EXISTS attendance (
-                                          id INT PRIMARY KEY AUTO_INCREMENT,
-                                          student_id INT NOT NULL,
+                                          student_index INT NOT NULL,
                                           course_code VARCHAR(20) NOT NULL,
                                           date DATE NOT NULL,
                                           present BOOLEAN DEFAULT FALSE,
-                                          remarks VARCHAR(255),
                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                          FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
-                                          UNIQUE KEY unique_attendance (student_id, course_code, date)
+                                          FOREIGN KEY (student_index) REFERENCES students(index_number) ON DELETE CASCADE,
+                                          FOREIGN KEY (course_code) REFERENCES courses(code) ON DELETE CASCADE,
+                                          PRIMARY KEY (student_index, course_code, date)
 );
 
 
 -- Insert sample attendance data (assuming student_id 1 and 2 exist from student_schema.sql)
-INSERT INTO attendance (student_id, course_code, date, present, remarks) VALUES
-                                                                             (1, 'CS101', '2025-04-15', true, ''),
-                                                                             (2, 'CS101', '2025-04-15', true, ''),
-                                                                             (1, 'CS101', '2025-04-17', true, ''),
-                                                                             (2, 'CS101', '2025-04-17', false, 'Sick leave'),
-                                                                             (1, 'MATH201', '2025-04-16', true, ''),
-                                                                             (2, 'MATH201', '2025-04-16', true, '');
-
--- Table for storing course sessions
-CREATE TABLE IF NOT EXISTS course_sessions (
-                                               id INT PRIMARY KEY AUTO_INCREMENT,
-                                               course_code VARCHAR(20) NOT NULL,
-                                               course_name VARCHAR(100) NOT NULL,
-                                               date DATE NOT NULL,
-                                               total_students INT DEFAULT 0,
-                                               present_students INT DEFAULT 0,
-                                               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                               updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                               UNIQUE KEY unique_session (course_code, date)
-);
-
--- Insert sample course session data
-INSERT INTO course_sessions (course_code, course_name, date, total_students, present_students) VALUES
-                                                                                                   ('CS101', 'Introduction to Computer Science', '2025-04-15', 25, 22),
-                                                                                                   ('CS101', 'Introduction to Computer Science', '2025-04-17',  25, 20),
-                                                                                                   ('MATH201', 'Calculus II', '2025-04-16',  18, 15);
+INSERT INTO attendance (student_index, course_code, date, present) VALUES
+                                                                             (202500001, 'CS1101', '2025-04-15', true);
 
 -- Create courses table if it doesn't exist already
 CREATE TABLE IF NOT EXISTS courses (
-                                       id INT PRIMARY KEY AUTO_INCREMENT,
-                                       code VARCHAR(20) NOT NULL UNIQUE,
+                                       code VARCHAR(7) PRIMARY KEY,
                                        name VARCHAR(100) NOT NULL,
-                                       description TEXT,
+                                       year INT NOT NULL,
+                                       credits INT NOT NULL,
+                                       duration INT NOT NULL,
+                                       avg_rating DECIMAL(3,2) DEFAULT NULL,  -- Added avg_rating column
                                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Insert sample course data
-INSERT INTO courses (code, name, description) VALUES
-                                                  ('CS101', 'Introduction to Computer Science', 'Fundamental concepts of computer science'),
-                                                  ('MATH201', 'Calculus II', 'Advanced calculus topics and applications'),
-                                                  ('ENG102', 'Technical Writing', 'Writing for technical and scientific documents');
+-- Insert sample courses
+INSERT INTO courses (code, name, year, credits, duration) VALUES
+                                                                        ('CS1101', 'Introduction to Programming', 1, 3, 45),
+                                                                        ('CS2101', 'Data Structures', 1, 4, 60),
+                                                                        ('ENG1001', 'Calculus I', 2, 3, 45);
+
 
 -- Scholarships table
 CREATE TABLE IF NOT EXISTS scholarships (
@@ -102,7 +74,7 @@ INSERT INTO scholarships (name, description, min_gpa, amount, application_deadli
 -- Create the scholarship Application table
 CREATE TABLE IF NOT EXISTS scholarship_applications (
                                                         id  INT PRIMARY KEY AUTO_INCREMENT,
-                                                        student_indexnumber VARCHAR(10) UNIQUE ,
+                                                        student_index VARCHAR(10) UNIQUE ,
                                                         scholarship_id INT NOT NULL ,
                                                         studentBatch VARCHAR(20) NOT NULL ,
                                                         studentDegree VARCHAR(50) NOT NULL ,
@@ -116,7 +88,7 @@ CREATE TABLE IF NOT EXISTS scholarship_applications (
 );
 
 -- Insert sample scholarship application data
-INSERT INTO scholarship_applications (student_indexnumber, scholarship_id, studentBatch, studentDegree, studentGPA, status, comments) VALUES
+INSERT INTO scholarship_applications (student_index, scholarship_id, studentBatch, studentDegree, studentGPA, status, comments) VALUES
                                                                                                                                           (220008441, 1, '2023', 'Computer Science', 3.8, 'Pending', 'This scholarship will be help for me'),
                                                                                                                                           (22000552, 2, '2022', 'Electrical Engineering', 3.2, 'Pending', ' I have completed the requirements'),
                                                                                                                                           (22000458, 1, '2021', 'Computer Science', 3.7, 'Pending', ' I have completed the requirements');
@@ -174,3 +146,14 @@ INSERT INTO student_applications (
           'Nimal Silva', '7543210987V', 'Father', '0767654321', 'nimal.silva@example.com',
           'No', 'Pending'
       );
+
+-- Table for Hostel applications
+CREATE TABLE IF NOT EXISTS hostel_applications (
+                                                    id INT PRIMARY KEY AUTO_INCREMENT,
+                                                    student_index INT NOT NULL,
+                                                    application_date DATE NOT NULL,
+                                                    status VARCHAR(20) NOT NULL DEFAULT 'Pending',
+                                                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                                    FOREIGN KEY (student_index) REFERENCES students(index_number) ON DELETE CASCADE
+);
