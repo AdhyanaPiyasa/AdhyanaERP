@@ -10,13 +10,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../../.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/EnrollmentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/EnrollmentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/UserProfileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/UserProfileService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,9 +75,9 @@
     "Tomcat Server.Exam Service.executor": "Run",
     "Tomcat Server.Faculty Service.executor": "Run",
     "Tomcat Server.Student Service.executor": "Run",
-    "git-widget-placeholder": "administration-service",
+    "git-widget-placeholder": "Course-Service",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP/auth-service/src/main/resources",
+    "last_opened_file_path": "C:/Users/User/OneDrive/Desktop/kruthi/year 2/group_project/Dev2",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
