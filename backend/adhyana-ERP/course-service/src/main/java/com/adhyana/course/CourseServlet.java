@@ -43,22 +43,16 @@ public class CourseServlet extends HttpServlet {
                 pathInfo = pathInfo.substring(1);
             }
 
-            // First try direct ID lookup (for backwards compatibility)
-            try {
-                int id = Integer.parseInt(pathInfo);
-                Course course = courseService.getCourseById(id);
-                if (course != null) {
-                    ApiResponse<Course> apiResponse = new ApiResponse<>(true,
-                            "Course retrieved by ID: " + id, course);
-                    sendJsonResponse(response, apiResponse);
-                } else {
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Course not found with ID: " + id);
-                }
+            // Check if the path is a direct courseId lookup
+            Course course = courseService.getCourseById(pathInfo);
+            if (course != null) {
+                ApiResponse<Course> apiResponse = new ApiResponse<>(true,
+                        "Course retrieved by ID: " + pathInfo, course);
+                sendJsonResponse(response, apiResponse);
                 return;
-            } catch (NumberFormatException e) {
-                // Not a direct ID lookup, continue with field-based lookup
             }
 
+            // If not a direct ID, try field-based lookup
             // Split the path into field and value parts
             String[] pathParts = pathInfo.split("/", 2);
 
@@ -117,9 +111,9 @@ public class CourseServlet extends HttpServlet {
                 return;
             }
 
-            int id = Integer.parseInt(pathInfo.substring(1));
+            String courseId = pathInfo.substring(1);
             Course course = parseCourseFromRequest(request);
-            course.setId(id);
+            course.setCourseId(courseId);
 
             boolean updated = courseService.updateCourse(course);
             if (updated) {
@@ -142,8 +136,8 @@ public class CourseServlet extends HttpServlet {
                 return;
             }
 
-            int id = Integer.parseInt(pathInfo.substring(1));
-            boolean deleted = courseService.deleteCourse(id);
+            String courseId = pathInfo.substring(1);
+            boolean deleted = courseService.deleteCourse(courseId);
 
             if (deleted) {
                 ApiResponse<Void> apiResponse = new ApiResponse<>(true, "Course deleted successfully", null);
@@ -165,17 +159,14 @@ public class CourseServlet extends HttpServlet {
             System.out.println("  " + entry.getKey() + ": " + entry.getValue());
         }
 
-        int code = Integer.parseInt(courseData.getOrDefault("code", "0"));
+        String courseId = courseData.getOrDefault("courseId", "");
         String name = courseData.getOrDefault("name", "");
         int year = Integer.parseInt(courseData.getOrDefault("year", "0"));
-        int semester = Integer.parseInt(courseData.getOrDefault("semester", "0"));
         int credits = Integer.parseInt(courseData.getOrDefault("credits", "0"));
         int duration = Integer.parseInt(courseData.getOrDefault("duration", "0"));
 
         // Note: We don't parse avgRating from request as it's calculated by triggers
-        // The order matches the Course constructor with avgRating as null
-        // id, code, name, year, semester, credits, duration, avgRating
-        return new Course(0, code, name, year, semester, credits, duration, null);
+        return new Course(courseId, name, year, credits, duration, null);
     }
 
     private String readRequestBody(HttpServletRequest request) throws IOException {

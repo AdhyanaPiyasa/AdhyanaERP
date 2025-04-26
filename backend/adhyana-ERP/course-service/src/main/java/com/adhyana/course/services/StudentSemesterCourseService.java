@@ -1,7 +1,7 @@
 package com.adhyana.course.services;
 
-import com.adhyana.course.models.Course; // Import Course model
-import com.adhyana.course.models.StudentSemesterCourse; // Still useful for extraction
+import com.adhyana.course.models.Course;
+import com.adhyana.course.models.StudentSemesterCourse;
 import com.adhyana.course.utils.DatabaseConnection;
 
 import java.sql.*;
@@ -10,15 +10,9 @@ import java.util.List;
 
 /**
  * Service class focused on retrieving course information based on student enrollments.
- * Assumes the student_semester_courses table is populated externally.
+ * Provides methods to interact with student_semester_courses table.
  */
 public class StudentSemesterCourseService {
-
-    // Service for fetching course details, likely needed here.
-    // Assuming CourseService exists and has a method like getCourseById(String courseId)
-    // If not, you might need to inject CourseService or duplicate the logic.
-    // For simplicity here, we'll perform the JOIN directly.
-    // private final CourseService courseService = new CourseService(); // Option 1: Inject/Use CourseService
 
     /**
      * Retrieves the full details of courses a student is enrolled in for a specific semester.
@@ -35,7 +29,7 @@ public class StudentSemesterCourseService {
                 "JOIN student_semester_courses ssc ON c.course_id = ssc.course_id " +
                 "WHERE ssc.student_index = ? AND ssc.semester_id = ?";
 
-        System.out.println("Executing query: " + query + " with studentIndex=" + studentIndex + ", semesterId=" + semesterId); // Debugging
+        System.out.println("Executing query: " + query + " with studentIndex=" + studentIndex + ", semesterId=" + semesterId);
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -45,8 +39,6 @@ public class StudentSemesterCourseService {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    // Extract Course object from the result set
-                    // Assuming CourseService's extractCourseFromResultSet or similar logic
                     courses.add(extractCourseFromResultSet(rs));
                 }
             }
@@ -59,55 +51,53 @@ public class StudentSemesterCourseService {
 
     /**
      * Helper method to extract a Course object from ResultSet.
-     * NOTE: This duplicates logic likely present in CourseService.
-     * Consider refactoring to share this logic if possible.
-     * Assumes the columns from the 'courses' table are selected (c.*).
-     * --- ADJUST THIS based on your actual Course constructor and table columns ---
+     * Matches the Course model structure as defined in the schema.
      *
      * @param rs The ResultSet pointing to the current row.
      * @return A Course object.
      * @throws SQLException If a database access error occurs.
      */
     private Course extractCourseFromResultSet(ResultSet rs) throws SQLException {
-        // Retrieve columns based on the 'courses' table definition in course_schema.sql
-        String courseId = rs.getString("course_id"); // PK is VARCHAR
+        // Extract columns based on the 'courses' table definition
+        String courseId = rs.getString("course_id");
         String name = rs.getString("name");
-        int year = rs.getInt("year"); // Assuming 'year' in courses table means academic year level
+        int year = rs.getInt("year");
         int credits = rs.getInt("credits");
         int duration = rs.getInt("duration");
         Double avgRating = rs.getObject("avg_rating") != null ? rs.getDouble("avg_rating") : null;
-        // Timestamp createdAt = rs.getTimestamp("created_at"); // Available if needed
-        // Timestamp updatedAt = rs.getTimestamp("updated_at"); // Available if needed
 
-        // --- IMPORTANT ---
-        // The Course model provided previously had different fields (id, code, semester).
-        // You MUST adjust either the Course model OR this extraction logic
-        // to match the actual 'courses' table schema and the desired Course object structure.
-
-        // Example assuming Course model needs adjustment to match DB:
-        // return new Course(courseId, name, year, credits, duration, avgRating);
-
-        // Example assuming Course model from Course.java is correct and DB needs mapping:
-        // This requires mapping course_id to 'code' or 'id', and potentially adding a 'semester' field
-        // to the Course model or fetching it differently if relevant here.
-        // For now, using placeholder values where direct mapping isn't obvious from Course.java vs DB schema.
-        // **REPLACE WITH CORRECT MAPPING**
-        int placeholderId = 0; // Cannot get INT id from VARCHAR course_id directly
-        int placeholderCode = 0; // Cannot get INT code from VARCHAR course_id directly
-        int placeholderSemester = 0; // 'semester' field doesn't exist directly in 'courses' table
-
-        // Using the constructor from the provided Course.java for structure:
-        // Course(int id, int code, String name, int year, int semester, int credits, int duration, Double avgRating)
-        // THIS WILL LIKELY CAUSE ISSUES without adjusting the Course model or this logic.
-        return new Course(placeholderId, placeholderCode, name, year, placeholderSemester, credits, duration, avgRating);
+        // Using the updated Course constructor
+        return new Course(courseId, name, year, credits, duration, avgRating);
     }
 
+    /**
+     * Retrieves all enrollments for a specific student and semester.
+     *
+     * @param studentIndex The student's index number.
+     * @param semesterId The semester ID.
+     * @return A list of StudentSemesterCourse objects.
+     * @throws Exception If a database error occurs.
+     */
+    public List<StudentSemesterCourse> getEnrollmentsByStudentAndSemester(int studentIndex, String semesterId) throws Exception {
+        List<StudentSemesterCourse> enrollments = new ArrayList<>();
+        String query = "SELECT * FROM student_semester_courses WHERE student_index = ? AND semester_id = ?";
 
-    // Optional: Keep methods to retrieve raw enrollment data if needed elsewhere or for debugging.
-    // These methods return StudentSemesterCourse objects.
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, studentIndex);
+            stmt.setString(2, semesterId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    enrollments.add(extractEnrollmentFromResultSet(rs));
+                }
+            }
+        }
+        return enrollments;
+    }
 
     /**
-     * Retrieves a specific enrollment record by its composite primary key. (Optional)
+     * Retrieves a specific enrollment record by its composite primary key.
      *
      * @param studentIndex The student's index number.
      * @param semesterId   The semester ID.
@@ -135,9 +125,8 @@ public class StudentSemesterCourseService {
         return enrollment;
     }
 
-
     /**
-     * Retrieves all enrollments for a specific student. (Optional)
+     * Retrieves all enrollments for a specific student.
      *
      * @param studentIndex The student's index number.
      * @return A list of StudentSemesterCourse objects.
@@ -160,9 +149,8 @@ public class StudentSemesterCourseService {
         return enrollments;
     }
 
-
     /**
-     * Helper method to extract a StudentSemesterCourse object from a ResultSet row. (Optional)
+     * Helper method to extract a StudentSemesterCourse object from a ResultSet row.
      *
      * @param rs The ResultSet pointing to the current row.
      * @return A StudentSemesterCourse object.
@@ -176,5 +164,4 @@ public class StudentSemesterCourseService {
                 rs.getTimestamp("enrollment_date")
         );
     }
-
 }
