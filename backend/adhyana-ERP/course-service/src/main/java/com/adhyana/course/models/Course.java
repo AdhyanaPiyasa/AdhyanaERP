@@ -2,43 +2,34 @@
 package com.adhyana.course.models;
 
 public class Course {
-    private int id;
-    private int code;
+    private String courseId;       // Changed from int id to String courseId
     private String name;
     private int year;
-    private int semester;
+    // semester field removed as it's not in the schema
     private int credits;
     private int duration;
-    private Double avgRating;  // New field for average rating
+    private Double avgRating;
 
     // Constructor with fields in database table order
-    public Course(int id, int code, String name, int year,
-                  int semester, int credits, int duration, Double avgRating) {
-        this.id = id;
-        this.code = code;
+    public Course(String courseId, String name, int year,
+                  int credits, int duration, Double avgRating) {
+        this.courseId = courseId;
         this.name = name;
         this.year = year;
-        this.semester = semester;
         this.credits = credits;
         this.duration = duration;
         this.avgRating = avgRating;
     }
 
     // Getters and setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-
-    public int getCode() { return code; }
-    public void setCode(int code) { this.code = code; }
+    public String getCourseId() { return courseId; }
+    public void setCourseId(String courseId) { this.courseId = courseId; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
     public int getYear() { return year; }
     public void setYear(int year) { this.year = year; }
-
-    public int getSemester() { return semester; }
-    public void setSemester(int semester) { this.semester = semester; }
 
     public int getCredits() { return credits; }
     public void setCredits(int credits) { this.credits = credits; }
@@ -52,11 +43,9 @@ public class Course {
     @Override
     public String toString() {
         return "Course{" +
-                "id=" + id +
-                ", code=" + code +
+                "courseId='" + courseId + '\'' +
                 ", name='" + name + '\'' +
                 ", year=" + year +
-                ", semester=" + semester +
                 ", credits=" + credits +
                 ", duration=" + duration +
                 ", avgRating=" + avgRating +

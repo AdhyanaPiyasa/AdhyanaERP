@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="administration-service:war exploded" />
+      <artifact name="auth-service:war exploded" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -10,9 +10,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/AnnouncementServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/AnnouncementServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/CourseServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/CourseServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/FeedbackServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/FeedbackServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/SemesterServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/SemesterServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/StudentSemesterCourseServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/StudentSemesterCourseServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/Announcement.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/Announcement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/ApiResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/Course.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/Course.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/Feedback.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/Feedback.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/Semester.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/Semester.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/StudentSemesterCourse.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/StudentSemesterCourse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/AnnouncementService.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/AnnouncementService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/CourseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/CourseService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/FeedbackService.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/FeedbackService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/SemesterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/SemesterService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/StudentSemesterCourseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/StudentSemesterCourseService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -66,6 +80,7 @@
     "Database Script.exam_schema.sql.executor": "Run",
     "Database Script.student_schema.sql.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Tomcat Server.API Gateway.executor": "Run",
     "Tomcat Server.Administration Service.executor": "Run",
@@ -119,7 +134,7 @@
       <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
-  <component name="RunManager" selected="Tomcat Server.Administration Service">
+  <component name="RunManager" selected="Tomcat Server.API Gateway">
     <configuration name="admin_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" />
       <script-mode>FILE</script-mode>
@@ -806,8 +821,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.20224.300" />
-        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-IU-242.20224.300" />
+        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.21565.193" />
+        <option value="bundled-js-predefined-d6986cc7102b-e768b9ed790e-JavaScript-IU-243.21565.193" />
       </set>
     </attachedChunks>
   </component>
@@ -860,6 +875,7 @@
       <workItem from="1745553306170" duration="745000" />
       <workItem from="1745555737841" duration="1774000" />
       <workItem from="1745619207547" duration="21295000" />
+      <workItem from="1745682599374" duration="4063000" />
     </task>
     <servers />
   </component>

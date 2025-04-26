@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -45,41 +46,27 @@ public class SemesterServlet extends HttpServlet {
 
             // Special case for batch lookup
             if (pathInfo.startsWith("batch/")) {
-                String batchIdStr = pathInfo.substring("batch/".length());
-                try {
-                    int batchId = Integer.parseInt(batchIdStr);
-                    List<Semester> semesters = semesterService.getSemestersByBatchId(batchId);
+                String batchId = pathInfo.substring("batch/".length());
+                List<Semester> semesters = semesterService.getSemestersByBatchId(batchId);
 
-                    if (!semesters.isEmpty()) {
-                        ApiResponse<List<Semester>> apiResponse = new ApiResponse<>(true,
-                                "Semesters retrieved for batch ID: " + batchId, semesters);
-                        sendJsonResponse(response, apiResponse);
-                    } else {
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND,
-                                "No semesters found for batch ID: " + batchId);
-                    }
-                    return;
-                } catch (NumberFormatException e) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                            "Invalid batch ID format: " + batchIdStr);
-                    return;
-                }
-            }
-
-            // First try direct ID lookup (for backwards compatibility)
-            try {
-                int id = Integer.parseInt(pathInfo);
-                Semester semester = semesterService.getSemesterById(id);
-                if (semester != null) {
-                    ApiResponse<Semester> apiResponse = new ApiResponse<>(true,
-                            "Semester retrieved by ID: " + id, semester);
+                if (!semesters.isEmpty()) {
+                    ApiResponse<List<Semester>> apiResponse = new ApiResponse<>(true,
+                            "Semesters retrieved for batch ID: " + batchId, semesters);
                     sendJsonResponse(response, apiResponse);
                 } else {
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Semester not found with ID: " + id);
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND,
+                            "No semesters found for batch ID: " + batchId);
                 }
                 return;
-            } catch (NumberFormatException e) {
-                // Not a direct ID lookup, continue with field-based lookup
+            }
+
+            // First try direct ID lookup
+            Semester semester = semesterService.getSemesterById(pathInfo);
+            if (semester != null) {
+                ApiResponse<Semester> apiResponse = new ApiResponse<>(true,
+                        "Semester retrieved by ID: " + pathInfo, semester);
+                sendJsonResponse(response, apiResponse);
+                return;
             }
 
             // Split the path into field and value parts
@@ -87,11 +74,11 @@ public class SemesterServlet extends HttpServlet {
 
             if (pathParts.length < 2) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                        "Invalid URL format. Use /{fieldName}/{value} (e.g., /year/1)");
+                        "Invalid URL format. Use /{fieldName}/{value} (e.g., /academicYear/2024)");
                 return;
             }
 
-            String fieldName = pathParts[0].toLowerCase();
+            String fieldName = pathParts[0];
             String fieldValue = URLDecoder.decode(pathParts[1], StandardCharsets.UTF_8.name());
 
             System.out.println("Searching semesters with " + fieldName + " = " + fieldValue);
@@ -140,14 +127,14 @@ public class SemesterServlet extends HttpServlet {
                 return;
             }
 
-            int id = Integer.parseInt(pathInfo.substring(1));
+            String semesterId = pathInfo.substring(1);
             Semester semester = parseSemesterFromRequest(request);
-            semester.setId(id);
+            semester.setSemesterId(semesterId);
 
             boolean updated = semesterService.updateSemester(semester);
             if (updated) {
                 // Fetch the updated semester to return in the response
-                Semester updatedSemester = semesterService.getSemesterById(id);
+                Semester updatedSemester = semesterService.getSemesterById(semesterId);
                 ApiResponse<Semester> apiResponse = new ApiResponse<>(true, "Semester updated successfully", updatedSemester);
                 sendJsonResponse(response, apiResponse);
             } else {
@@ -167,8 +154,8 @@ public class SemesterServlet extends HttpServlet {
                 return;
             }
 
-            int id = Integer.parseInt(pathInfo.substring(1));
-            boolean deleted = semesterService.deleteSemester(id);
+            String semesterId = pathInfo.substring(1);
+            boolean deleted = semesterService.deleteSemester(semesterId);
 
             if (deleted) {
                 ApiResponse<Void> apiResponse = new ApiResponse<>(true, "Semester deleted successfully", null);
@@ -190,15 +177,15 @@ public class SemesterServlet extends HttpServlet {
             System.out.println("  " + entry.getKey() + ": " + entry.getValue());
         }
 
-        int batchId = Integer.parseInt(semesterData.getOrDefault("batchId", "0"));
-        int courseId = Integer.parseInt(semesterData.getOrDefault("courseId", "0"));
-        int teacherId = Integer.parseInt(semesterData.getOrDefault("teacherId", "0"));
-        int year = Integer.parseInt(semesterData.getOrDefault("year", "0"));
-        int semester = Integer.parseInt(semesterData.getOrDefault("semester", "0"));
-        String startedAt = semesterData.getOrDefault("startedAt", null);
-        String endedAt = semesterData.getOrDefault("endedAt", null);
+        String semesterId = semesterData.getOrDefault("semesterId", "");
+        String batchId = semesterData.getOrDefault("batchId", "");
+        int academicYear = Integer.parseInt(semesterData.getOrDefault("academicYear", "0"));
+        int semesterNum = Integer.parseInt(semesterData.getOrDefault("semesterNum", "0"));
+        Date startDate = Date.valueOf(semesterData.getOrDefault("startDate", "2000-01-01"));
+        Date endDate = Date.valueOf(semesterData.getOrDefault("endDate", "2000-01-01"));
+        String status = semesterData.getOrDefault("status", "PLANNED");
 
-        return new Semester(0, batchId, courseId, teacherId, year, semester, startedAt, endedAt);
+        return new Semester(semesterId, batchId, academicYear, semesterNum, startDate, endDate, status);
     }
 
     private String readRequestBody(HttpServletRequest request) throws IOException {

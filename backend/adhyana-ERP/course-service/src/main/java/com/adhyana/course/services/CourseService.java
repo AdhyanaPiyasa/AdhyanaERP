@@ -14,14 +14,12 @@ public class CourseService {
     private static final Map<String, String> FIELD_MAPPINGS = new HashMap<>();
 
     static {
-        FIELD_MAPPINGS.put("id", "id");
-        FIELD_MAPPINGS.put("code", "code");
+        FIELD_MAPPINGS.put("courseId", "course_id");
         FIELD_MAPPINGS.put("name", "name");
         FIELD_MAPPINGS.put("year", "year");
-        FIELD_MAPPINGS.put("semester", "semester");
         FIELD_MAPPINGS.put("credits", "credits");
         FIELD_MAPPINGS.put("duration", "duration");
-        FIELD_MAPPINGS.put("avgRating", "avg_rating");  // Add mapping for avg_rating
+        FIELD_MAPPINGS.put("avgRating", "avg_rating");
     }
 
     // Get all courses
@@ -48,7 +46,6 @@ public class CourseService {
         }
 
         String columnName = FIELD_MAPPINGS.get(fieldName.toLowerCase());
-        String query = "SELECT * FROM courses WHERE ";
         List<Course> courses = new ArrayList<>();
 
         // Build different queries based on field type
@@ -75,10 +72,14 @@ public class CourseService {
 
         // Handle special cases based on column type
         switch (columnName) {
-            case "id":
-            case "code":
+            case "course_id":
+                // String primary key - exact match
+                query = "SELECT * FROM courses WHERE " + columnName + " = ?";
+                stmt = conn.prepareStatement(query);
+                stmt.setString(1, fieldValue);
+                break;
+
             case "year":
-            case "semester":
             case "credits":
             case "duration":
                 // Numeric fields - exact match
@@ -129,11 +130,9 @@ public class CourseService {
         Double avgRating = rs.getObject("avg_rating") != null ? rs.getDouble("avg_rating") : null;
 
         return new Course(
-                rs.getInt("id"),
-                rs.getInt("code"),
+                rs.getString("course_id"),
                 rs.getString("name"),
                 rs.getInt("year"),
-                rs.getInt("semester"),
                 rs.getInt("credits"),
                 rs.getInt("duration"),
                 avgRating
@@ -141,57 +140,46 @@ public class CourseService {
     }
 
     // Get a course by ID - kept for backward compatibility
-    public Course getCourseById(int id) throws Exception {
-        List<Course> courses = searchCoursesByField("id", String.valueOf(id));
+    public Course getCourseById(String courseId) throws Exception {
+        List<Course> courses = searchCoursesByField("courseId", courseId);
         return courses.isEmpty() ? null : courses.get(0);
     }
 
     // Create a new course
     public Course createCourse(Course course) throws Exception {
-        String query = "INSERT INTO courses (code, name, year, semester, credits, duration) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO courses (course_id, name, year, credits, duration) " +
+                "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, course.getCode());
+            stmt.setString(1, course.getCourseId());
             stmt.setString(2, course.getName());
             stmt.setInt(3, course.getYear());
-            stmt.setInt(4, course.getSemester());
-            stmt.setInt(5, course.getCredits());
-            stmt.setInt(6, course.getDuration());
+            stmt.setInt(4, course.getCredits());
+            stmt.setInt(5, course.getDuration());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
                 throw new SQLException("Creating course failed, no rows affected.");
             }
 
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    course.setId(generatedKeys.getInt(1));
-                    return course;
-                } else {
-                    throw new SQLException("Creating course failed, no ID obtained.");
-                }
-            }
+            return course;
         }
     }
 
     // Update an existing course
     public boolean updateCourse(Course course) throws Exception {
-        String query = "UPDATE courses SET code = ?, name = ?, year = ?, semester = ?, " +
-                "credits = ?, duration = ? WHERE id = ?";
+        String query = "UPDATE courses SET name = ?, year = ?, credits = ?, duration = ? WHERE course_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, course.getCode());
-            stmt.setString(2, course.getName());
-            stmt.setInt(3, course.getYear());
-            stmt.setInt(4, course.getSemester());
-            stmt.setInt(5, course.getCredits());
-            stmt.setInt(6, course.getDuration());
-            stmt.setInt(7, course.getId());
+            stmt.setString(1, course.getName());
+            stmt.setInt(2, course.getYear());
+            stmt.setInt(3, course.getCredits());
+            stmt.setInt(4, course.getDuration());
+            stmt.setString(5, course.getCourseId());
 
             int affectedRows = stmt.executeUpdate();
             return affectedRows > 0;
@@ -199,13 +187,13 @@ public class CourseService {
     }
 
     // Delete a course
-    public boolean deleteCourse(int id) throws Exception {
-        String query = "DELETE FROM courses WHERE id = ?";
+    public boolean deleteCourse(String courseId) throws Exception {
+        String query = "DELETE FROM courses WHERE course_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, id);
+            stmt.setString(1, courseId);
             int affectedRows = stmt.executeUpdate();
             return affectedRows > 0;
         }

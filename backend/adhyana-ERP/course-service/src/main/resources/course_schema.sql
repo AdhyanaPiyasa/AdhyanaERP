@@ -291,3 +291,66 @@ WHERE c.course_id IN (SELECT DISTINCT course_id FROM feedbacks);
 
 DELIMITER //
 
+-- =============================================
+-- Final Semester Triggers
+-- Purpose: Manage student_semester_courses records when semesters change
+-- =============================================
+
+DELIMITER //
+
+-- Trigger when a semester is deleted
+CREATE TRIGGER after_semester_delete
+    AFTER DELETE ON semesters
+    FOR EACH ROW
+BEGIN
+    -- Remove all related course enrollments when a semester is deleted
+    DELETE FROM student_semester_courses
+    WHERE semester_id = OLD.semester_id;
+END //
+
+-- Trigger when a semester is updated
+CREATE TRIGGER after_semester_update
+    AFTER UPDATE ON semesters
+    FOR EACH ROW
+BEGIN
+    -- Update semester_id references if it changes
+    IF OLD.semester_id <> NEW.semester_id THEN
+        UPDATE student_semester_courses
+        SET semester_id = NEW.semester_id
+        WHERE semester_id = OLD.semester_id;
+    END IF;
+END //
+
+-- Trigger when a new semester is created
+CREATE TRIGGER after_semester_insert
+    AFTER INSERT ON semesters
+    FOR EACH ROW
+BEGIN
+    -- Get students from the batch associated with this semester
+    -- and courses offered in this semester
+    INSERT INTO student_semester_courses (student_index, semester_id, course_id)
+    SELECT
+        s.index_number,
+        NEW.semester_id,
+        bc.course_id
+    FROM
+        students s
+            JOIN
+        batch_courses bc ON s.batch_id = bc.batch_id
+            JOIN
+        semester_offerings so ON so.semester_id = NEW.semester_id AND so.course_id = bc.course_id
+    WHERE
+        s.batch_id = NEW.batch_id
+      AND NOT EXISTS (
+        -- Avoid duplicate enrollments
+        SELECT 1 FROM student_semester_courses ssc
+        WHERE ssc.student_index = s.index_number
+          AND ssc.semester_id = NEW.semester_id
+          AND ssc.course_id = bc.course_id
+    );
+
+    -- Note: enrollment_date will be automatically set to CURRENT_TIMESTAMP
+    -- by the default value in the table definition
+END //
+
+DELIMITER ;

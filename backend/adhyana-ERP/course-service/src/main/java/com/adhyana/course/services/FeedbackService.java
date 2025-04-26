@@ -24,13 +24,13 @@ public class FeedbackService {
         return feedbacks;
     }
 
-    public Feedback getFeedbackById(int id) throws Exception {
-        String query = "SELECT * FROM feedbacks WHERE id = ?";
+    public Feedback getFeedbackById(int feedbackId) throws Exception {
+        String query = "SELECT * FROM feedbacks WHERE feedback_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, id);
+            stmt.setInt(1, feedbackId);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -40,24 +40,66 @@ public class FeedbackService {
         return null;
     }
 
+    public List<Feedback> getFeedbacksByCourse(String courseId) throws Exception {
+        List<Feedback> feedbacks = new ArrayList<>();
+        String query = "SELECT * FROM feedbacks WHERE course_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, courseId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                feedbacks.add(mapFeedback(rs));
+            }
+        }
+        return feedbacks;
+    }
+
+    public List<Feedback> getFeedbacksBySemester(String semesterId) throws Exception {
+        List<Feedback> feedbacks = new ArrayList<>();
+        String query = "SELECT * FROM feedbacks WHERE semester_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, semesterId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                feedbacks.add(mapFeedback(rs));
+            }
+        }
+        return feedbacks;
+    }
 
     public Feedback createFeedback(Feedback feedback) throws Exception {
-        String query = "INSERT INTO feedbacks (courseId, studentId, teacher, rating_content, rating_instructor, rating_lms, comment, is_anonymous, created_at, updated_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO feedbacks (course_id, semester_id, student_index, rating_content, " +
+                "rating_instructor, rating_materials, rating_lms, comment, is_anonymous, created_at, updated_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setInt(1, feedback.getCourseId());
-            stmt.setInt(2, feedback.getStudentId());
-            stmt.setString(3, feedback.getTeacher());
+            stmt.setString(1, feedback.getCourseId());
+            stmt.setString(2, feedback.getSemesterId());
+
+            // Handle null student_index
+            if (feedback.getStudentIndex() != null) {
+                stmt.setInt(3, feedback.getStudentIndex());
+            } else {
+                stmt.setNull(3, Types.INTEGER);
+            }
+
             stmt.setInt(4, feedback.getRatingContent());
             stmt.setInt(5, feedback.getRatingInstructor());
-            stmt.setInt(6, feedback.getRatingLms());
-            stmt.setString(7, feedback.getComment());
-            stmt.setBoolean(8, feedback.isAnonymous());
-            stmt.setTimestamp(9, feedback.getCreatedAt());
-            stmt.setTimestamp(10, feedback.getUpdatedAt());
+            stmt.setInt(6, feedback.getRatingMaterials());
+            stmt.setInt(7, feedback.getRatingLms());
+            stmt.setString(8, feedback.getComment());
+            stmt.setBoolean(9, feedback.isAnonymous());
+            stmt.setTimestamp(10, feedback.getCreatedAt());
+            stmt.setTimestamp(11, feedback.getUpdatedAt());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -66,7 +108,7 @@ public class FeedbackService {
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    feedback.setId(generatedKeys.getInt(1));
+                    feedback.setFeedbackId(generatedKeys.getInt(1));
                     return feedback;
                 } else {
                     throw new SQLException("Creating feedback failed, no ID obtained.");
@@ -75,23 +117,32 @@ public class FeedbackService {
         }
     }
 
-    public void updateFeedback(int id, Feedback feedback) throws Exception {
-        String query = "UPDATE feedbacks SET courseId = ?, studentId = ?, teacher = ?, rating_content = ?, " +
-                "rating_instructor = ?, rating_lms = ?, comment = ?, is_anonymous = ?, updated_at = ? WHERE id = ?";
+    public void updateFeedback(int feedbackId, Feedback feedback) throws Exception {
+        String query = "UPDATE feedbacks SET course_id = ?, semester_id = ?, student_index = ?, " +
+                "rating_content = ?, rating_instructor = ?, rating_materials = ?, rating_lms = ?, " +
+                "comment = ?, is_anonymous = ?, updated_at = ? WHERE feedback_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, feedback.getCourseId());
-            stmt.setInt(2, feedback.getStudentId());
-            stmt.setString(3, feedback.getTeacher());
+            stmt.setString(1, feedback.getCourseId());
+            stmt.setString(2, feedback.getSemesterId());
+
+            // Handle null student_index
+            if (feedback.getStudentIndex() != null) {
+                stmt.setInt(3, feedback.getStudentIndex());
+            } else {
+                stmt.setNull(3, Types.INTEGER);
+            }
+
             stmt.setInt(4, feedback.getRatingContent());
             stmt.setInt(5, feedback.getRatingInstructor());
-            stmt.setInt(6, feedback.getRatingLms());
-            stmt.setString(7, feedback.getComment());
-            stmt.setBoolean(8, feedback.isAnonymous());
-            stmt.setTimestamp(9, feedback.getUpdatedAt());
-            stmt.setInt(10, id);
+            stmt.setInt(6, feedback.getRatingMaterials());
+            stmt.setInt(7, feedback.getRatingLms());
+            stmt.setString(8, feedback.getComment());
+            stmt.setBoolean(9, feedback.isAnonymous());
+            stmt.setTimestamp(10, feedback.getUpdatedAt());
+            stmt.setInt(11, feedbackId);
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -100,13 +151,13 @@ public class FeedbackService {
         }
     }
 
-    public void deleteFeedback(int id) throws Exception {
-        String query = "DELETE FROM feedbacks WHERE id = ?";
+    public void deleteFeedback(int feedbackId) throws Exception {
+        String query = "DELETE FROM feedbacks WHERE feedback_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, id);
+            stmt.setInt(1, feedbackId);
             int affectedRows = stmt.executeUpdate();
 
             if (affectedRows == 0) {
@@ -117,12 +168,13 @@ public class FeedbackService {
 
     private Feedback mapFeedback(ResultSet rs) throws SQLException {
         return new Feedback(
-                rs.getInt("id"),
-                rs.getInt("courseId"),
-                rs.getInt("studentId"),
-                rs.getString("teacher"),
+                rs.getInt("feedback_id"),
+                rs.getString("course_id"),
+                rs.getString("semester_id"),
+                rs.getObject("student_index") != null ? rs.getInt("student_index") : null,
                 rs.getInt("rating_content"),
                 rs.getInt("rating_instructor"),
+                rs.getInt("rating_materials"),
                 rs.getInt("rating_lms"),
                 rs.getString("comment"),
                 rs.getBoolean("is_anonymous"),

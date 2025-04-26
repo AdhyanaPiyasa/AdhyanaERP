@@ -1,71 +1,65 @@
-// semester-service/src/main/java/com/adhyana/semester/models/Semester.java
 package com.adhyana.course.models;
 
 import java.sql.Date;
 
 public class Semester {
-    private int id;
-    private int batchId;
-    private int courseId;
-    private int teacherId;
-    private int year;
-    private int semester;
-    private String startedAt; // Month and year only, e.g., "August 2023"
-    private String endedAt;   // Month and year only, e.g., "December 2023"
+    private String semesterId;
+    private String batchId;
+    private int academicYear;
+    private int semesterNum;
+    private Date startDate;
+    private Date endDate;
+    private String status;
     private Date createdAt;
     private Date updatedAt;
 
     // Constructor with fields in database table order
-    public Semester(int id, int batchId, int courseId, int teacherId, int year, int semester, String startedAt, String endedAt, Date createdAt, Date updatedAt) {
-        this.id = id;
+    public Semester(String semesterId, String batchId, int academicYear, int semesterNum,
+                    Date startDate, Date endDate, String status, Date createdAt, Date updatedAt) {
+        this.semesterId = semesterId;
         this.batchId = batchId;
-        this.courseId = courseId;
-        this.teacherId = teacherId;
-        this.year = year;
-        this.semester = semester;
-        this.startedAt = startedAt;
-        this.endedAt = endedAt;
+        this.academicYear = academicYear;
+        this.semesterNum = semesterNum;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
     // Constructor without timestamps for creation
-    public Semester(int id, int batchId, int courseId, int teacherId, int year, int semester,
-                    String startedAt, String endedAt) {
-        this.id = id;
+    public Semester(String semesterId, String batchId, int academicYear, int semesterNum,
+                    Date startDate, Date endDate, String status) {
+        this.semesterId = semesterId;
         this.batchId = batchId;
-        this.courseId = courseId;
-        this.teacherId = teacherId;
-        this.year = year;
-        this.semester = semester;
-        this.startedAt = startedAt;
-        this.endedAt = endedAt;
+        this.academicYear = academicYear;
+        this.semesterNum = semesterNum;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = status;
     }
 
     // Getters and setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public String getSemesterId() { return semesterId; }
+    public void setSemesterId(String semesterId) { this.semesterId = semesterId; }
 
-    public int getBatchId() { return batchId; }
-    public void setBatchId(int batchId) { this.batchId = batchId; }
+    public String getBatchId() { return batchId; }
+    public void setBatchId(String batchId) { this.batchId = batchId; }
 
-    public int getCourseId() { return courseId; }
-    public void setCourseId(int courseId) { this.courseId = courseId; }
+    public int getAcademicYear() { return academicYear; }
+    public void setAcademicYear(int academicYear) { this.academicYear = academicYear; }
 
-    public int getTeacherId() { return teacherId; }
-    public void setTeacherId(int teacherId) { this.teacherId = teacherId; }
+    public int getSemesterNum() { return semesterNum; }
+    public void setSemesterNum(int semesterNum) { this.semesterNum = semesterNum; }
 
-    public int getYear() { return year; }
-    public void setYear(int year) { this.year = year; }
+    public Date getStartDate() { return startDate; }
+    public void setStartDate(Date startDate) { this.startDate = startDate; }
 
-    public int getSemester() { return semester; }
-    public void setSemester(int semester) { this.semester = semester; }
+    public Date getEndDate() { return endDate; }
+    public void setEndDate(Date endDate) { this.endDate = endDate; }
 
-    public String getStartedAt() { return startedAt; }
-    public void setStartedAt(String startedAt) { this.startedAt = startedAt; }
-
-    public String getEndedAt() { return endedAt; }
-    public void setEndedAt(String endedAt) { this.endedAt = endedAt; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
@@ -76,17 +70,15 @@ public class Semester {
     @Override
     public String toString() {
         return "Semester{" +
-                "id=" + id +
-                ", batchId=" + batchId +
-                ", courseId=" + courseId +
-                ", teacherId=" + teacherId +
-                ", year=" + year +
-                ", semester=" + semester +
-                ", startedAt='" + startedAt + '\'' +
-                ", endedAt='" + endedAt + '\'' +
+                "semesterId='" + semesterId + '\'' +
+                ", batchId='" + batchId + '\'' +
+                ", academicYear=" + academicYear +
+                ", semesterNum=" + semesterNum +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", status='" + status + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
     }
 }
-
