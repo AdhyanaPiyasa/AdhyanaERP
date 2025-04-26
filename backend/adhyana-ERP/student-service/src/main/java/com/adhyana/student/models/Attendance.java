@@ -4,28 +4,26 @@ import java.time.LocalDate;
 
 public class Attendance {
     private int id;
-    private int studentId;
+    private int studentIndex;
     private String courseCode;
     private LocalDate date;
     private boolean present;
-    private String remarks;// Optional notes about this attendance record (e.g., reason for absence)
 
-    // Constructor to initialize all fields
-    public Attendance(int id, int studentId, String courseCode, LocalDate date, boolean present, String remarks) {
+    // Constructor
+    public Attendance(int id, int studentIndex, String courseCode, LocalDate date, boolean present) {
         this.id = id;
-        this.studentId = studentId;
+        this.studentIndex = studentIndex;
         this.courseCode = courseCode;
         this.date = date;
         this.present = present;
-        this.remarks = remarks;
     }
 
-    // Getters and setters for all fields(allow controlled access to the private fields)
+    // Getters and setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
-    public int getStudentId() { return studentId; }
-    public void setStudentId(int studentId) { this.studentId = studentId; }
+    public int getStudentIndex() { return studentIndex; }
+    public void setStudentIndex(int studentIndex) { this.studentIndex = studentIndex; }
 
     public String getCourseCode() { return courseCode; }
     public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
@@ -35,8 +33,5 @@ public class Attendance {
 
     public boolean isPresent() { return present; }
     public void setPresent(boolean present) { this.present = present; }
-
-    public String getRemarks() { return remarks; }
-    public void setRemarks(String remarks) { this.remarks = remarks; }
 
 }

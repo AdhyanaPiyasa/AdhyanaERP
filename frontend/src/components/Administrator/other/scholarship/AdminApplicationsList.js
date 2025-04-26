@@ -64,38 +64,70 @@ const AdminApplicationsList = () => {
         setShowViewModal(false);
     };
 
-    // Process all pending applications for a specific scholarship
-    const handleProcessApplications = async (scholarshipId) => {
-        try {
-            setLoading(true);
-            
-            // API call to process applications automatically
-            // POST to /api/scholarship/scholarships/process/{scholarshipId}
-            // In real implementation:
-            const token = localStorage.getItem('token');
-             const response = await fetch(`http://localhost:8081/api/api/students/scholarships/process/${scholarshipId}`, {
-                 method: 'POST',
-                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-             const data = await response.json();
-            
-            // After processing, refresh the applications list
-            await fetchApplications();
-            
-        } catch (err) {
-            setError('Failed to process applications: ' + err.message);
-            console.error('Error processing applications:', err);
-        } finally {
-            setLoading(false);
+// Process all pending applications across all scholarships
+const handleProcessApplications = async () => {
+    try {
+        setLoading(true);
+        setError(null);
+        
+        // Extract unique scholarship IDs from pending applications
+        const pendingApplications = applications.filter(app => 
+            app.status && app.status.toLowerCase() === 'pending'
+        );
+        
+        // Get unique scholarship IDs
+        const uniqueScholarshipIds = [...new Set(pendingApplications.map(app => app.scholarshipId))];
+        
+        console.log("Processing scholarships with IDs:", uniqueScholarshipIds);
+        
+        if (uniqueScholarshipIds.length === 0) {
+            console.log("No pending applications found");
+            return;
         }
-    };
+        
+        // Process each scholarship one by one
+        const token = localStorage.getItem('token');
+        let processedCount = 0;
+        
+        for (const scholarshipId of uniqueScholarshipIds) {
+            try {
+                const response = await fetch(`http://localhost:8081/api/api/students/scholarships/process/${scholarshipId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+                
+                if (!response.ok) {
+                    console.error(`Failed to process scholarship ID ${scholarshipId}: ${response.status}`);
+                    continue; // Continue with next scholarship even if this one fails
+                }
+                
+                const data = await response.json();
+                console.log(`Processed scholarship ID ${scholarshipId}:`, data);
+                processedCount++;
+            } catch (err) {
+                console.error(`Error processing scholarship ID ${scholarshipId}:`, err);
+                // Continue with next scholarship even if this one fails
+            }
+        }
+        
+        // Show success message
+        if (processedCount > 0) {
+            // After all processing is complete, refresh the applications list
+            await fetchApplications();
+        } else {
+            setError("Failed to process any scholarships");
+        }
+        
+    } catch (err) {
+        setError('Failed to process applications: ' + err.message);
+        console.error('Error processing applications:', err);
+    } finally {
+        setLoading(false);
+    }
+};
 
     // Get status color based on application status
     const getStatusColor = (status) => {
@@ -265,7 +297,7 @@ const AdminApplicationsList = () => {
                                                     // Prevent default and stop propagation
                                                     e.preventDefault();
                                                     e.stopPropagation();
-                                                    handleProcessApplications(1);
+                                                    handleProcessApplications();
                                                 },
                                                 children: ['Process Pending Applications']
                                             }

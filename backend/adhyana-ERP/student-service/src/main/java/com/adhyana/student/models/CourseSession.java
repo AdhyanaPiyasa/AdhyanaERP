@@ -1,8 +1,6 @@
-// student-service/src/main/java/com/adhyana/student/models/CourseSession.java
 package com.adhyana.student.models;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 public class CourseSession {
     private int id;
@@ -13,9 +11,9 @@ public class CourseSession {
     private int presentStudents;
     private double attendancePercentage;
 
+    // Constructor
     public CourseSession(int id, String courseCode, String courseName, LocalDate date,
-                          int totalStudents, int presentStudents) {
-
+                         int totalStudents, int presentStudents) {
         this.id = id;
         this.courseCode = courseCode;
         this.courseName = courseName;
@@ -25,6 +23,7 @@ public class CourseSession {
         this.calculateAttendancePercentage();
     }
 
+    // Calculate attendance percentage
     private void calculateAttendancePercentage() {
         if (totalStudents > 0) {
             this.attendancePercentage = ((double) presentStudents / totalStudents) * 100.0;

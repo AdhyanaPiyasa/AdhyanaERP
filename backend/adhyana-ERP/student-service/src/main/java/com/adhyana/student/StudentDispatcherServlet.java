@@ -13,8 +13,7 @@ public class StudentDispatcherServlet extends HttpServlet {
     private final StudentCoreServlet studentCoreServlet = new StudentCoreServlet();
     private final AttendanceServlet attendanceServlet = new AttendanceServlet();
     private final ScholarshipServlet scholarshipServlet = new ScholarshipServlet();
-    private final StudentApplicationServlet StudentApplicationServlet = new StudentApplicationServlet(); // Add this line
-
+    private final StudentApplicationServlet applicationServlet = new StudentApplicationServlet();
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
@@ -27,10 +26,7 @@ public class StudentDispatcherServlet extends HttpServlet {
             return;
         }
 
-        if (pathInfo.startsWith("/newapplications")) {
-            // New applications functionality
-            StudentApplicationServlet.service(request, response);
-        }else if (pathInfo.startsWith("/core")) {
+        if (pathInfo.startsWith("/core")) {
             // Core student functionality
             studentCoreServlet.service(request, response);
         } else if (pathInfo.startsWith("/attendance")) {
@@ -39,6 +35,9 @@ public class StudentDispatcherServlet extends HttpServlet {
         } else if (pathInfo.startsWith("/scholarships") || pathInfo.startsWith("/applications")) {
             // Scholarship functionality
             scholarshipServlet.service(request, response);
+        } else if (pathInfo.startsWith("/newapplications")) {
+            // Student application functionality
+            applicationServlet.service(request, response);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Resource not found");
         }

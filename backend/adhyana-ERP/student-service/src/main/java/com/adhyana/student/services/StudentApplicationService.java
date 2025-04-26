@@ -92,7 +92,7 @@ public class StudentApplicationService {
      * Retrieves a specific application by ID
      */
     public StudentApplication getApplication(int id) throws Exception {
-        String query = "SELECT * FROM student_applications WHERE id = ?";
+        String query = "SELECT * FROM student_applications WHERE student_application_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -111,7 +111,7 @@ public class StudentApplicationService {
      * Updates an application status
      */
     public void updateApplicationStatus(int id, String status) throws Exception {
-        String query = "UPDATE student_applications SET status = ? WHERE id = ?";
+        String query = "UPDATE student_applications SET status = ? WHERE student_application_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -151,7 +151,7 @@ public class StudentApplicationService {
      */
     private StudentApplication mapResultSetToApplication(ResultSet rs) throws SQLException {
         return new StudentApplication(
-                rs.getInt("id"),
+                rs.getInt("student_application_id"),
                 rs.getString("name"),
                 rs.getString("national_id"),
                 rs.getString("email"),

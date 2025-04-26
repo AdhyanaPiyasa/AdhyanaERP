@@ -3,7 +3,7 @@ package com.adhyana.student.models;
 
 public class ScholarshipApplication {
     private int id;
-    private int studentId;
+    private int studentIndexNumber;
     private int scholarshipId;
     private String studentBatch;
     private String studentDegree;
@@ -12,11 +12,11 @@ public class ScholarshipApplication {
     private String comments;
 
     // Constructor
-    public ScholarshipApplication(int id, int studentId, int scholarshipId,
+    public ScholarshipApplication(int id, int studentIndexNumber, int scholarshipId,
                                   String studentBatch, String studentDegree,
                                   double studentGpa, String status, String comments) {
         this.id = id;
-        this.studentId = studentId;
+        this.studentIndexNumber = studentIndexNumber;
         this.scholarshipId = scholarshipId;
         this.studentBatch = studentBatch;
         this.studentDegree = studentDegree;
@@ -29,8 +29,8 @@ public class ScholarshipApplication {
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
-    public int getStudentId() { return studentId; }
-    public void setStudentId(int studentId) { this.studentId = studentId; }
+    public int getStudentIndexNumber() { return studentIndexNumber; }
+    public void setStudentIndexNumber(int studentId) { this.studentIndexNumber = studentIndexNumber; }
 
     public int getScholarshipId() { return scholarshipId; }
     public void setScholarshipId(int scholarshipId) { this.scholarshipId = scholarshipId; }

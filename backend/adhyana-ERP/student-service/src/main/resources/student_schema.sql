@@ -8,7 +8,7 @@ USE adhyana_student;
 
 -- Shared Table: Students (Reference Only - Data Managed by Admin)
 CREATE TABLE IF NOT EXISTS students (
-                                        index_number INT PRIMARY KEY,
+                                        student_index INT PRIMARY KEY,
                                         registration_number VARCHAR(20) NOT NULL UNIQUE,
                                         name VARCHAR(100) NOT NULL,
                                         email VARCHAR(100) NOT NULL UNIQUE,
@@ -37,11 +37,11 @@ CREATE TABLE IF NOT EXISTS student_applications (
                                                     national_id VARCHAR(20) NOT NULL UNIQUE,
                                                     email VARCHAR(100) NOT NULL UNIQUE,
                                                     phone VARCHAR(20) NOT NULL,
-                                                    gender ENUM('Male', 'Female', 'Other') NOT NULL,
+                                                    gender VARCHAR(10) NOT NULL,
                                                     date_of_birth DATE NOT NULL,
                                                     address TEXT NOT NULL,
                                                     applied_program VARCHAR(100) NOT NULL,
-                                                    application_date DATE NOT NULL DEFAULT (CURDATE()),
+                                                    application_date DATE NOT NULL,
                                                     mathematics VARCHAR(5) NOT NULL,
                                                     science VARCHAR(5) NOT NULL,
                                                     english VARCHAR(5) NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS student_applications (
                                                     guardian_relation VARCHAR(20) NOT NULL,
                                                     guardian_contact_number VARCHAR(20) NOT NULL,
                                                     guardian_email VARCHAR(100),
-                                                    hostel_required BOOLEAN DEFAULT FALSE,
+                                                    hostel_required VARCHAR(5),
                                                     status VARCHAR(20) NOT NULL DEFAULT 'Pending',
                                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -70,32 +70,26 @@ CREATE TABLE IF NOT EXISTS hostel_applications (
 
 -- Student Specific: Attendance
 CREATE TABLE IF NOT EXISTS attendance (
-                                          attendance_id BIGINT PRIMARY KEY AUTO_INCREMENT, -- Use surrogate key
+                                          attendance_id INT PRIMARY KEY AUTO_INCREMENT,
                                           student_index INT NOT NULL,
-                                          course_id VARCHAR(10) NOT NULL,
-                                          session_date DATE NOT NULL,
-                                          session_time TIME NULL, -- Optional: Specific time if multiple sessions/day
+                                          course_id VARCHAR(20) NOT NULL,
+                                          date DATE NOT NULL,
                                           present BOOLEAN DEFAULT FALSE,
-                                          notes VARCHAR(255) NULL, -- e.g., 'Medical Leave Approved'
-                                          recorded_by INT NULL, -- Could link to staff ID if needed
                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    -- FOREIGN KEY (student_index) REFERENCES students(index_number) ON DELETE CASCADE, -- Cascade OK?
-    -- FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE, -- Cascade OK?
-                                          UNIQUE KEY uk_student_course_session (student_index, course_id, session_date, session_time) -- Prevent duplicates
+                                          FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE CASCADE,
+                                          FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE,
+                                          UNIQUE KEY (student_index, course_id, date)
 );
 
 -- Student Specific: Scholarships Master List
 CREATE TABLE IF NOT EXISTS scholarships (
                                             scholarship_id INT PRIMARY KEY AUTO_INCREMENT,
-                                            name VARCHAR(100) NOT NULL UNIQUE,
+                                            name VARCHAR(100) NOT NULL,
                                             description TEXT,
-                                            eligibility_criteria TEXT NULL, -- More flexible than just GPA
-                                            min_gpa DECIMAL(3,2) NULL, -- GPA might be just one criterion
+                                            min_gpa DOUBLE NOT NULL,
                                             amount DECIMAL(10,2) NOT NULL,
-                                            amount_type ENUM('FIXED', 'PERCENTAGE', 'TUITION_WAIVER') DEFAULT 'FIXED',
                                             application_deadline DATE NOT NULL,
-                                            status ENUM('ACTIVE', 'INACTIVE', 'CLOSED') DEFAULT 'ACTIVE',
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -105,28 +99,24 @@ CREATE TABLE IF NOT EXISTS scholarship_applications (
                                                         scholarship_application_id INT PRIMARY KEY AUTO_INCREMENT,
                                                         student_index INT NOT NULL, -- Changed from VARCHAR, Removed UNIQUE
                                                         scholarship_id INT NOT NULL,
-                                                        application_date DATE DEFAULT (CURDATE()),
                                                         student_batch VARCHAR(20) NULL, -- Denormalized for convenience, but can get from student_index
                                                         student_degree VARCHAR(50) NULL, -- Denormalized
-                                                        student_gpa DECIMAL(3,2) NULL, -- GPA at time of application
-                                                        status ENUM('Pending','Approved','Rejected', 'Waitlisted') NOT NULL DEFAULT 'Pending',
+                                                        student_gpa DOUBLE NOT NULL, -- GPA at time of application
+                                                        status ENUM('Pending','Approved','Rejected') NOT NULL ,
                                                         comments TEXT,
-                                                        supporting_documents_path VARCHAR(255) NULL, -- Link to stored documents
                                                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    -- FOREIGN KEY (student_index) REFERENCES students(index_number) ON DELETE CASCADE,
                                                         FOREIGN KEY (scholarship_id) REFERENCES scholarships(scholarship_id) ON DELETE CASCADE, -- If scholarship deleted, apps are void
-                                                        UNIQUE KEY uk_student_scholarship (student_index, scholarship_id) -- Student can apply only once per scholarship
 );
 
 -- Sample Data Insertion (Student Schema) --
 
 -- Re-insert sample student/course data (for reference, assuming not live linked)
-INSERT INTO students (index_number, registration_number, name, email, batch_id) VALUES
+INSERT INTO students (student_index, registration_number, name, email, batch_id) VALUES
                                                                                     (20240001, '2024CS001','Janith Perera' ,'janith.p@student.adhyana.lk', 'CS24F'),
                                                                                     (20240002, '2024CS002','Aisha Khan' ,'aisha.k@student.adhyana.lk', 'CS24F'),
                                                                                     (20230010, '2023BM010','Ravi Sharma' ,'ravi.s@student.adhyana.lk', 'BM23S')
-ON DUPLICATE KEY UPDATE index_number=index_number; -- Avoid error if already exists
+ON DUPLICATE KEY UPDATE student_index=student_index; -- Avoid error if already exists
 
 INSERT INTO courses (course_id, name, year, credits, duration) VALUES
                                                                    ('CS1101', 'Introduction to Programming', 1, 3, 45),
@@ -135,7 +125,7 @@ INSERT INTO courses (course_id, name, year, credits, duration) VALUES
 ON DUPLICATE KEY UPDATE course_id=course_id; -- Avoid error if already exists
 
 -- Insert sample attendance data
-INSERT INTO attendance (student_index, course_id, session_date, present) VALUES
+INSERT INTO attendance (student_index, course_id, date, present) VALUES
                                                                              (20240001, 'CS1101', '2025-04-15', true),
                                                                              (20240001, 'CS1101', '2025-04-17', true),
                                                                              (20240002, 'CS1101', '2025-04-15', false),
