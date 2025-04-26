@@ -122,7 +122,8 @@ const AppState = {
     // userRole: localStorage.getItem('userRole') || null
     isAuthenticated: true,
     token: 'dev-token',
-    userRole: 'teacher'
+    userRole: 'admin'
+
 };
 const initializeApp = async () => {
     try {
@@ -164,7 +165,8 @@ const checkAuthStatus = async () => {
     // const userRole = localStorage.getItem('userRole');
 
     const token = 'dev-token';
-    const userRole = 'teacher';
+    const userRole = 'admin';
+
 
     if (token && userRole) {
         AppState.isAuthenticated = true;
