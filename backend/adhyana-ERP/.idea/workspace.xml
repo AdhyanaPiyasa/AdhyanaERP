@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="administration-service:war exploded" />
+      <artifact name="student-service:war exploded" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -11,10 +11,9 @@
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/staff/Payroll.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/staff/Payroll.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/utils/navigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/utils/navigation.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,9 +113,9 @@
       <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
-  <component name="RunManager" selected="Tomcat Server.Administration Service">
-    <configuration name="auth_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
-      <script-file value="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" />
+  <component name="RunManager" selected="Database Script.admin_schema.sql">
+    <configuration name="admin_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" />
       <script-mode>FILE</script-mode>
       <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
       <method v="2" />
@@ -775,8 +774,8 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Database Script.admin_schema.sql" />
       <item itemvalue="Database Script.student_schema.sql" />
-      <item itemvalue="Database Script.auth_schema.sql" />
       <item itemvalue="Database Script.course_schema.sql" />
       <item itemvalue="Database Script.ddbms_schema.sql" />
       <item itemvalue="Database Script.exam_schema.sql" />
@@ -790,11 +789,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Database Script.admin_schema.sql" />
         <item itemvalue="Database Script.student_schema.sql" />
         <item itemvalue="Database Script.ddbms_schema.sql" />
         <item itemvalue="Database Script.course_schema.sql" />
         <item itemvalue="Database Script.exam_schema.sql" />
-        <item itemvalue="Database Script.auth_schema.sql" />
       </list>
     </recent_temporary>
   </component>

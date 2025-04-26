@@ -12,7 +12,7 @@ const PayrollDashboard = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8081/api/staff', {
+            const response = await fetch('http://localhost:8081/api/api/admin/staff', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -43,7 +43,7 @@ const PayrollDashboard = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const url = 'http://localhost:8081/api/payroll';
+            const url = 'http://localhost:8081/api/api/admin/payroll';
             
             const response = await fetch(url, {
                 method: 'GET',
