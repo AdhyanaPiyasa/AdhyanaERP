@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="administration-service:war exploded" />
+      <artifact name="student-service:war exploded" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -28,11 +28,6 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$/../.." value="administration-service" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
@@ -66,7 +61,6 @@
     "Database Script.exam_schema.sql.executor": "Run",
     "Database Script.student_schema.sql.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Tomcat Server.API Gateway.executor": "Run",
     "Tomcat Server.Administration Service.executor": "Run",
     "Tomcat Server.Auth Service.executor": "Run",
@@ -78,6 +72,7 @@
     "git-widget-placeholder": "Course-Service",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/User/OneDrive/Desktop/kruthi/year 2/group_project/Dev2",
+
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -101,11 +96,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\viduranga\Documents\GitHub\AdhyanaERP\backend\adhyana-ERP\auth-service\src\main\resources" />
-      <recent name="C:\Users\viduranga\Documents\GitHub\AdhyanaERP\backend\adhyana-ERP\ddbms-service\src\main\resources" />
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP" />
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\course-service\src\main" />
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\exam-service\src\main" />
+      <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\course-service\src\main\resources" />
+      <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\exam-service\src\main\resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\faculty-service\src\main" />
@@ -119,15 +114,9 @@
       <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
-  <component name="RunManager" selected="Tomcat Server.Administration Service">
+  <component name="RunManager" selected="Database Script.admin_schema.sql">
     <configuration name="admin_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" />
-      <script-mode>FILE</script-mode>
-      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
-      <method v="2" />
-    </configuration>
-    <configuration name="auth_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
-      <script-file value="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" />
       <script-mode>FILE</script-mode>
       <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
       <method v="2" />
@@ -138,7 +127,7 @@
       <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
       <method v="2" />
     </configuration>
-    <configuration name="ddbms_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true">
+    <configuration name="ddbms_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/ddbms-service/src/main/resources/ddbms_schema.sql" />
       <script-mode>FILE</script-mode>
       <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
@@ -146,6 +135,12 @@
     </configuration>
     <configuration name="exam_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/exam-service/src/main/resources/exam_schema.sql" />
+      <script-mode>FILE</script-mode>
+      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
+      <method v="2" />
+    </configuration>
+    <configuration name="student_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" />
       <script-mode>FILE</script-mode>
       <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
       <method v="2" />
@@ -513,9 +508,9 @@
       <option name="BROWSER_ID" value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
-        <artifact name="ddbms-service:war exploded">
+        <artifact name="ddmbs-service:war exploded">
           <settings>
-            <option name="CONTEXT_PATH" value="/ddbms_service_war_exploded" />
+            <option name="CONTEXT_PATH" value="" />
           </settings>
         </artifact>
       </deployment>
@@ -595,7 +590,7 @@
       <method v="2">
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
-          <artifact name="ddbms-service:war exploded" />
+          <artifact name="ddmbs-service:war exploded" />
         </option>
       </method>
     </configuration>
@@ -781,7 +776,7 @@
     </configuration>
     <list>
       <item itemvalue="Database Script.admin_schema.sql" />
-      <item itemvalue="Database Script.auth_schema.sql" />
+      <item itemvalue="Database Script.student_schema.sql" />
       <item itemvalue="Database Script.course_schema.sql" />
       <item itemvalue="Database Script.ddbms_schema.sql" />
       <item itemvalue="Database Script.exam_schema.sql" />
@@ -796,10 +791,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Database Script.admin_schema.sql" />
-        <item itemvalue="Database Script.auth_schema.sql" />
+        <item itemvalue="Database Script.student_schema.sql" />
         <item itemvalue="Database Script.ddbms_schema.sql" />
-        <item itemvalue="Database Script.exam_schema.sql" />
         <item itemvalue="Database Script.course_schema.sql" />
+        <item itemvalue="Database Script.exam_schema.sql" />
       </list>
     </recent_temporary>
   </component>
@@ -854,12 +849,10 @@
       <workItem from="1745488723789" duration="4640000" />
       <workItem from="1745494120750" duration="1628000" />
       <workItem from="1745506098657" duration="5325000" />
-      <workItem from="1745518276178" duration="2509000" />
-      <workItem from="1745520908567" duration="127000" />
-      <workItem from="1745521057931" duration="4840000" />
-      <workItem from="1745553306170" duration="745000" />
-      <workItem from="1745555737841" duration="1774000" />
-      <workItem from="1745619207547" duration="21295000" />
+      <workItem from="1745514911174" duration="1605000" />
+      <workItem from="1745530258457" duration="452000" />
+      <workItem from="1745530725004" duration="7000" />
+      <workItem from="1745553283147" duration="21000" />
     </task>
     <servers />
   </component>

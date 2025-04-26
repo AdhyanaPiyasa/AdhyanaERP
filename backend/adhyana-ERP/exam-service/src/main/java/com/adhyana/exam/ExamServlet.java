@@ -1,9 +1,7 @@
-package com.adhyana.exam.servlets;
+package com.adhyana.exam;
 
 import com.adhyana.exam.models.Exam;
 import com.adhyana.exam.services.ExamService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,19 +14,18 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @WebServlet("/api/exams/*")
 public class ExamServlet extends HttpServlet {
     private ExamService examService;
-    private Gson gson;
+    private final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+    private final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
 
     @Override
     public void init() throws ServletException {
         examService = new ExamService();
-        // Configure Gson with date formatting
-        gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd")
-                .create();
     }
 
     @Override
@@ -42,22 +39,22 @@ public class ExamServlet extends HttpServlet {
             if (pathInfo == null || pathInfo.equals("/")) {
                 // Get all exams
                 List<Exam> exams = examService.getAllExams();
-                out.print(gson.toJson(exams));
+                out.print(toJson(exams));
             } else {
                 // Get a specific exam by ID
                 int examId = getExamIdFromPath(pathInfo);
                 Exam exam = examService.getExam(examId);
 
                 if (exam != null) {
-                    out.print(gson.toJson(exam));
+                    out.print(toJson(exam));
                 } else {
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    out.print("{\"error\": \"Exam not found\"}");
+                    out.print(toJsonError("Exam not found"));
                 }
             }
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"error\": \"" + e.getMessage() + "\"}");
+            out.print(toJsonError(e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -75,10 +72,10 @@ public class ExamServlet extends HttpServlet {
             Exam createdExam = examService.createExam(exam);
 
             response.setStatus(HttpServletResponse.SC_CREATED);
-            out.print(gson.toJson(createdExam));
+            out.print(toJson(createdExam));
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"error\": \"" + e.getMessage() + "\"}");
+            out.print(toJsonError(e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -93,7 +90,7 @@ public class ExamServlet extends HttpServlet {
             String pathInfo = request.getPathInfo();
             if (pathInfo == null || pathInfo.equals("/")) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print("{\"error\": \"Exam ID is required for update\"}");
+                out.print(toJsonError("Exam ID is required for update"));
                 return;
             }
 
@@ -103,7 +100,7 @@ public class ExamServlet extends HttpServlet {
             Exam existingExam = examService.getExam(examId);
             if (existingExam == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print("{\"error\": \"Exam not found\"}");
+                out.print(toJsonError("Exam not found"));
                 return;
             }
 
@@ -115,10 +112,10 @@ public class ExamServlet extends HttpServlet {
 
             // Return the updated exam
             Exam exam = examService.getExam(examId);
-            out.print(gson.toJson(exam));
+            out.print(toJson(exam));
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"error\": \"" + e.getMessage() + "\"}");
+            out.print(toJsonError(e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -133,7 +130,7 @@ public class ExamServlet extends HttpServlet {
             String pathInfo = request.getPathInfo();
             if (pathInfo == null || pathInfo.equals("/")) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print("{\"error\": \"Exam ID is required for deletion\"}");
+                out.print(toJsonError("Exam ID is required for deletion"));
                 return;
             }
 
@@ -143,7 +140,7 @@ public class ExamServlet extends HttpServlet {
             Exam existingExam = examService.getExam(examId);
             if (existingExam == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                out.print("{\"error\": \"Exam not found\"}");
+                out.print(toJsonError("Exam not found"));
                 return;
             }
 
@@ -151,23 +148,20 @@ public class ExamServlet extends HttpServlet {
             examService.deleteExam(examId);
 
             response.setStatus(HttpServletResponse.SC_OK);
-            out.print("{\"message\": \"Exam deleted successfully\"}");
+            out.print(toJsonMessage("Exam deleted successfully"));
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"error\": \"" + e.getMessage() + "\"}");
+            out.print(toJsonError(e.getMessage()));
             e.printStackTrace();
         }
     }
 
     private int getExamIdFromPath(String pathInfo) {
-        // Extract the exam ID from the path
-        // Path format: /123 where 123 is the exam ID
         String[] pathParts = pathInfo.split("/");
         return Integer.parseInt(pathParts[1]);
     }
 
     private Exam parseExamFromRequest(HttpServletRequest request) throws Exception {
-        // Read the request body
         StringBuilder buffer = new StringBuilder();
         try (BufferedReader reader = request.getReader()) {
             String line;
@@ -175,8 +169,108 @@ public class ExamServlet extends HttpServlet {
                 buffer.append(line);
             }
         }
+        String requestBody = buffer.toString();
+        return examFromJson(requestBody);
+    }
 
-        // Parse JSON to Exam object
-        return gson.fromJson(buffer.toString(), Exam.class);
+    private Exam examFromJson(String json) throws Exception {
+        Exam exam = new Exam();
+        // Basic manual parsing - you might need a more robust solution for complex JSON
+        json = json.replaceAll("[{}]", "");
+        String[] pairs = json.split(",");
+        for (String pair : pairs) {
+            String[] keyValue = pair.split(":");
+            if (keyValue.length == 2) {
+                String key = keyValue[0].trim().replaceAll("\"", "");
+                String value = keyValue[1].trim().replaceAll("\"", "");
+                switch (key) {
+                    case "title":
+                        exam.setTitle(value);
+                        break;
+                    case "semester_id":
+                        exam.setSemester_id(value);
+                        break;
+                    case "exam_date":
+                        exam.setExam_date(dateFormatter.parse(value));
+                        break;
+                    case "start_time":
+                        exam.setStart_time(new java.sql.Time(timeFormatter.parse(value).getTime()));
+                        break;
+                    case "end_time":
+                        exam.setEnd_time(new java.sql.Time(timeFormatter.parse(value).getTime()));
+                        break;
+                    case "location":
+                        exam.setLocation(value);
+                        break;
+                    case "type":
+                        exam.setType(value);
+                        break;
+                    case "exam_id":
+                        exam.setExam_id(Integer.parseInt(value));
+                        break;
+                    // Add other fields as necessary
+                }
+            }
+        }
+        return exam;
+    }
+
+    private String toJson(Object obj) throws Exception {
+        if (obj == null) {
+            return "null";
+        }
+        if (obj instanceof List) {
+            List<?> list = (List<?>) obj;
+            return "[" + list.stream().map(this::toJsonInternal).collect(Collectors.joining(",")) + "]";
+        }
+        return toJsonInternal(obj);
+    }
+
+    private String toJsonInternal(Object obj) {
+        if (obj == null) {
+            return "null";
+        }
+        if (obj instanceof String) {
+            return "\"" + escapeJsonString((String) obj) + "\"";
+        }
+        if (obj instanceof Number || obj instanceof Boolean) {
+            return obj.toString();
+        }
+        if (obj instanceof Date) {
+            return "\"" + dateFormatter.format((Date) obj) + "\"";
+        }
+        if (obj instanceof java.sql.Time) {
+            return "\"" + timeFormatter.format(obj) + "\"";
+        }
+        if (obj instanceof Exam) {
+            Exam exam = (Exam) obj;
+            return "{" +
+                    "\"exam_id\":" + exam.getExam_id() + "," +
+                    "\"title\":\"" + escapeJsonString(exam.getTitle()) + "\"," +
+                    "\"semester_id\":\"" + escapeJsonString(exam.getSemester_id()) + "\"," +
+                    "\"exam_date\":\"" + dateFormatter.format(exam.getExam_date()) + "\"," +
+                    "\"start_time\":\"" + timeFormatter.format(exam.getStart_time()) + "\"," +
+                    "\"end_time\":\"" + timeFormatter.format(exam.getEnd_time()) + "\"," +
+                    "\"location\":\"" + escapeJsonString(exam.getLocation()) + "\"," +
+                    "\"type\":\"" + escapeJsonString(exam.getType()) + "\"" +
+                    "}";
+        }
+        // Handle other object types if needed
+        return "\"Unsupported type\"";
+    }
+
+    private String escapeJsonString(String str) {
+        if (str == null) {
+            return "";
+        }
+        return str.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private String toJsonError(String message) {
+        return "{\"error\":\"" + escapeJsonString(message) + "\"}";
+    }
+
+    private String toJsonMessage(String message) {
+        return "{\"message\":\"" + escapeJsonString(message) + "\"}";
     }
 }

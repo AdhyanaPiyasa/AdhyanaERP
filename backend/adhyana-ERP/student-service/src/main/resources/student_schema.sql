@@ -18,6 +18,30 @@ CREATE TABLE IF NOT EXISTS students (
     -- No FK here to avoid cross-db constraints, app logic ensures consistency
 );
 
+
+-- Shared Table: Enrolled_Students
+CREATE TABLE IF NOT EXISTS enrolled_students (
+                                                 student_index INT PRIMARY KEY AUTO_INCREMENT,
+                                                 registration_number VARCHAR(20) NOT NULL UNIQUE,
+                                                 batch_id VARCHAR(10) NULL,
+                                                 name VARCHAR(100) NOT NULL,
+                                                 national_id VARCHAR(20) NOT NULL UNIQUE,
+                                                 email VARCHAR(100) NOT NULL UNIQUE,
+                                                 phone VARCHAR(20) NOT NULL,
+                                                 gender VARCHAR(10) NOT NULL,
+                                                 date_of_birth DATE NOT NULL,
+                                                 address TEXT NOT NULL,
+                                                 guardian_name VARCHAR(100) NOT NULL,
+                                                 guardian_national_id VARCHAR(20) NOT NULL,
+                                                 guardian_relation VARCHAR(20) NOT NULL,
+                                                 guardian_contact_number VARCHAR(20) NOT NULL,
+                                                 guardian_email VARCHAR(100),
+                                                 hostel_required VARCHAR(5),
+                                                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
 -- Shared Table: Courses (Reference Only - Data Managed by Admin/Course Service)
 CREATE TABLE IF NOT EXISTS courses (
                                        course_id VARCHAR(10) PRIMARY KEY,
@@ -117,6 +141,15 @@ INSERT INTO students (student_index, registration_number, name, email, batch_id)
                                                                                     (20240002, '2024CS002','Aisha Khan' ,'aisha.k@student.adhyana.lk', 'CS24F'),
                                                                                     (20230010, '2023BM010','Ravi Sharma' ,'ravi.s@student.adhyana.lk', 'BM23S')
 ON DUPLICATE KEY UPDATE student_index=student_index; -- Avoid error if already exists
+
+
+-- Sample data to enrolled_students table
+INSERT INTO enrolled_students (registration_number, batch_id, name, national_id, email, phone, gender, date_of_birth, address, guardian_name, guardian_national_id, guardian_relation, guardian_contact_number, guardian_email, hostel_required) VALUES
+        ('2024CS001', 'CS24F', 'Janith Perera', '19980515234V', 'janith.p@student.adhyana.lk', '0771234567', 'Male', '1998-05-15', '123 Main Street, Colombo', 'Kamal Perera', '19701020567V', 'Father', '0719876543', 'kamal.p@example.com', 'No'),
+        ('2024CS002', 'CS24F', 'Aisha Khan', '20001102876V', 'aisha.k@student.adhyana.lk', '0765432109', 'Female', '2000-11-02', '45 Flower Road, Kandy', 'Farah Khan', '19750318901V', 'Mother', '0721122334', 'farah.k@example.com', 'Yes'),
+        ('2023BM010', 'BM23S', 'Ravi Sharma', '19990728123V', 'ravi.s@student.adhyana.lk', '0759876543', 'Male', '1999-07-28', '78 Lake View Avenue, Galle', 'Priya Sharma', '19730905432V', 'Mother', '0705556667', 'priya.s@example.com', 'No');
+
+
 
 INSERT INTO courses (course_id, name, year, credits, duration) VALUES
                                                                    ('CS1101', 'Introduction to Programming', 1, 3, 45),
