@@ -2,178 +2,131 @@ package com.adhyana.exam.services;
 
 import com.adhyana.exam.models.Assignment;
 import com.adhyana.exam.utils.DatabaseConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AssignmentService {
-    public List<Assignment> getAllAssignments() throws Exception {
-        System.out.println("AssignmentService - getAllAssignments: Retrieving all assignments");
-        List<Assignment> assignments = new ArrayList<>();
-        String query = "SELECT * FROM assignments ORDER BY date,start_time";
-        System.out.println("AssignmentService - getAllAssignments: Executing query: " + query);
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             Statement stmt = connection.createStatement();
+    public List<Assignment> getAllAssignments() throws Exception {
+        List<Assignment> assignments = new ArrayList<>();
+        String query = "SELECT assignment_id, title, course_id, semester_id, type, due_date, due_time, max_marks, description, posted_by FROM assignments";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
 
-            int count = 0;
             while (rs.next()) {
                 assignments.add(createAssignmentFromResultSet(rs));
-                count++;
             }
-            System.out.println("AssignmentService - getAllAssignments: Retrieved " + count + " assignments");
-        } catch (Exception e) {
-            System.out.println("AssignmentService - getAllAssignments: Error occurred: " + e.getMessage());
-            throw e;
         }
         return assignments;
     }
 
-    public Assignment getAssignmentById(int id) throws Exception {
-        System.out.println("AssignmentService - getAssignmentById: Retrieving assignment with ID: " + id);
-        String query = "SELECT * FROM assignments WHERE Aid = ?";
-        System.out.println("AssignmentService - getAssignmentById: Executing query: " + query);
+    public Assignment getAssignment(int id) throws Exception {
+        String query = "SELECT assignment_id, title, course_id, semester_id, type, due_date, due_time, max_marks, description, posted_by FROM assignments WHERE assignment_id = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Assignment assignment = createAssignmentFromResultSet(rs);
-                    System.out.println("AssignmentService - getAssignmentById: Found assignment: " + assignment.getTitle());
-                    return assignment;
-                } else {
-                    System.out.println("AssignmentService - getAssignmentById: No assignment found with ID: " + id);
-                }
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return createAssignmentFromResultSet(rs);
             }
-        } catch (Exception e) {
-            System.out.println("AssignmentService - getAssignmentById: Error occurred: " + e.getMessage());
-            throw e;
         }
         return null;
     }
 
     public Assignment createAssignment(Assignment assignment) throws Exception {
-        System.out.println("AssignmentService - createAssignment: Creating new assignment: " + assignment.getTitle());
-        String query = "INSERT INTO assignments (title, course, course_code, type, " +
-                "date, start_time, end_time, room, teacher) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        System.out.println("AssignmentService - createAssignment: Preparing query with parameters");
+        String query = "INSERT INTO assignments (title, course_id, semester_id, type, due_date, due_time, max_marks, description, posted_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
             setAssignmentParameters(stmt, assignment);
-            System.out.println("AssignmentService - createAssignment: Executing insert query");
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
-                String errorMsg = "Couldn't insert assignment";
-                System.out.println("AssignmentService - createAssignment: Error - " + errorMsg);
-                throw new SQLException(errorMsg);
+                throw new SQLException("Creating assignment failed, no rows affected.");
             }
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    int generatedId = generatedKeys.getInt(1);
-                    assignment.setId(generatedId);
-                    System.out.println("AssignmentService - createAssignment: Assignment created with ID: " + generatedId);
+                    assignment.setAssignment_id(generatedKeys.getInt(1));
                     return assignment;
                 } else {
-                    String errorMsg = "Creating assignment failed, no ID obtained.";
-                    System.out.println("AssignmentService - createAssignment: Error - " + errorMsg);
-                    throw new SQLException(errorMsg);
+                    throw new SQLException("Creating assignment failed, no ID obtained.");
                 }
             }
-        } catch (Exception e) {
-            System.out.println("AssignmentService - createAssignment: Exception occurred: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
         }
     }
 
-    public void updateAssignment(int aid, Assignment assignment) throws Exception {
-        System.out.println("AssignmentService - updateAssignment: Updating assignment with ID: " + aid);
-        String query = "UPDATE assignments SET title = ?, course = ?, course_code = ?, type = ?, date = ?, " +
-                "start_time = ?, end_time = ?, room = ?, teacher = ? WHERE Aid = ?";
-        System.out.println("AssignmentService - updateAssignment: Preparing update query");
+    public void updateAssignment(int id, Assignment assignment) throws Exception {
+        String query = "UPDATE assignments SET title = ?, course_id = ?, semester_id = ?, type = ?, due_date = ?, due_time = ?, max_marks = ?, description = ?, posted_by = ? WHERE assignment_id = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
             setAssignmentParameters(stmt, assignment);
-            stmt.setInt(10, aid);
-            System.out.println("AssignmentService - updateAssignment: Executing update query");
+            stmt.setInt(10, id);
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
-                String errorMsg = "Couldn't update assignment, ID may not exist: " + aid;
-                System.out.println("AssignmentService - updateAssignment: Error - " + errorMsg);
-                throw new SQLException(errorMsg);
-            } else {
-                System.out.println("AssignmentService - updateAssignment: Successfully updated assignment with ID: " + aid);
+                throw new SQLException("Updating assignment failed, no rows affected.");
             }
-        } catch (Exception e) {
-            System.out.println("AssignmentService - updateAssignment: Exception occurred: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
         }
     }
 
-    public void deleteAssignment(int assignment) throws Exception {
-        System.out.println("AssignmentService - deleteAssignment: Deleting assignment with ID: " + assignment);
-        String query = "DELETE FROM assignments WHERE Aid = ?";
-        System.out.println("AssignmentService - deleteAssignment: Preparing delete query");
+    public void deleteAssignment(int id) throws Exception {
+        String query = "DELETE FROM assignments WHERE assignment_id = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, assignment);
-            System.out.println("AssignmentService - deleteAssignment: Executing delete query");
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, id);
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
-                String errorMsg = "Couldn't delete assignment, ID may not exist: " + assignment;
-                System.out.println("AssignmentService - deleteAssignment: Error - " + errorMsg);
-                throw new SQLException(errorMsg);
-            } else {
-                System.out.println("AssignmentService - deleteAssignment: Successfully deleted assignment with ID: " + assignment);
+                throw new SQLException("Deleting assignment failed, no rows affected.");
             }
-        } catch (Exception e) {
-            System.out.println("AssignmentService - deleteAssignment: Exception occurred: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
         }
     }
 
     private Assignment createAssignmentFromResultSet(ResultSet rs) throws SQLException {
-        Assignment assignment = new Assignment(
-                rs.getInt("Aid"),
-                rs.getString("title"),
-                rs.getString("course"),
-                rs.getInt("course_code"),
-                rs.getString("type"),
-                rs.getString("date"),
-                rs.getString("start_time"),
-                rs.getString("end_time"),
-                rs.getString("room"),
-                rs.getString("teacher")
-        );
-        System.out.println("AssignmentService - createAssignmentFromResultSet: Created assignment object: " +
-                assignment.getTitle() + ", ID: " + assignment.getId());
+        Assignment assignment = new Assignment();
+        assignment.setAssignment_id(rs.getInt("assignment_id"));
+        assignment.setTitle(rs.getString("title"));
+        assignment.setCourse_id(rs.getString("course_id"));
+        assignment.setSemester_id(rs.getString("semester_id"));
+        assignment.setType(rs.getString("type"));
+        assignment.setDue_date(rs.getDate("due_date"));
+        assignment.setDue_time(rs.getTime("due_time"));
+        assignment.setMax_marks(rs.getInt("max_marks")); // Use getInt for Integer
+        assignment.setDescription(rs.getString("description"));
+        assignment.setPosted_by(rs.getInt("posted_by"));   // Use getInt for Integer
         return assignment;
     }
 
     private void setAssignmentParameters(PreparedStatement stmt, Assignment assignment) throws SQLException {
-        System.out.println("AssignmentService - setAssignmentParameters: Setting parameters for assignment: " + assignment.getTitle());
         stmt.setString(1, assignment.getTitle());
-        stmt.setString(2, assignment.getCourse());
-        stmt.setInt(3, assignment.getCourseCode());
+        stmt.setString(2, assignment.getCourse_id());
+        stmt.setString(3, assignment.getSemester_id());
         stmt.setString(4, assignment.getType());
-        stmt.setString(5, assignment.getDate());
-        stmt.setString(6, assignment.getStartTime());
-        stmt.setString(7, assignment.getEndTime());
-        stmt.setString(8, assignment.getRoom());
-        stmt.setString(9, assignment.getTeacher());
-        System.out.println("AssignmentService - setAssignmentParameters: Parameters set successfully");
+        stmt.setDate(5, new java.sql.Date(assignment.getDue_date().getTime()));
+        stmt.setTime(6, assignment.getDue_time());
+        if (assignment.getMax_marks() != null) {
+            stmt.setInt(7, assignment.getMax_marks());
+        } else {
+            stmt.setNull(7, java.sql.Types.INTEGER);
+        }
+        stmt.setString(8, assignment.getDescription());
+        if (assignment.getPosted_by() != null) {
+            stmt.setInt(9, assignment.getPosted_by());
+        } else {
+            stmt.setNull(9, java.sql.Types.INTEGER);
+        }
     }
 }
