@@ -145,7 +145,7 @@ const App = () => {
                 case 'staff/Attendance':
                 return { type: StaffAttendance };
                 case 'staff/Payroll':
-                return { type: Payroll };
+                return { type: PayrollDashboard };
                 case 'staff/StaffList':
                 return { type: StaffList };
             case 'other':
