@@ -124,7 +124,7 @@
       <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
-  <component name="RunManager" selected="Database Script.ddbms_schema.sql">
+  <component name="RunManager" selected="Tomcat Server.Auth Service">
     <configuration name="admin_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" />
       <script-mode>FILE</script-mode>
