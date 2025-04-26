@@ -10,18 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/filters/SyncServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8/storage_v2/_src_/schema/adhyana_auth.pwkCKA.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8/storage_v2/_src_/schema/adhyana_auth.pwkCKA.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/SyncServlet.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/StaffService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/StaffService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/adhyana/gateway/APIGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/adhyana/gateway/APIGateway.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/DDBMSServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/DDBMSServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ddbms-service/src/main/resources/ddbms_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/resources/ddbms_schema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exam-service/src/main/resources/exam_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/exam-service/src/main/resources/exam_schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exam-service/src/main/java/com/adhyana/exam/ExamServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/exam-service/src/main/java/com/adhyana/exam/ExamServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +73,7 @@
     "Tomcat Server.Exam Service.executor": "Run",
     "Tomcat Server.Faculty Service.executor": "Run",
     "Tomcat Server.Student Service.executor": "Run",
-    "git-widget-placeholder": "core-services",
+    "git-widget-placeholder": "examservicefront",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP",
     "node.js.detected.package.eslint": "true",
@@ -128,7 +118,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Tomcat Server.DDBMS">
-
     <configuration name="auth_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" />
       <script-mode>FILE</script-mode>
@@ -874,5 +863,16 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
