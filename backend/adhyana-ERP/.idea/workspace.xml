@@ -128,6 +128,7 @@
     </key>
   </component>
   <component name="RunManager" selected="Tomcat Server.DDBMS">
+
     <configuration name="auth_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" />
       <script-mode>FILE</script-mode>

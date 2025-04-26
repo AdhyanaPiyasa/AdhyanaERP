@@ -113,9 +113,12 @@ const StudentExamDashboard = () => {
                             renderTab('assignments', 'Assignments'),
                             renderTab('grades', 'Grades'),
                             renderTab('reports', 'Reports')
-                        ]
+                        ],
+                     
                     }
+                
                 },
+
                 renderTabContent()
             ]
         }

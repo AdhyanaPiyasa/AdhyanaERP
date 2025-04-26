@@ -65,6 +65,9 @@ const App = () => {
                 return { type: OtherPage };
             case 'other/finance':
                 return { type: Finance };
+            case 'other/exams/StudentExamDashboard':
+                return { type: StudentExamDashboard };    
+                
             case 'other/scholarship':
                 return { type: ScholarshipList };
             case 'other/hostel':
