@@ -4,7 +4,7 @@ const OtherPage = () => {
         {
             id: 'exams',
             title: 'Exams',
-            path: 'other/exams/',
+            path: 'other/exams/StudentExamDashboard',
             icon: '🎓' // Graduation cap for scholarship
         },
         {
