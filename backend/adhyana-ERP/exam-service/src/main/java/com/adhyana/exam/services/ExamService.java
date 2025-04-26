@@ -9,7 +9,7 @@ import java.util.List;
 public class ExamService {
     public List<Exam> getAllExams() throws Exception {
         List<Exam> exams = new ArrayList<>();
-        String query = "SELECT * FROM exams ORDER BY date, start_time";
+        String query = "SELECT exam_id, title, semester_id, exam_date, start_time, end_time, location, type FROM exams ORDER BY exam_date, start_time";
 
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
@@ -23,7 +23,7 @@ public class ExamService {
     }
 
     public Exam getExam(int id) throws Exception {
-        String query = "SELECT * FROM exams WHERE id = ?";
+        String query = "SELECT exam_id, title, semester_id, exam_date, start_time, end_time, location, type FROM exams WHERE exam_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -39,8 +39,7 @@ public class ExamService {
     }
 
     public Exam createExam(Exam exam) throws Exception {
-        String query = "INSERT INTO exams (title, course, course_code, date, " +
-                "start_time, end_time, room, teacher) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO exams (title, semester_id, exam_date, start_time, end_time, location, type) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -54,7 +53,7 @@ public class ExamService {
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    exam.setId(generatedKeys.getInt(1));
+                    exam.setExam_id(generatedKeys.getInt(1));
                     return exam;
                 } else {
                     throw new SQLException("Creating exam failed, no ID obtained.");
@@ -64,14 +63,13 @@ public class ExamService {
     }
 
     public void updateExam(int id, Exam exam) throws Exception {
-        String query = "UPDATE exams SET title = ?, course = ?, course_code = ?, date = ?, " +
-                "start_time = ?, end_time = ?, room = ?, teacher = ? WHERE id = ?";
+        String query = "UPDATE exams SET title = ?, semester_id = ?, exam_date = ?, start_time = ?, end_time = ?, location = ?, type = ? WHERE exam_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             setExamParameters(stmt, exam);
-            stmt.setInt(9, id);
+            stmt.setInt(8, id);
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -81,7 +79,7 @@ public class ExamService {
     }
 
     public void deleteExam(int id) throws Exception {
-        String query = "DELETE FROM exams WHERE id = ?";
+        String query = "DELETE FROM exams WHERE exam_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -96,27 +94,25 @@ public class ExamService {
     }
 
     private Exam createExamFromResultSet(ResultSet rs) throws SQLException {
-        return new Exam(
-                rs.getInt("id"),
-                rs.getString("title"),
-                rs.getString("course"),
-                rs.getInt("course_code"),
-                rs.getString("date"),
-                rs.getString("start_time"),
-                rs.getString("end_time"),
-                rs.getString("room"),
-                rs.getString("teacher")
-        );
+        Exam exam = new Exam();
+        exam.setExam_id(rs.getInt("exam_id"));
+        exam.setTitle(rs.getString("title"));
+        exam.setSemester_id(rs.getString("semester_id"));
+        exam.setExam_date(rs.getDate("exam_date"));
+        exam.setStart_time(rs.getTime("start_time"));
+        exam.setEnd_time(rs.getTime("end_time"));
+        exam.setLocation(rs.getString("location"));
+        exam.setType(rs.getString("type"));
+        return exam;
     }
 
     private void setExamParameters(PreparedStatement stmt, Exam exam) throws SQLException {
         stmt.setString(1, exam.getTitle());
-        stmt.setString(2, exam.getCourse());
-        stmt.setInt(3, exam.getCourseCode());
-        stmt.setString(4, exam.getDate());
-        stmt.setString(5, exam.getStartTime());
-        stmt.setString(6, exam.getEndTime());
-        stmt.setString(7, exam.getRoom());
-        stmt.setString(8, exam.getTeacher());
+        stmt.setString(2, exam.getSemester_id());
+        stmt.setDate(3, new java.sql.Date(exam.getExam_date().getTime())); // Convert java.util.Date to java.sql.Date
+        stmt.setTime(4, new java.sql.Time(exam.getStart_time().getTime()));     // Convert java.util.Time to java.sql.Time
+        stmt.setTime(5, new java.sql.Time(exam.getEnd_time().getTime()));       // Convert java.util.Time to java.sql.Time
+        stmt.setString(6, exam.getLocation());
+        stmt.setString(7, exam.getType());
     }
 }
