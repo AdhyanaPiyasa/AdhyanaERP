@@ -10,38 +10,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/HostelAssignmentRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/StaffAttendance.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/Student.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/UserProfileRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/EnrollmentService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/UserProfileService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/UserProfileRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../.idea/workspace.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/AdminServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/AdminServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/filters/AuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/filters/AuthFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/AcademicCalendar.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/Announcement.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/ApiResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/Batch.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/Batch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/BatchFacultyAssignment.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/BatchFacultyAssignment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/Payroll.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/Payroll.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/Staff.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/Staff.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/StaffRole.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/StaffRole.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/AcademicCalendarService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/AnnouncementService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/BatchService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/BatchService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/PayrollService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/PayrollService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/StaffService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/StaffService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/utils/JsonUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/utils/JsonUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/EnrollmentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/EnrollmentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/UserProfileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/UserProfileService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/adhyana/gateway/APIGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/adhyana/gateway/APIGateway.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/AuthServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/AuthServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/ApiResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/services/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/services/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,7 +78,7 @@
     "Tomcat Server.Exam Service.executor": "Run",
     "Tomcat Server.Faculty Service.executor": "Run",
     "Tomcat Server.Student Service.executor": "Run",
-    "git-widget-placeholder": "core-services",
+    "git-widget-placeholder": "administration-service",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP/auth-service/src/main/resources",
     "node.js.detected.package.eslint": "true",

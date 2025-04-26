@@ -30,18 +30,18 @@ public class UserProfileService {
         request.setUserId("S" + staff.getStaffId()); // Prefix 'S' for Staff
         request.setUsername(staff.getEmail());
         // Default password is staff ID + first 3 chars of name
-        String defaultPassword = "staff" + staff.getStaffId() +
+        String defaultPassword = "S" + staff.getStaffId() +
                 staff.getName().substring(0, Math.min(3, staff.getName().length()));
         request.setPassword(hashPassword(defaultPassword));
 
         // Set role based on staff position or default to "STAFF"
         String position = staff.getPosition().toUpperCase();
-        if (position.contains("ADMIN")) {
-            request.setRole("ADMIN");
-        } else if (position.contains("LECTURER") || position.contains("PROFESSOR")) {
-            request.setRole("FACULTY");
+        if (position.contains("admin")) {
+            request.setRole("admin");
+        } else if (position.contains("lecturer") || position.contains("professor")) {
+            request.setRole("teacher");
         } else {
-            request.setRole("STAFF");
+            request.setRole("staff");
         }
 
         return sendUserProfileToAuthService(request);
@@ -58,7 +58,7 @@ public class UserProfileService {
         request.setUsername(student.getEmail());
         // Default password is registration number
         request.setPassword(hashPassword(student.getRegistrationNumber()));
-        request.setRole("STUDENT");
+        request.setRole("student");
 
         return sendUserProfileToAuthService(request);
     }
@@ -77,7 +77,7 @@ public class UserProfileService {
         request.setUsername(guardianEmail);
         // Default password is "guardian" + student index
         request.setPassword(hashPassword("guardian" + studentIndexNumber));
-        request.setRole("GUARDIAN");
+        request.setRole("parent");
 
         return sendUserProfileToAuthService(request);
     }
@@ -144,39 +144,52 @@ public class UserProfileService {
      * @return Hashed password
      */
     private String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+        if (password == null) return null;
 
-            // Convert to hex string
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
+        StringBuilder output = new StringBuilder();
+        for (char c : password.toCharArray()) {
+            if (c >= 'a' && c <= 'z') {
+                output.append((char) ('a' + (c - 'a' + 13) % 26));
+            } else if (c >= 'A' && c <= 'Z') {
+                output.append((char) ('A' + (c - 'A' + 13) % 26));
+            } else {
+                output.append(c);
             }
-            return hexString.toString();
-        } catch (Exception e) {
-            // Fall back to plaintext in case of error (should never happen in production)
-            System.err.println("Error hashing password: " + e.getMessage());
-            return password;
         }
+        return output.toString();
     }
+//        try {
+//            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+//
+//            // Convert to hex string
+//            StringBuilder hexString = new StringBuilder();
+//            for (byte b : hash) {
+//                String hex = Integer.toHexString(0xff & b);
+//                if (hex.length() == 1) hexString.append('0');
+//                hexString.append(hex);
+//            }
+//            return hexString.toString();
+//        } catch (Exception e) {
+//            // Fall back to plaintext in case of error (should never happen in production)
+//            System.err.println("Error hashing password: " + e.getMessage());
+//            return password;
+//        }
 
-    /**
-     * Generate a random password
-     * @param length Length of password
-     * @return Random password
-     */
-    public String generateRandomPassword(int length) {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
-        StringBuilder password = new StringBuilder();
-
-        for (int i = 0; i < length; i++) {
-            int index = (int) (Math.random() * chars.length());
-            password.append(chars.charAt(index));
-        }
-
-        return password.toString();
-    }
+//    /**
+//     * Generate a random password
+//     * @param length Length of password
+//     * @return Random password
+//     */
+//    public String generateRandomPassword(int length) {
+//        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
+//        StringBuilder password = new StringBuilder();
+//
+//        for (int i = 0; i < length; i++) {
+//            int index = (int) (Math.random() * chars.length());
+//            password.append(chars.charAt(index));
+//        }
+//
+//        return password.toString();
+//    }
 }

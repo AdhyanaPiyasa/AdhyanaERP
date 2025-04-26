@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS hostel_applications (
                                                    status VARCHAR(20) NOT NULL DEFAULT 'Pending', -- Consider ENUM ('Pending', 'Approved', 'Rejected', 'Waitlisted')
                                                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                                   FOREIGN KEY (student_index) REFERENCES students(index_number) ON DELETE CASCADE -- If student leaves, hostel app is irrelevant
+                                                   FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE CASCADE -- If student leaves, hostel app is irrelevant
 );
 
 -- Admin Specific: Payroll
@@ -190,7 +190,7 @@ INSERT INTO batch_courses (batch_id, course_id) VALUES
                                                     ('ENG23F', 'ENG1001'), ('ENG23F', 'PHY1001'), ('ENG23F', 'CS1101');
 
 -- Insert sample student data
-INSERT INTO students (index_number, registration_number, name, email, batch_id) VALUES
+INSERT INTO students (student_index, registration_number, name, email, batch_id) VALUES
                                                                                     (20240001, '2024CS001','Janith Perera' ,'janith.p@student.adhyana.lk', 'CS24F'),
                                                                                     (20240002, '2024CS002','Aisha Khan' ,'aisha.k@student.adhyana.lk', 'CS24F'),
                                                                                     (20230010, '2023BM010','Ravi Sharma' ,'ravi.s@student.adhyana.lk', 'BM23S');
