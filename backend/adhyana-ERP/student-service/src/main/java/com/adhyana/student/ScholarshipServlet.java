@@ -151,8 +151,8 @@ public class ScholarshipServlet extends HttpServlet {
             sendJsonResponse(response, apiResponse);
         } else if (path.startsWith("/student/")) {
             // Get application by student ID
-            int studentId = Integer.parseInt(path.substring("/student/".length()));
-            ScholarshipApplication application = scholarshipService.getApplicationByStudentId(studentId);
+            int studentIndexNumber = Integer.parseInt(path.substring("/student/".length()));
+            ScholarshipApplication application = scholarshipService.getApplicationByStudentId(studentIndexNumber);
             if (application != null) {
                 ApiResponse<ScholarshipApplication> apiResponse =
                         new ApiResponse<>(true, "Application retrieved successfully", application);
@@ -285,7 +285,7 @@ public class ScholarshipServlet extends HttpServlet {
         String json = sb.toString();
         json = json.replaceAll("[{}\"]", "");
         String[] pairs = json.split(",");
-        int studentId = 0;
+        int studentIndexNumber = 0;
         int scholarshipId = 0;
         String studentBatch = null;
         String studentDegree = null;
@@ -298,8 +298,8 @@ public class ScholarshipServlet extends HttpServlet {
                 String value = keyValue[1].trim();
 
                 switch (key) {
-                    case "studentId":
-                        studentId = Integer.parseInt(value);
+                    case "studentIndexNumber":
+                        studentIndexNumber = Integer.parseInt(value);
                         break;
                     case "scholarshipId":
                         scholarshipId = Integer.parseInt(value);
@@ -318,7 +318,7 @@ public class ScholarshipServlet extends HttpServlet {
         }
 
         // Default status for new applications is "Pending"
-        return new ScholarshipApplication(0, studentId, scholarshipId, studentBatch,
+        return new ScholarshipApplication(0, studentIndexNumber, scholarshipId, studentBatch,
                 studentDegree, studentGpa, "Pending", null);
     }
 

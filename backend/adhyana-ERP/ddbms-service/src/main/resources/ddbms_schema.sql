@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS batch_courses (
 
 -- Students (Primary Source)
 CREATE TABLE IF NOT EXISTS students (
-                                        index_number INT PRIMARY KEY,
+                                        student_index INT PRIMARY KEY,
                                         registration_number VARCHAR(20) NOT NULL UNIQUE,
                                         name VARCHAR(100) NOT NULL,
                                         email VARCHAR(100) NOT NULL UNIQUE,
@@ -74,11 +74,11 @@ CREATE TABLE IF NOT EXISTS student_applications (
                                                     national_id VARCHAR(20) NOT NULL UNIQUE,
                                                     email VARCHAR(100) NOT NULL UNIQUE,
                                                     phone VARCHAR(20) NOT NULL,
-                                                    gender ENUM('Male', 'Female', 'Other') NOT NULL,
+                                                    gender VARCHAR(10) NOT NULL,
                                                     date_of_birth DATE NOT NULL,
                                                     address TEXT NOT NULL,
                                                     applied_program VARCHAR(100) NOT NULL,
-                                                    application_date DATE NOT NULL DEFAULT (CURDATE()),
+                                                    application_date DATE NOT NULL,
                                                     mathematics VARCHAR(5) NOT NULL,
                                                     science VARCHAR(5) NOT NULL,
                                                     english VARCHAR(5) NOT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS student_applications (
                                                     guardian_relation VARCHAR(20) NOT NULL,
                                                     guardian_contact_number VARCHAR(20) NOT NULL,
                                                     guardian_email VARCHAR(100),
-                                                    hostel_required BOOLEAN DEFAULT FALSE,
+                                                    hostel_required VARCHAR(5),
                                                     status VARCHAR(20) NOT NULL DEFAULT 'Pending',
                                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -161,19 +161,16 @@ CREATE TABLE IF NOT EXISTS academic_calendar (
 
 -- Attendance
 CREATE TABLE IF NOT EXISTS attendance (
-                                          attendance_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                                          attendance_id INT PRIMARY KEY AUTO_INCREMENT,
                                           student_index INT NOT NULL,
-                                          course_id VARCHAR(10) NOT NULL,
-                                          session_date DATE NOT NULL,
-                                          session_time TIME NULL,
+                                          course_id VARCHAR(20) NOT NULL,
+                                          date DATE NOT NULL,
                                           present BOOLEAN DEFAULT FALSE,
-                                          notes VARCHAR(255) NULL,
-                                          recorded_by INT NULL,
                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                          FOREIGN KEY (student_index) REFERENCES students(index_number) ON DELETE CASCADE,
+                                          FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE CASCADE,
                                           FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE,
-                                          UNIQUE KEY uk_student_course_session (student_index, course_id, session_date, session_time)
+                                          UNIQUE KEY (student_index, course_id, date)
 );
 
 -- Scholarships Master List
@@ -181,12 +178,9 @@ CREATE TABLE IF NOT EXISTS scholarships (
                                             scholarship_id INT PRIMARY KEY AUTO_INCREMENT,
                                             name VARCHAR(100) NOT NULL UNIQUE,
                                             description TEXT,
-                                            eligibility_criteria TEXT NULL,
-                                            min_gpa DECIMAL(3,2) NULL,
+                                            min_gpa DOUBLE NOT NULL,
                                             amount DECIMAL(10,2) NOT NULL,
-                                            amount_type ENUM('FIXED', 'PERCENTAGE', 'TUITION_WAIVER') DEFAULT 'FIXED',
                                             application_deadline DATE NOT NULL,
-                                            status ENUM('ACTIVE', 'INACTIVE', 'CLOSED') DEFAULT 'ACTIVE',
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -194,20 +188,16 @@ CREATE TABLE IF NOT EXISTS scholarships (
 -- Scholarship Applications
 CREATE TABLE IF NOT EXISTS scholarship_applications (
                                                         scholarship_application_id INT PRIMARY KEY AUTO_INCREMENT,
-                                                        student_index INT NOT NULL,
+                                                        student_index INT NOT NULL, -- Changed from VARCHAR, Removed UNIQUE
                                                         scholarship_id INT NOT NULL,
-                                                        application_date DATE DEFAULT (CURDATE()),
-                                                        student_batch VARCHAR(20) NULL,
-                                                        student_degree VARCHAR(50) NULL,
-                                                        student_gpa DECIMAL(3,2) NULL,
-                                                        status ENUM('Pending','Approved','Rejected', 'Waitlisted') NOT NULL DEFAULT 'Pending',
+                                                        student_batch VARCHAR(20) NULL, -- Denormalized for convenience, but can get from student_index
+                                                        student_degree VARCHAR(50) NULL, -- Denormalized
+                                                        student_gpa DOUBLE NOT NULL, -- GPA at time of application
+                                                        status ENUM('Pending','Approved','Rejected') NOT NULL ,
                                                         comments TEXT,
-                                                        supporting_documents_path VARCHAR(255) NULL,
                                                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                                        FOREIGN KEY (student_index) REFERENCES students(index_number) ON DELETE CASCADE,
-                                                        FOREIGN KEY (scholarship_id) REFERENCES scholarships(scholarship_id) ON DELETE CASCADE,
-                                                        UNIQUE KEY uk_student_scholarship (student_index, scholarship_id)
+                                                        FOREIGN KEY (scholarship_id) REFERENCES scholarships(scholarship_id) ON DELETE CASCADE, -- If scholarship deleted, apps are void
 );
 
 -- ================ COURSE SPECIFIC TABLES ================
@@ -437,8 +427,8 @@ INSERT INTO students (index_number, registration_number, name, email, batch_id) 
 
 -- Insert sample student applications
 INSERT INTO student_applications (name, national_id, email, phone, gender, date_of_birth, address, applied_program, application_date, mathematics, science, english, computer_studies, guardian_name, guardian_national_id, guardian_relation, guardian_contact_number, guardian_email, hostel_required, status) VALUES
-                                                                                                                                                                                                                                                                                                                     ('Raj Kumar', '9876543210V', 'raj.kumar@email.com', '0771234567', 'Male', '2005-06-15', '123 Main St, Colombo', 'Computer Science', '2024-03-20', 'A', 'B', 'A', 'A', 'Sanjay Kumar', '7654321098V', 'Father', '0777654321', 'sanjay.kumar@email.com', TRUE, 'Accepted'),
-                                                                                                                                                                                                                                                                                                                     ('Amara Silva', '9865432109V', 'amara.silva@email.com', '0761234567', 'Female', '2006-03-22', '456 Park Ave, Kandy', 'Information Systems', '2024-03-19', 'A', 'A', 'B', 'A', 'Nimal Silva', '7543210987V', 'Father', '0767654321', 'nimal.silva@email.com', FALSE, 'Pending');
+                                                                                                                                                                                                                                                                                                                     ('Raj Kumar', '9876543210V', 'raj.kumar@email.com', '0771234567', 'Male', '2005-06-15', '123 Main St, Colombo', 'Computer Science', '2024-03-20', 'A', 'B', 'A', 'A', 'Sanjay Kumar', '7654321098V', 'Father', '0777654321', 'sanjay.kumar@email.com', Yes, 'Accepted'),
+                                                                                                                                                                                                                                                                                                                     ('Amara Silva', '9865432109V', 'amara.silva@email.com', '0761234567', 'Female', '2006-03-22', '456 Park Ave, Kandy', 'Information Systems', '2024-03-19', 'A', 'A', 'B', 'A', 'Nimal Silva', '7543210987V', 'Father', '0767654321', 'nimal.silva@email.com', No, 'Pending');
 
 -- Insert into payroll table
 INSERT INTO payroll (staff_id, salary_month, basic_salary, allowances, deductions, payment_status, payment_date) VALUES
@@ -464,7 +454,7 @@ INSERT INTO academic_calendar (event_title, description, start_date, end_date, e
                                                                                                            ('Faculty Development Workshop', 'Workshop on modern assessment techniques.', '2025-05-28', NULL, 'EVENT', 3);
 
 -- Insert sample attendance data
-INSERT INTO attendance (student_index, course_id, session_date, present) VALUES
+INSERT INTO attendance (student_index, course_id, date, present) VALUES
                                                                              (20240001, 'CS1101', '2025-04-15', true),
                                                                              (20240001, 'CS1101', '2025-04-17', true),
                                                                              (20240002, 'CS1101', '2025-04-15', false),

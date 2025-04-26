@@ -33,7 +33,7 @@ public class ScholarshipService {
 
     // get scholarship using scholarship id
     public Scholarship getScholarship(int id) throws Exception {
-        String query = "SELECT * FROM scholarships WHERE id = ?";
+        String query = "SELECT * FROM scholarships WHERE scholarship_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -77,7 +77,7 @@ public class ScholarshipService {
     // update scholarship
     public void updateScholarship(int id, Scholarship scholarship) throws Exception {
         String query = "UPDATE scholarships SET name = ?, description = ?, min_gpa = ?, " +
-                "amount = ?, application_deadline = ? WHERE id = ?";
+                "amount = ?, application_deadline = ? WHERE scholarship_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -94,7 +94,7 @@ public class ScholarshipService {
 
     //delete a scholarship
     public void deleteScholarship(int id) throws Exception {
-        String query = "DELETE FROM scholarships WHERE id = ?";
+        String query = "DELETE FROM scholarships WHERE scholarship_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -125,7 +125,7 @@ public class ScholarshipService {
     }
 
     public ScholarshipApplication getApplication(int id) throws Exception {
-        String query = "SELECT * FROM scholarship_applications WHERE id = ?";
+        String query = "SELECT * FROM scholarship_applications WHERE scholarship_application_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -140,13 +140,13 @@ public class ScholarshipService {
         return null;
     }
 
-    public ScholarshipApplication getApplicationByStudentId(int studentId) throws Exception {
-        String query = "SELECT * FROM scholarship_applications WHERE student_id = ?";
+    public ScholarshipApplication getApplicationByStudentId(int studentIndexNumber) throws Exception {
+        String query = "SELECT * FROM scholarship_applications WHERE student_index = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, studentId);
+            stmt.setInt(1, studentIndexNumber);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -157,8 +157,8 @@ public class ScholarshipService {
     }
 
     public ScholarshipApplication applyForScholarship(ScholarshipApplication application) throws Exception {
-        String query = "INSERT INTO scholarship_applications (student_id, scholarship_id, studentBatch, " +
-                "studentDegree, studentGPA, status, comments) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO scholarship_applications (student_index, scholarship_id, student_batch, " +
+                "student_degree, student_gpa, status, comments) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -182,7 +182,7 @@ public class ScholarshipService {
     }
 
     public void updateApplicationStatus(int id, String status, String comments) throws Exception {
-        String query = "UPDATE scholarship_applications SET status = ?, comments = ? WHERE id = ?";
+        String query = "UPDATE scholarship_applications SET status = ?, comments = ? WHERE scholarship_application_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -211,11 +211,11 @@ public class ScholarshipService {
         // Update all pending applications for this scholarship
         String query = "UPDATE scholarship_applications SET status = ?, comments = ? " +
                 "WHERE scholarship_id = ? AND status = 'Pending' " +
-                "AND studentGPA >= ?";
+                "AND student_gpa >= ?";
 
         String rejectQuery = "UPDATE scholarship_applications SET status = ?, comments = ? " +
                 "WHERE scholarship_id = ? AND status = 'Pending' " +
-                "AND studentGPA < ?";
+                "AND student_gpa < ?";
 
         try (Connection conn = DatabaseConnection.getConnection()) {
             // First, approve eligible applications
@@ -245,7 +245,7 @@ public class ScholarshipService {
     // Helper methods
     private Scholarship mapResultSetToScholarship(ResultSet rs) throws SQLException {
         return new Scholarship(
-                rs.getInt("id"),
+                rs.getInt("scholarship_id"),
                 rs.getString("name"),
                 rs.getString("description"),
                 rs.getDouble("min_gpa"),
@@ -256,12 +256,12 @@ public class ScholarshipService {
 
     private ScholarshipApplication mapResultSetToApplication(ResultSet rs) throws SQLException {
         return new ScholarshipApplication(
-                rs.getInt("id"),
-                rs.getInt("student_id"),
+                rs.getInt("scholarship_application_id"),
+                rs.getInt("student_index"),
                 rs.getInt("scholarship_id"),
-                rs.getString("studentBatch"),
-                rs.getString("studentDegree"),
-                rs.getDouble("studentGPA"),
+                rs.getString("student_batch"),
+                rs.getString("student_batch"),
+                rs.getDouble("student_gpa"),
                 rs.getString("status"),
                 rs.getString("comments")
         );
@@ -276,7 +276,7 @@ public class ScholarshipService {
     }
 
     private void setApplicationParameters(PreparedStatement stmt, ScholarshipApplication application) throws SQLException {
-        stmt.setInt(1, application.getStudentId());
+        stmt.setInt(1, application.getStudentIndexNumber());
         stmt.setInt(2, application.getScholarshipId());
         stmt.setString(3, application.getStudentBatch());
         stmt.setString(4, application.getStudentDegree());

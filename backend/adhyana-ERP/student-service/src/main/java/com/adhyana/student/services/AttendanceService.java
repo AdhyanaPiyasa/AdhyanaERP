@@ -1,4 +1,3 @@
-// student-service/src/main/java/com/adhyana/student/services/AttendanceService.java
 package com.adhyana.student.services;
 
 import com.adhyana.student.models.Attendance;
@@ -8,7 +7,6 @@ import com.adhyana.student.utils.DatabaseConnection;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,42 +14,13 @@ import java.util.Map;
 
 public class AttendanceService {
 
-    // Record attendance for a single student
-    public Attendance recordAttendance(Attendance attendance) throws Exception {
-        String query = "INSERT INTO attendance (student_id, course_code, date, present, remarks) " +
-                "VALUES (?, ?, ?, ?, ?)";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-            stmt.setInt(1, attendance.getStudentId());
-            stmt.setString(2, attendance.getCourseCode());
-            stmt.setDate(3, Date.valueOf(attendance.getDate()));
-            stmt.setBoolean(4, attendance.isPresent());
-            stmt.setString(5, attendance.getRemarks());
-
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Recording attendance failed, no rows affected.");
-            }
-
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    attendance.setId(generatedKeys.getInt(1));
-                    return attendance;
-                } else {
-                    throw new SQLException("Recording attendance failed, no ID obtained.");
-                }
-            }
-        }
-    }
-
-    // Record attendance for multiple students in a batch for a course session
+    /**
+     * Record attendance for multiple students in a batch for a course session
+     */
     public boolean recordBatchAttendance(String courseCode, LocalDate date,
-                                         Map<Integer, Boolean> studentAttendance,
-                                         Map<Integer, String> remarks) throws Exception {
-        String query = "INSERT INTO attendance (student_id, course_code, date, present, remarks) " +
-                "VALUES (?, ?, ?, ?, ?)";
+                                         Map<Integer, Boolean> studentAttendance) throws Exception {
+        String query = "INSERT INTO attendance (student_index, course_id, date, present) " +
+                "VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE present = VALUES(present)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -59,15 +28,13 @@ public class AttendanceService {
             conn.setAutoCommit(false);
 
             for (Map.Entry<Integer, Boolean> entry : studentAttendance.entrySet()) {
-                int studentId = entry.getKey();
+                int studentIndex = entry.getKey();
                 boolean present = entry.getValue();
-                String remark = remarks.getOrDefault(studentId, "");
 
-                stmt.setInt(1, studentId);
+                stmt.setInt(1, studentIndex);
                 stmt.setString(2, courseCode);
                 stmt.setDate(3, Date.valueOf(date));
                 stmt.setBoolean(4, present);
-                stmt.setString(5, remark);
                 stmt.addBatch();
             }
 
@@ -86,164 +53,137 @@ public class AttendanceService {
         }
     }
 
-    // Create a new course session
-    public CourseSession createCourseSession(CourseSession session) throws Exception {
-        String query = "INSERT INTO course_sessions (course_code, course_name, date," +
-                "total_students, present_students) VALUES (?, ?, ?, ?, ?)";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-            stmt.setString(1, session.getCourseCode());
-            stmt.setString(2, session.getCourseName());
-            stmt.setDate(3, Date.valueOf(session.getDate()));
-            stmt.setInt(4, session.getTotalStudents());
-            stmt.setInt(5, session.getPresentStudents());
-
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Creating course session failed, no rows affected.");
-            }
-
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    session.setId(generatedKeys.getInt(1));
-                    return session;
-                } else {
-                    throw new SQLException("Creating course session failed, no ID obtained.");
-                }
-            }
-        }
-    }
-
-    // Add this method to your AttendanceService.java
-    public void updateAttendance(int id, Attendance attendance) throws Exception {
-        String query = "UPDATE attendance SET student_id = ?, course_code = ?, date = ?, present = ?, remarks = ? WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, attendance.getStudentId());
-            stmt.setString(2, attendance.getCourseCode());
-            stmt.setDate(3, Date.valueOf(attendance.getDate()));
-            stmt.setBoolean(4, attendance.isPresent());
-            stmt.setString(5, attendance.getRemarks());
-            stmt.setInt(6, id);
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Updating attendance failed, no rows affected.");
-            }
-        }
-    }
-
-    // Update the attendance count for a course session
-    public void updateSessionAttendance(int sessionId, int totalStudents, int presentStudents) throws Exception {
-        String query = "UPDATE course_sessions SET total_students = ?, present_students = ? WHERE id = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, totalStudents);
-            stmt.setInt(2, presentStudents);
-            stmt.setInt(3, sessionId);
-
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Updating session attendance failed, no rows affected.");
-            }
-        }
-    }
-
-    // Add this method to your AttendanceService.java
-    public List<Attendance> getAllAttendance() throws Exception {
-        List<Attendance> attendanceList = new ArrayList<>();
-        String query = "SELECT * FROM attendance ORDER BY date DESC, student_id";
-        try (Connection conn = DatabaseConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                attendanceList.add(mapResultSetToAttendance(rs));
-            }
-        }
-        return attendanceList;
-    }
-
-    // Add this method to your AttendanceService.java
-    public Attendance getAttendance(int id) throws Exception {
-        String query = "SELECT * FROM attendance WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return mapResultSetToAttendance(rs);
-            }
-        }
-        return null;
-    }
-
-
-
-    // Get a list of all course sessions for a specific course
-    public List<CourseSession> getCourseSessionsByCourse(String courseCode) throws Exception {
-        List<CourseSession> sessions = new ArrayList<>();
-        String query = "SELECT * FROM course_sessions WHERE course_code = ? ORDER BY date DESC";
+    /**
+     * Get the attendance percentage for a specific course on a specific date
+     */
+    public CourseSession getCourseSessionAttendance(String courseCode, LocalDate date) throws Exception {
+        String query = "SELECT course_id, " +
+                "(SELECT name FROM courses WHERE course_id = ?) as course_name, " +
+                "COUNT(*) as total_students, " +
+                "SUM(CASE WHEN present = true THEN 1 ELSE 0 END) as present_students " +
+                "FROM attendance WHERE course_id = ? AND date = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, courseCode);
+            stmt.setString(2, courseCode);
+            stmt.setDate(3, Date.valueOf(date));
             ResultSet rs = stmt.executeQuery();
 
+            if (rs.next()) {
+                return mapResultSetToCourseSession(rs, date);
+            }
+
+            // If no attendance records found, return a default session with 0 students
+            return new CourseSession(0, courseCode, getCourseName(courseCode), date, 0, 0);
+        }
+    }
+
+    /**
+     * Get all course sessions for a specific course
+     */
+    public List<CourseSession> getCourseSessionHistory(String courseCode) throws Exception {
+        List<CourseSession> sessions = new ArrayList<>();
+        String query = "SELECT date, COUNT(*) as total_students, " +
+                "SUM(CASE WHEN present = true THEN 1 ELSE 0 END) as present_students " +
+                "FROM attendance WHERE course_id = ? GROUP BY date ORDER BY date DESC";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            String courseName = getCourseName(courseCode);
+            stmt.setString(1, courseCode);
+            ResultSet rs = stmt.executeQuery();
+
+            int sessionId = 1;
             while (rs.next()) {
-                sessions.add(mapResultSetToCourseSession(rs));
+                LocalDate sessionDate = rs.getDate("date").toLocalDate();
+                int totalStudents = rs.getInt("total_students");
+                int presentStudents = rs.getInt("present_students");
+
+                sessions.add(new CourseSession(
+                        sessionId++,
+                        courseCode,
+                        courseName,
+                        sessionDate,
+                        totalStudents,
+                        presentStudents
+                ));
             }
         }
         return sessions;
     }
 
-    // Get a single course session by ID
-    public CourseSession getCourseSessionById(int sessionId) throws Exception {
-        String query = "SELECT * FROM course_sessions WHERE id = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, sessionId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return mapResultSetToCourseSession(rs);
-            }
-        }
-        return null;
-    }
-
-    // Get attendance records for a specific student
-    public List<Attendance> getStudentAttendance(int studentId) throws Exception {
+    /**
+     * Get students for a specific course with their attendance status for a date
+     */
+    public List<Attendance> getStudentAttendanceForSession(String courseCode, LocalDate date) throws Exception {
         List<Attendance> attendanceList = new ArrayList<>();
-        String query = "SELECT * FROM attendance WHERE student_id = ? ORDER BY date DESC";
+
+        // This query gets all enrolled students and their attendance status if available
+        String query = "SELECT s.student_index, a.attendance_id, a.course_id, a.date, " +
+                "COALESCE(a.present, false) as present " +
+                "FROM students s " +
+                "JOIN student_courses sc ON s.student_index = sc.student_index " +
+                "LEFT JOIN attendance a ON s.student_index = a.student_index " +
+                "AND a.course_id = ? AND a.date = ? " +
+                "WHERE sc.course_id = ? " +
+                "ORDER BY s.name";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, studentId);
+            stmt.setString(1, courseCode);
+            stmt.setDate(2, Date.valueOf(date));
+            stmt.setString(3, courseCode);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                attendanceList.add(mapResultSetToAttendance(rs));
+                attendanceList.add(mapResultSetToAttendance(rs, date));
             }
         }
         return attendanceList;
     }
 
-    // Get attendance records for a specific student in a specific course
-    public List<Attendance> getStudentCourseAttendance(int studentId, String courseCode) throws Exception {
-        List<Attendance> attendanceList = new ArrayList<>();
-        String query = "SELECT * FROM attendance WHERE student_id = ? AND course_code = ? ORDER BY date DESC";
+    /**
+     * Get attendance summary for a specific student
+     */
+    public List<AttendanceSummary> getStudentAttendanceSummary(int studentIndex) throws Exception {
+        List<AttendanceSummary> summaries = new ArrayList<>();
+        String query = "SELECT a.course_id, " +
+                "(SELECT name FROM courses WHERE course_id = a.course_id) as course_name, " +
+                "COUNT(DISTINCT a.date) as total_sessions, " +
+                "SUM(CASE WHEN a.present = true THEN 1 ELSE 0 END) as present_count, " +
+                "(SELECT name FROM students WHERE student_index = ?) as student_name " +
+                "FROM attendance a WHERE a.student_index = ? " +
+                "GROUP BY a.course_id";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, studentId);
+            stmt.setInt(1, studentIndex);
+            stmt.setInt(2, studentIndex);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                summaries.add(mapResultSetToAttendanceSummary(rs, studentIndex));
+            }
+        }
+        return summaries;
+    }
+
+    /**
+     * Get detailed attendance for a student in a specific course
+     */
+    public List<Attendance> getStudentCourseAttendance(int studentIndex, String courseCode) throws Exception {
+        List<Attendance> attendanceList = new ArrayList<>();
+        String query = "SELECT * FROM attendance WHERE student_index = ? AND course_id = ? ORDER BY date DESC";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, studentIndex);
             stmt.setString(2, courseCode);
             ResultSet rs = stmt.executeQuery();
 
@@ -254,306 +194,78 @@ public class AttendanceService {
         return attendanceList;
     }
 
-    // Get attendance summary for a specific student across all courses
-    public List<AttendanceSummary> getStudentAttendanceSummary(int studentId) throws Exception {
-        List<AttendanceSummary> summaries = new ArrayList<>();
-
-        // First, get the student's name
-        String studentName = getStudentName(studentId);
-        if (studentName == null) {
-            throw new SQLException("Student not found with ID: " + studentId);
-        }
-
-        // Get attendance summary for each course
-        String query = "SELECT a.course_code, " +
-                "(SELECT course_name FROM course_sessions WHERE course_code = a.course_code LIMIT 1) as course_name, " +
-                "COUNT(DISTINCT DATE(a.date)) as total_sessions, " +
-                "SUM(CASE WHEN a.present = 1 THEN 1 ELSE 0 END) as present_count " +
-                "FROM attendance a WHERE a.student_id = ? " +
-                "GROUP BY a.course_code";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, studentId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                String courseCode = rs.getString("course_code");
-                String courseName = rs.getString("course_name");
-                int totalSessions = rs.getInt("total_sessions");
-                int presentCount = rs.getInt("present_count");
-
-                summaries.add(new AttendanceSummary(
-                        studentId,
-                        studentName,
-                        courseCode,
-                        courseName,
-                        totalSessions,
-                        presentCount
-                ));
-            }
-        }
-        return summaries;
-    }
-
-    // Get the attendance list for a course session
-    public List<Map<String, Object>> getCourseSessionAttendance(String courseCode, LocalDate date) throws Exception {
-        List<Map<String, Object>> attendanceList = new ArrayList<>();
-        String query = "SELECT s.id, s.name, s.index_number, a.present, a.remarks " +
-                "FROM students s " +
-                "LEFT JOIN attendance a ON s.id = a.student_id AND a.course_code = ? AND a.date = ? " +
-                "WHERE s.state = 'Active' " +
-                "ORDER BY s.name";
+    /**
+     * Helper method to get course name
+     */
+    private String getCourseName(String courseCode) throws Exception {
+        String query = "SELECT name FROM courses WHERE course_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, courseCode);
-            stmt.setDate(2, Date.valueOf(date));
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Map<String, Object> attendanceRecord = new HashMap<>();
-                attendanceRecord.put("studentId", rs.getInt("id"));
-                attendanceRecord.put("name", rs.getString("name"));
-                attendanceRecord.put("indexNumber", rs.getString("index_number"));
-
-                // Check if attendance was taken (not null in the result)
-                Object presentObj = rs.getObject("present");
-                if (presentObj != null) {
-                    attendanceRecord.put("present", rs.getBoolean("present"));
-                    attendanceRecord.put("remarks", rs.getString("remarks"));
-                } else {
-                    // No attendance record exists yet
-                    attendanceRecord.put("present", null);
-                    attendanceRecord.put("remarks", "");
-                }
-
-                attendanceList.add(attendanceRecord);
-            }
-        }
-        return attendanceList;
-    }
-
-    // Helper method to get student name
-    private String getStudentName(int studentId) throws Exception {
-        String query = "SELECT name FROM students WHERE id = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, studentId);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 return rs.getString("name");
             }
         }
-        return null;
+        return "Unknown Course";
     }
 
-    // Add this method to your AttendanceService.java
-    public void deleteAttendance(int id) throws Exception {
-        String query = "DELETE FROM attendance WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, id);
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Deleting attendance failed, no rows affected.");
-            }
-        }
-    }
-
-    // Add this method to your AttendanceService.java
-    public void deleteCourseSession(int id) throws Exception {
-        String query = "DELETE FROM course_sessions WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, id);
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Deleting course session failed, no rows affected.");
-            }
-        }
-    }
-
-    // Helper method to map ResultSet to Attendance
-    private Attendance mapResultSetToAttendance(ResultSet rs) throws SQLException {
-        return new Attendance(
-                rs.getInt("id"),
-                rs.getInt("student_id"),
-                rs.getString("course_code"),
-                rs.getDate("date").toLocalDate(),
-                rs.getBoolean("present"),
-                rs.getString("remarks")
-        );
-    }
-
-    // Helper method to map ResultSet to CourseSession
-    private CourseSession mapResultSetToCourseSession(ResultSet rs) throws SQLException {
+    /**
+     * Helper method to map ResultSet to CourseSession
+     */
+    private CourseSession mapResultSetToCourseSession(ResultSet rs, LocalDate date) throws SQLException {
         return new CourseSession(
-                rs.getInt("id"),
-                rs.getString("course_code"),
+                0, // We don't have a session ID in the database
+                rs.getString("course_id"),
                 rs.getString("course_name"),
-                rs.getDate("date").toLocalDate(),
+                date,
                 rs.getInt("total_students"),
                 rs.getInt("present_students")
         );
     }
+
+    /**
+     * Helper method to map ResultSet to AttendanceSummary
+     */
+    private AttendanceSummary mapResultSetToAttendanceSummary(ResultSet rs, int studentIndex) throws SQLException {
+        return new AttendanceSummary(
+                studentIndex,
+                rs.getString("student_name"),
+                rs.getString("course_id"),
+                rs.getString("course_name"),
+                rs.getInt("total_sessions"),
+                rs.getInt("present_count")
+        );
+    }
+
+    /**
+     * Helper method to map ResultSet to Attendance (for existing attendance records)
+     */
+    private Attendance mapResultSetToAttendance(ResultSet rs) throws SQLException {
+        return new Attendance(
+                rs.getInt("attendance_id"),
+                rs.getInt("student_index"),
+                rs.getString("course_id"),
+                rs.getDate("date").toLocalDate(),
+                rs.getBoolean("present")
+        );
+    }
+
+    private Attendance mapResultSetToAttendance(ResultSet rs, LocalDate date) throws SQLException {
+        int id = rs.getInt("attendance_id");
+        int studentIndex = rs.getInt("student_index");
+        String courseCode = rs.getString("course_id");
+        boolean present = rs.getBoolean("present");
+
+        return new Attendance(
+                id,
+                studentIndex,
+                courseCode,
+                date,
+                present
+        );
+    }
 }
-
-
-//package com.adhyana.student.services;
-//
-//import com.adhyana.student.models.Attendance;
-//import com.adhyana.student.utils.DatabaseConnection;
-//import java.sql.*;
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.time.LocalDate;
-//
-//public class AttendanceService {
-//
-//    //Creates a new attendance record in the database
-//    public Attendance createAttendance(Attendance attendance) throws Exception {
-//        String query = "INSERT INTO attendance (student_id, date, present, remarks) " +
-//                "VALUES (?, ?, ?, ?)";
-//
-//        try (Connection conn = DatabaseConnection.getConnection();
-//             // Get generated keys to return the new ID
-//             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-//
-//            // Set parameters from the attendance object
-//            setAttendanceParameters(stmt, attendance);
-//
-//            int affectedRows = stmt.executeUpdate();
-//            if (affectedRows == 0) {
-//                throw new SQLException("Creating attendance failed, no rows affected.");
-//            }
-//
-//            // Get the auto-generated ID and set it on the attendance object
-//            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-//                if (generatedKeys.next()) {
-//                    attendance.setId(generatedKeys.getInt(1));
-//                    return attendance;
-//                } else {
-//                    throw new SQLException("Creating attendance failed, no ID obtained.");
-//                }
-//            }
-//        }
-//    }
-//
-//    //Retrieves all attendance records from the database
-//    public List<Attendance> getAllAttendance() throws Exception {
-//        List<Attendance> attendanceList = new ArrayList<>();
-//        String query = "SELECT * FROM attendance";
-//
-//        // ensure connections are closed properly
-//        try (Connection conn = DatabaseConnection.getConnection();
-//             Statement stmt = conn.createStatement();
-//             ResultSet rs = stmt.executeQuery(query)) {
-//
-//            // Iterate through all records and map them to Attendance objects
-//            while (rs.next()) {
-//                attendanceList.add(mapResultSetToAttendance(rs));
-//            }
-//        }
-//        return attendanceList;
-//    }
-//
-//    //Retrieves a single attendance record by its ID
-//    public Attendance getAttendance(int id) throws Exception {
-//        String query = "SELECT * FROM attendance WHERE id = ?";
-//
-//        try (Connection conn = DatabaseConnection.getConnection();
-//             PreparedStatement stmt = conn.prepareStatement(query)) {
-//
-//            stmt.setInt(1, id);
-//            ResultSet rs = stmt.executeQuery();
-//
-//            // Return the attendance record if found, otherwise null
-//            if (rs.next()) {
-//                return mapResultSetToAttendance(rs);
-//            }
-//        }
-//        return null;
-//    }
-//
-//    //Retrieves all attendance records for a specific student
-//    public List<Attendance> getStudentAttendance(int studentId) throws Exception {
-//        List<Attendance> attendanceList = new ArrayList<>();
-//        String query = "SELECT * FROM attendance WHERE student_id = ?";
-//
-//        try (Connection conn = DatabaseConnection.getConnection();
-//             PreparedStatement stmt = conn.prepareStatement(query)) {
-//
-//            // Set the student ID parameter in the query
-//            stmt.setInt(1, studentId);
-//            ResultSet rs = stmt.executeQuery();
-//
-//            // Iterate through the student's records
-//            while (rs.next()) {
-//                attendanceList.add(mapResultSetToAttendance(rs));
-//            }
-//        }
-//        return attendanceList;
-//    }
-//
-//    //Updates an existing attendance record
-//    public void updateAttendance(int id, Attendance attendance) throws Exception {
-//        String query = "UPDATE attendance SET student_id = ?, date = ?, present = ?, remarks = ? " +
-//                "WHERE id = ?";
-//
-//        try (Connection conn = DatabaseConnection.getConnection();
-//             PreparedStatement stmt = conn.prepareStatement(query)) {
-//
-//            // Set parameters from the attendance object
-//            setAttendanceParameters(stmt, attendance);
-//            // Set the ID for the WHERE clause
-//            stmt.setInt(5, id);
-//
-//            int affectedRows = stmt.executeUpdate();
-//            if (affectedRows == 0) {
-//                throw new SQLException("Updating attendance failed, no rows affected.");
-//            }
-//        }
-//    }
-//
-//    //Deletes an attendance record by ID
-//    public void deleteAttendance(int id) throws Exception {
-//        String query = "DELETE FROM attendance WHERE id = ?";
-//
-//        try (Connection conn = DatabaseConnection.getConnection();
-//             PreparedStatement stmt = conn.prepareStatement(query)) {
-//
-//            stmt.setInt(1, id);
-//
-//            int affectedRows = stmt.executeUpdate();
-//            if (affectedRows == 0) {
-//                throw new SQLException("Deleting attendance failed, no rows affected.");
-//            }
-//        }
-//    }
-//
-//    //convert a database ResultSet row to an Attendance object
-//    private Attendance mapResultSetToAttendance(ResultSet rs) throws SQLException {
-//        return new Attendance(
-//                rs.getInt("id"),
-//                rs.getInt("student_id"),
-//                rs.getDate("date").toLocalDate(),
-//                rs.getBoolean("present"),
-//                rs.getString("remarks")
-//        );
-//    }
-//
-//    //set prepared statement parameters from an Attendance object
-//    private void setAttendanceParameters(PreparedStatement stmt, Attendance attendance) throws SQLException {
-//        stmt.setInt(1, attendance.getStudentId());
-//        stmt.setDate(2, Date.valueOf(attendance.getDate()));
-//        stmt.setBoolean(3, attendance.isPresent());
-//        stmt.setString(4, attendance.getRemarks());
-//    }
-//
-//}

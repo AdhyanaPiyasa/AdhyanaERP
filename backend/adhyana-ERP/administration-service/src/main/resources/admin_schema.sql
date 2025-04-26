@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS batch_courses (
 
 -- Shared Table: Students (Primary Source)
 CREATE TABLE IF NOT EXISTS students (
-                                        index_number INT PRIMARY KEY, -- Using INT as it seems to be numeric identifier
+                                        student_index INT PRIMARY KEY, -- Using INT as it seems to be numeric identifier
                                         registration_number VARCHAR(20) NOT NULL UNIQUE,
                                         name VARCHAR(100) NOT NULL,
                                         email VARCHAR(100) NOT NULL UNIQUE,
@@ -70,14 +70,14 @@ CREATE TABLE IF NOT EXISTS students (
 CREATE TABLE IF NOT EXISTS student_applications (
                                                     student_application_id INT PRIMARY KEY AUTO_INCREMENT,
                                                     name VARCHAR(100) NOT NULL,
-                                                    national_id VARCHAR(20) NOT NULL UNIQUE, -- Added UNIQUE constraint
-                                                    email VARCHAR(100) NOT NULL UNIQUE, -- Added UNIQUE constraint
+                                                    national_id VARCHAR(20) NOT NULL UNIQUE,
+                                                    email VARCHAR(100) NOT NULL UNIQUE,
                                                     phone VARCHAR(20) NOT NULL,
-                                                    gender ENUM('Male', 'Female', 'Other') NOT NULL, -- Use ENUM
+                                                    gender VARCHAR(10) NOT NULL,
                                                     date_of_birth DATE NOT NULL,
                                                     address TEXT NOT NULL,
-                                                    applied_program VARCHAR(100) NOT NULL, -- Consider linking to a programs table if exists
-                                                    application_date DATE NOT NULL DEFAULT (CURDATE()), -- Default to current date
+                                                    applied_program VARCHAR(100) NOT NULL,
+                                                    application_date DATE NOT NULL,
                                                     mathematics VARCHAR(5) NOT NULL,
                                                     science VARCHAR(5) NOT NULL,
                                                     english VARCHAR(5) NOT NULL,
@@ -86,9 +86,9 @@ CREATE TABLE IF NOT EXISTS student_applications (
                                                     guardian_national_id VARCHAR(20) NOT NULL,
                                                     guardian_relation VARCHAR(20) NOT NULL,
                                                     guardian_contact_number VARCHAR(20) NOT NULL,
-                                                    guardian_email VARCHAR(100), -- Email can be optional
-                                                    hostel_required BOOLEAN DEFAULT FALSE, -- Use BOOLEAN
-                                                    status VARCHAR(20) NOT NULL DEFAULT 'Pending', -- Consider ENUM ('Pending', 'Accepted', 'Rejected', 'Waitlisted')
+                                                    guardian_email VARCHAR(100),
+                                                    hostel_required VARCHAR(5),
+                                                    status VARCHAR(20) NOT NULL DEFAULT 'Pending',
                                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

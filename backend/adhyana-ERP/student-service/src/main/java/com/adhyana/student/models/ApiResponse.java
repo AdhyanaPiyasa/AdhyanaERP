@@ -1,5 +1,6 @@
 package com.adhyana.student.models;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -25,24 +26,28 @@ public class ApiResponse<T> {
             json.append(",\"data\":");
             if (data instanceof Student) {
                 json.append(studentToJson((Student) data));
-            }else if (data instanceof Attendance) {
+            } else if (data instanceof Attendance) {
                 json.append(attendanceToJson((Attendance) data));
-            }else if (data instanceof CourseSession) {
+            } else if (data instanceof CourseSession) {
                 json.append(courseSessionToJson((CourseSession) data));
+            } else if (data instanceof AttendanceSummary) {
+                json.append(attendanceSummaryToJson((AttendanceSummary) data));
             } else if (data instanceof Scholarship) {
                 json.append(scholarshipToJson((Scholarship) data));
             } else if (data instanceof ScholarshipApplication) {
                 json.append(scholarshipApplicationToJson((ScholarshipApplication) data));
-            }else if (data instanceof StudentApplication) {
+            } else if (data instanceof StudentApplication) {
                 json.append(studentApplicationToJson((StudentApplication) data));
             } else if (data instanceof StudentApplication.ApplicationResponse) {
                 json.append(applicationResponseToJson((StudentApplication.ApplicationResponse) data));
-            }else if (data instanceof java.util.List) {
+            } else if (data instanceof java.util.List) {
                 json.append(listToJson((java.util.List<?>) data));
-            }else {
+            } else if (data instanceof java.util.Map) {
+                json.append(listToJson((java.util.List<?>) data));
+            } else {
                 json.append("null");
             }
-        }else {
+        } else {
             json.append(",\"data\":null");
         }
 
@@ -50,16 +55,30 @@ public class ApiResponse<T> {
         return json.toString();
     }
 
-    //*convert objects to JSON strings *
+    // Convert objects to JSON strings
 
-    /**
-     * Converts a Student object to a JSON string
-     *
-     * Contains all the student fields needed for the UI:
-     * - Full details for the student listing page (Image 1)
-     * - Fields for student profile view (Image 6)
-     * - Fields for edit form (Image 4)
-     */
+    // New method to handle Attendance objects
+    private String attendanceToJson(Attendance attendance) {
+        return String.format(
+                "{\"id\":%d,\"studentIndex\":%d,\"courseCode\":\"%s\",\"date\":\"%s\"," +
+                        "\"present\":%b}",
+                attendance.getId(), attendance.getStudentIndex(), attendance.getCourseCode(),
+                attendance.getDate(), attendance.isPresent()
+        );
+    }
+
+    // New method to handle CourseSession objects
+    private String courseSessionToJson(CourseSession session) {
+        return String.format(
+                "{\"id\":%d,\"courseCode\":\"%s\",\"courseName\":\"%s\",\"date\":\"%s\"," +
+                        "\"totalStudents\":%d,\"presentStudents\":%d,\"attendancePercentage\":%.2f}",
+                session.getId(), session.getCourseCode(), session.getCourseName(),
+                session.getDate(), session.getTotalStudents(), session.getPresentStudents(),
+                session.getAttendancePercentage()
+        );
+    }
+
+    // Existing method for StudentToJson
     private String studentToJson(Student student) {
         return String.format(
                 "{\"id\":%d,\"name\":\"%s\",\"email\":\"%s\",\"degreeID\":\"%s\",\"degreeProgram\":\"%s\"," +
@@ -72,11 +91,10 @@ public class ApiResponse<T> {
         );
     }
 
-
-    // Add this new method to handle StudentApplication objects
+    // Existing method for StudentApplicationToJson
     private String studentApplicationToJson(StudentApplication application) {
         return String.format(
-                "{\"id\":%d,\"name\":\"%s\",\"nationalId\":\"%s\",\"email\":\"%s\",\"phone\":\"%s\"," +
+                "{\"student_application_id\":%d,\"name\":\"%s\",\"nationalId\":\"%s\",\"email\":\"%s\",\"phone\":\"%s\"," +
                         "\"gender\":\"%s\",\"dateOfBirth\":\"%s\",\"address\":\"%s\",\"appliedProgram\":\"%s\"," +
                         "\"applicationDate\":\"%s\",\"mathematics\":\"%s\",\"science\":\"%s\",\"english\":\"%s\"," +
                         "\"computerStudies\":\"%s\",\"guardianName\":\"%s\",\"guardianNationalId\":\"%s\"," +
@@ -92,8 +110,7 @@ public class ApiResponse<T> {
         );
     }
 
-
-    // Add this method to handle ApplicationResponse objects
+    // Existing method for ApplicationResponseToJson
     private String applicationResponseToJson(StudentApplication.ApplicationResponse response) {
         return String.format(
                 "{\"applicantId\":\"%s\",\"name\":\"%s\",\"status\":\"%s\"}",
@@ -101,40 +118,18 @@ public class ApiResponse<T> {
         );
     }
 
-    // converts an Attendance object to a JSON string
-    private String attendanceToJson(Attendance attendance) {
-        return String.format(
-                "{\"id\":%d,\"studentId\":%d,\"courseCode\":\"%s\",\"date\":\"%s\"," +
-                        "\"present\":%b,\"remarks\":\"%s\"}",
-                attendance.getId(), attendance.getStudentId(), attendance.getCourseCode(),
-                attendance.getDate(), attendance.isPresent(), attendance.getRemarks()
-        );
-    }
-
-    // converts an course session object to a JSON string
-    private String courseSessionToJson(CourseSession session) {
-        return String.format(
-                "{\"id\":%d,\"courseCode\":\"%s\",\"courseName\":\"%s\",\"date\":\"%s\",\"totalStudents\":%d," +
-                        "\"presentStudents\":%d,\"attendancePercentage\":%.2f}",
-                session.getId(), session.getCourseCode(), session.getCourseName(),
-                session.getDate(),
-                session.getTotalStudents(), session.getPresentStudents(),
-                session.getAttendancePercentage()
-        );
-    }
-
-    // converts a attendanceSummary object to a JSON string
+    // Existing method for AttendanceSummaryToJson
     private String attendanceSummaryToJson(AttendanceSummary summary) {
         return String.format(
-                "{\"studentId\":%d,\"studentName\":\"%s\",\"courseCode\":\"%s\",\"courseName\":\"%s\"," +
+                "{\"studentIndex\":%d,\"studentName\":\"%s\",\"courseCode\":\"%s\",\"courseName\":\"%s\"," +
                         "\"totalSessions\":%d,\"presentCount\":%d,\"absentCount\":%d,\"attendancePercentage\":%.2f}",
-                summary.getStudentId(), summary.getStudentName(), summary.getCourseCode(),
+                summary.getStudentIndex(), summary.getStudentName(), summary.getCourseCode(),
                 summary.getCourseName(), summary.getTotalSessions(), summary.getPresentCount(),
                 summary.getAbsentCount(), summary.getAttendancePercentage()
         );
     }
 
-    // converts a scholarship object to a JSON string
+    // Existing method for ScholarshipToJson
     private String scholarshipToJson(Scholarship scholarship) {
         return String.format(
                 "{\"id\":%d,\"name\":\"%s\",\"description\":\"%s\",\"minGpa\":%f," +
@@ -145,29 +140,59 @@ public class ApiResponse<T> {
         );
     }
 
-    // converts a scholarship Application object to a JSON string
+    // Existing method for ScholarshipApplicationToJson
     private String scholarshipApplicationToJson(ScholarshipApplication application) {
         return String.format(
-                "{\"id\":%d,\"studentId\":%d,\"scholarshipId\":%d,\"studentBatch\":\"%s\"," +
+                "{\"id\":%d,\"studentIndexNumber\":%d,\"scholarshipId\":%d,\"studentBatch\":\"%s\"," +
                         "\"studentDegree\":\"%s\",\"studentGpa\":%f,\"status\":\"%s\",\"comments\":\"%s\"}",
-                application.getId(), application.getStudentId(), application.getScholarshipId(),
+                application.getId(), application.getStudentIndexNumber(), application.getScholarshipId(),
                 application.getStudentBatch(), application.getStudentDegree(),
                 application.getStudentGpa(), application.getStatus(),
                 application.getComments() != null ? application.getComments() : ""
         );
     }
 
+//    // New method to handle Map objects
+//    private String mapToJson(Map<?, ?> map) {
+//        StringBuilder json = new StringBuilder();
+//        json.append("{");
+//
+//        int i = 0;
+//        for (Map.Entry<?, ?> entry : map.entrySet()) {
+//            json.append("\"").append(entry.getKey()).append("\":");
+//
+//            if (entry.getValue() instanceof String) {
+//                json.append("\"").append(entry.getValue()).append("\"");
+//            } else if (entry.getValue() instanceof Number) {
+//                json.append(entry.getValue());
+//            } else if (entry.getValue() instanceof Boolean) {
+//                json.append(entry.getValue());
+//            } else if (entry.getValue() instanceof LocalDate) {
+//                json.append("\"").append(entry.getValue()).append("\"");
+//            } else {
+//                json.append("null");
+//            }
+//
+//            if (i < map.size() - 1) {
+//                json.append(",");
+//            }
+//            i++;
+//        }
+//
+//        json.append("}");
+//        return json.toString();
+//    }
 
-    // Update the existing listToJson method to handle the new classes
+    // Updated method to handle all object types
     private String listToJson(java.util.List<?> list) {
         StringBuilder json = new StringBuilder();
         json.append("[");
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i) instanceof Student) {
                 json.append(studentToJson((Student) list.get(i)));
-            }else if (list.get(i) instanceof Attendance) {
+            } else if (list.get(i) instanceof Attendance) {
                 json.append(attendanceToJson((Attendance) list.get(i)));
-            }else if (list.get(i) instanceof CourseSession) {
+            } else if (list.get(i) instanceof CourseSession) {
                 json.append(courseSessionToJson((CourseSession) list.get(i)));
             } else if (list.get(i) instanceof AttendanceSummary) {
                 json.append(attendanceSummaryToJson((AttendanceSummary) list.get(i)));
@@ -175,11 +200,11 @@ public class ApiResponse<T> {
                 json.append(scholarshipToJson((Scholarship) list.get(i)));
             } else if (list.get(i) instanceof ScholarshipApplication) {
                 json.append(scholarshipApplicationToJson((ScholarshipApplication) list.get(i)));
-            }else if (list.get(i) instanceof StudentApplication) {
+            } else if (list.get(i) instanceof StudentApplication) {
                 json.append(studentApplicationToJson((StudentApplication) list.get(i)));
             } else if (list.get(i) instanceof StudentApplication.ApplicationResponse) {
                 json.append(applicationResponseToJson((StudentApplication.ApplicationResponse) list.get(i)));
-                }
+            }
 
             if (i < list.size() - 1) {
                 json.append(",");// Add comma between items
