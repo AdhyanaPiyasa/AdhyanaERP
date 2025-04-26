@@ -8,9 +8,9 @@ const ExamMain = () => {
             icon: '🏨' 
         },
         {
-            id: 'CreateExam',
-            title: 'Create Exams',
-            path: 'other/exams/CreateExam',
+            id: 'Exam',
+            title: 'Exams',
+            path: 'other/exams/ExamList',
             icon: '📄' 
         },
         
