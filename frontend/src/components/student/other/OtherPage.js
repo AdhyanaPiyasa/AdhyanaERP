@@ -2,6 +2,12 @@
 const OtherPage = () => {
     const options = [
         {
+            id: 'exams',
+            title: 'Exams',
+            path: 'other/exams/',
+            icon: '🎓' // Graduation cap for scholarship
+        },
+        {
             id: 'scholarship',
             title: 'Scholarship',
             path: 'other/scholarship',
