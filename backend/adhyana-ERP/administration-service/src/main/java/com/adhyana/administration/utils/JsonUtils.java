@@ -8,9 +8,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Utilities for JSON handling without external libraries.
+ * Improved implementation using standard Java APIs.
+ */
 public class JsonUtils {
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
+    /**
+     * Read the request body as a string
+     * @param request HTTP request
+     * @return Request body as string
+     */
     public static String readRequestBody(HttpServletRequest request) throws Exception {
         StringBuilder sb = new StringBuilder();
         String line;
@@ -24,28 +33,37 @@ public class JsonUtils {
         return sb.toString();
     }
 
-    // Parse Staff from JSON string
+    /**
+     * Parse Staff from JSON string
+     * @param jsonStr JSON string
+     * @return Staff object
+     */
     public static Staff parseStaff(String jsonStr) throws Exception {
-        jsonStr = jsonStr.replaceAll("[{}\"]", "");
-        String[] pairs = jsonStr.split(",");
+        // Remove outer braces and quotes
+        jsonStr = jsonStr.trim();
+        if (jsonStr.startsWith("{")) {
+            jsonStr = jsonStr.substring(1);
+        }
+        if (jsonStr.endsWith("}")) {
+            jsonStr = jsonStr.substring(0, jsonStr.length() - 1);
+        }
 
+        // Split into key-value pairs
         Staff staff = new Staff();
+        String[] pairs = splitJsonPairs(jsonStr);
 
         for (String pair : pairs) {
-            String[] keyValue = pair.split(":");
+            String[] keyValue = splitKeyValue(pair);
             if (keyValue.length == 2) {
-                String key = keyValue[0].trim();
-                String value = keyValue[1].trim();
+                String key = keyValue[0];
+                String value = keyValue[1];
 
                 switch (key) {
-                    case "id":
-                        staff.setId(Integer.parseInt(value));
+                    case "staffId":
+                        staff.setStaffId(parseIntOrDefault(value, 0));
                         break;
-                    case "firstName":
-                        staff.setFirstName(value);
-                        break;
-                    case "lastName":
-                        staff.setLastName(value);
+                    case "name":
+                        staff.setName(value);
                         break;
                     case "email":
                         staff.setEmail(value);
@@ -61,7 +79,7 @@ public class JsonUtils {
                         break;
                     case "hireDate":
                         if (!value.isEmpty()) {
-                            staff.setHireDate(dateFormat.parse(value));
+                            staff.setHireDate(parseDate(value));
                         }
                         break;
                     case "status":
@@ -74,32 +92,44 @@ public class JsonUtils {
         return staff;
     }
 
-    // Parse StaffRole from JSON string
+    /**
+     * Parse StaffRole from JSON string
+     * @param jsonStr JSON string
+     * @return StaffRole object
+     */
     public static StaffRole parseStaffRole(String jsonStr) throws Exception {
-        jsonStr = jsonStr.replaceAll("[{}\"]", "");
-        String[] pairs = jsonStr.split(",");
+        // Remove outer braces and quotes
+        jsonStr = jsonStr.trim();
+        if (jsonStr.startsWith("{")) {
+            jsonStr = jsonStr.substring(1);
+        }
+        if (jsonStr.endsWith("}")) {
+            jsonStr = jsonStr.substring(0, jsonStr.length() - 1);
+        }
 
+        // Split into key-value pairs
         StaffRole role = new StaffRole();
+        String[] pairs = splitJsonPairs(jsonStr);
 
         for (String pair : pairs) {
-            String[] keyValue = pair.split(":");
+            String[] keyValue = splitKeyValue(pair);
             if (keyValue.length == 2) {
-                String key = keyValue[0].trim();
-                String value = keyValue[1].trim();
+                String key = keyValue[0];
+                String value = keyValue[1];
 
                 switch (key) {
-                    case "id":
-                        role.setId(Integer.parseInt(value));
+                    case "roleId":
+                        role.setRoleId(parseIntOrDefault(value, 0));
                         break;
                     case "staffId":
-                        role.setStaffId(Integer.parseInt(value));
+                        role.setStaffId(parseIntOrDefault(value, 0));
                         break;
                     case "role":
                         role.setRole(value);
                         break;
                     case "assignedDate":
                         if (!value.isEmpty()) {
-                            role.setAssignedDate(dateFormat.parse(value));
+                            role.setAssignedDate(parseDate(value));
                         } else {
                             role.setAssignedDate(new Date());
                         }
@@ -111,49 +141,122 @@ public class JsonUtils {
         return role;
     }
 
-    // Parse Payroll from JSON string
-    public static Payroll parsePayroll(String jsonStr) throws Exception {
-        jsonStr = jsonStr.replaceAll("[{}\"]", "");
-        String[] pairs = jsonStr.split(",");
+    /**
+     * Parse StaffAttendance from JSON string
+     * @param jsonStr JSON string
+     * @return StaffAttendance object
+     */
+    public static StaffAttendance parseStaffAttendance(String jsonStr) throws Exception {
+        // Remove outer braces and quotes
+        jsonStr = jsonStr.trim();
+        if (jsonStr.startsWith("{")) {
+            jsonStr = jsonStr.substring(1);
+        }
+        if (jsonStr.endsWith("}")) {
+            jsonStr = jsonStr.substring(0, jsonStr.length() - 1);
+        }
 
-        Payroll payroll = new Payroll();
+        // Split into key-value pairs
+        StaffAttendance attendance = new StaffAttendance();
+        String[] pairs = splitJsonPairs(jsonStr);
 
         for (String pair : pairs) {
-            String[] keyValue = pair.split(":");
+            String[] keyValue = splitKeyValue(pair);
             if (keyValue.length == 2) {
-                String key = keyValue[0].trim();
-                String value = keyValue[1].trim();
+                String key = keyValue[0];
+                String value = keyValue[1];
 
                 switch (key) {
-                    case "id":
-                        payroll.setId(Integer.parseInt(value));
+                    case "attendanceId":
+                        attendance.setAttendanceId(parseIntOrDefault(value, 0));
                         break;
                     case "staffId":
-                        payroll.setStaffId(Integer.parseInt(value));
+                        attendance.setStaffId(parseIntOrDefault(value, 0));
+                        break;
+                    case "month":
+                        if (!value.isEmpty()) {
+                            attendance.setMonth(parseDate(value));
+                        }
+                        break;
+                    case "workingDays":
+                        attendance.setWorkingDays(parseIntOrDefault(value, 0));
+                        break;
+                    case "presentDays":
+                        attendance.setPresentDays(parseIntOrDefault(value, 0));
+                        break;
+                    case "status":
+                        attendance.setStatus(value);
+                        break;
+                    case "approvedBy":
+                        attendance.setApprovedBy(parseIntOrDefault(value, 0));
+                        break;
+                    case "approvedDate":
+                        if (!value.isEmpty()) {
+                            attendance.setApprovedDate(parseDate(value));
+                        }
+                        break;
+                }
+            }
+        }
+
+        return attendance;
+    }
+
+    /**
+     * Parse Payroll from JSON string
+     * @param jsonStr JSON string
+     * @return Payroll object
+     */
+    public static Payroll parsePayroll(String jsonStr) throws Exception {
+        // Remove outer braces and quotes
+        jsonStr = jsonStr.trim();
+        if (jsonStr.startsWith("{")) {
+            jsonStr = jsonStr.substring(1);
+        }
+        if (jsonStr.endsWith("}")) {
+            jsonStr = jsonStr.substring(0, jsonStr.length() - 1);
+        }
+
+        // Split into key-value pairs
+        Payroll payroll = new Payroll();
+        String[] pairs = splitJsonPairs(jsonStr);
+
+        for (String pair : pairs) {
+            String[] keyValue = splitKeyValue(pair);
+            if (keyValue.length == 2) {
+                String key = keyValue[0];
+                String value = keyValue[1];
+
+                switch (key) {
+                    case "payrollId":
+                        payroll.setPayrollId(parseIntOrDefault(value, 0));
+                        break;
+                    case "staffId":
+                        payroll.setStaffId(parseIntOrDefault(value, 0));
                         break;
                     case "salaryMonth":
                         if (!value.isEmpty()) {
-                            payroll.setSalaryMonth(dateFormat.parse(value));
+                            payroll.setSalaryMonth(parseDate(value));
                         }
                         break;
                     case "basicSalary":
                         if (!value.isEmpty()) {
-                            payroll.setBasicSalary(new BigDecimal(value));
+                            payroll.setBasicSalary(parseBigDecimal(value));
                         }
                         break;
                     case "allowances":
                         if (!value.isEmpty()) {
-                            payroll.setAllowances(new BigDecimal(value));
+                            payroll.setAllowances(parseBigDecimal(value));
                         }
                         break;
                     case "deductions":
                         if (!value.isEmpty()) {
-                            payroll.setDeductions(new BigDecimal(value));
+                            payroll.setDeductions(parseBigDecimal(value));
                         }
                         break;
                     case "netSalary":
                         if (!value.isEmpty()) {
-                            payroll.setNetSalary(new BigDecimal(value));
+                            payroll.setNetSalary(parseBigDecimal(value));
                         }
                         break;
                     case "paymentStatus":
@@ -161,8 +264,11 @@ public class JsonUtils {
                         break;
                     case "paymentDate":
                         if (!value.isEmpty()) {
-                            payroll.setPaymentDate(dateFormat.parse(value));
+                            payroll.setPaymentDate(parseDate(value));
                         }
+                        break;
+                    case "notes":
+                        payroll.setNotes(value);
                         break;
                 }
             }
@@ -171,44 +277,61 @@ public class JsonUtils {
         return payroll;
     }
 
-    // Parse Batch from JSON string
+    /**
+     * Parse Batch from JSON string
+     * @param jsonStr JSON string
+     * @return Batch object
+     */
     public static Batch parseBatch(String jsonStr) throws Exception {
-        jsonStr = jsonStr.replaceAll("[{}\"]", "");
-        String[] pairs = jsonStr.split(",");
+        // Remove outer braces and quotes
+        jsonStr = jsonStr.trim();
+        if (jsonStr.startsWith("{")) {
+            jsonStr = jsonStr.substring(1);
+        }
+        if (jsonStr.endsWith("}")) {
+            jsonStr = jsonStr.substring(0, jsonStr.length() - 1);
+        }
 
+        // Split into key-value pairs
         Batch batch = new Batch();
+        String[] pairs = splitJsonPairs(jsonStr);
 
         for (String pair : pairs) {
-            String[] keyValue = pair.split(":");
+            String[] keyValue = splitKeyValue(pair);
             if (keyValue.length == 2) {
-                String key = keyValue[0].trim();
-                String value = keyValue[1].trim();
+                String key = keyValue[0];
+                String value = keyValue[1];
 
                 switch (key) {
-                    case "id":
-                        batch.setId(Integer.parseInt(value));
+                    case "batchId":
+                        batch.setBatchId(value);
                         break;
                     case "batchName":
                         batch.setBatchName(value);
                         break;
                     case "startDate":
                         if (!value.isEmpty()) {
-                            batch.setStartDate(dateFormat.parse(value));
+                            batch.setStartDate(parseDate(value));
                         }
                         break;
                     case "endDate":
                         if (!value.isEmpty()) {
-                            batch.setEndDate(dateFormat.parse(value));
+                            batch.setEndDate(parseDate(value));
                         }
                         break;
-                    case "courseId":
-                        batch.setCourseId(Integer.parseInt(value));
-                        break;
                     case "capacity":
-                        batch.setCapacity(Integer.parseInt(value));
+                        batch.setCapacity(parseIntOrDefault(value, 0));
                         break;
                     case "status":
                         batch.setStatus(value);
+                        break;
+                    case "courseIds":
+                        if (value.startsWith("[") && value.endsWith("]")) {
+                            String[] courseIds = parseJsonArray(value.substring(1, value.length() - 1));
+                            for (String courseId : courseIds) {
+                                batch.addCourseId(courseId);
+                            }
+                        }
                         break;
                 }
             }
@@ -217,42 +340,54 @@ public class JsonUtils {
         return batch;
     }
 
-    // Parse BatchFacultyAssignment from JSON string
+    /**
+     * Parse BatchFacultyAssignment from JSON string
+     * @param jsonStr JSON string
+     * @return BatchFacultyAssignment object
+     */
     public static BatchFacultyAssignment parseBatchFacultyAssignment(String jsonStr) throws Exception {
-        jsonStr = jsonStr.replaceAll("[{}\"]", "");
-        String[] pairs = jsonStr.split(",");
+        // Remove outer braces and quotes
+        jsonStr = jsonStr.trim();
+        if (jsonStr.startsWith("{")) {
+            jsonStr = jsonStr.substring(1);
+        }
+        if (jsonStr.endsWith("}")) {
+            jsonStr = jsonStr.substring(0, jsonStr.length() - 1);
+        }
 
+        // Split into key-value pairs
         BatchFacultyAssignment assignment = new BatchFacultyAssignment();
+        String[] pairs = splitJsonPairs(jsonStr);
 
         for (String pair : pairs) {
-            String[] keyValue = pair.split(":");
+            String[] keyValue = splitKeyValue(pair);
             if (keyValue.length == 2) {
-                String key = keyValue[0].trim();
-                String value = keyValue[1].trim();
+                String key = keyValue[0];
+                String value = keyValue[1];
 
                 switch (key) {
-                    case "id":
-                        assignment.setId(Integer.parseInt(value));
+                    case "assignmentId":
+                        assignment.setAssignmentId(parseIntOrDefault(value, 0));
                         break;
                     case "batchId":
-                        assignment.setBatchId(Integer.parseInt(value));
+                        assignment.setBatchId(value);
                         break;
                     case "staffId":
-                        assignment.setStaffId(Integer.parseInt(value));
+                        assignment.setStaffId(parseIntOrDefault(value, 0));
                         break;
-                    case "subject":
-                        assignment.setSubject(value);
+                    case "courseId":
+                        assignment.setCourseId(value);
                         break;
                     case "assignmentDate":
                         if (!value.isEmpty()) {
-                            assignment.setAssignmentDate(dateFormat.parse(value));
+                            assignment.setAssignmentDate(parseDate(value));
                         } else {
                             assignment.setAssignmentDate(new Date());
                         }
                         break;
                     case "endDate":
                         if (!value.isEmpty()) {
-                            assignment.setEndDate(dateFormat.parse(value));
+                            assignment.setEndDate(parseDate(value));
                         }
                         break;
                     case "status":
@@ -265,97 +400,288 @@ public class JsonUtils {
         return assignment;
     }
 
-    // Parse Announcement from JSON string
-    public static Announcement parseAnnouncement(String jsonStr) throws Exception {
-        jsonStr = jsonStr.replaceAll("[{}\"]", "");
-        String[] pairs = jsonStr.split(",");
+    /**
+     * Parse Student from JSON string
+     * @param jsonStr JSON string
+     * @return Student object
+     */
+    public static Student parseStudent(String jsonStr) throws Exception {
+        // Remove outer braces and quotes
+        jsonStr = jsonStr.trim();
+        if (jsonStr.startsWith("{")) {
+            jsonStr = jsonStr.substring(1);
+        }
+        if (jsonStr.endsWith("}")) {
+            jsonStr = jsonStr.substring(0, jsonStr.length() - 1);
+        }
 
-        Announcement announcement = new Announcement();
+        // Split into key-value pairs
+        Student student = new Student();
+        String[] pairs = splitJsonPairs(jsonStr);
 
         for (String pair : pairs) {
-            String[] keyValue = pair.split(":");
+            String[] keyValue = splitKeyValue(pair);
             if (keyValue.length == 2) {
-                String key = keyValue[0].trim();
-                String value = keyValue[1].trim();
+                String key = keyValue[0];
+                String value = keyValue[1];
 
                 switch (key) {
-                    case "id":
-                        announcement.setId(Integer.parseInt(value));
+                    case "indexNumber":
+                        student.setIndexNumber(parseIntOrDefault(value, 0));
                         break;
-                    case "title":
-                        announcement.setTitle(value);
+                    case "registrationNumber":
+                        student.setRegistrationNumber(value);
                         break;
-                    case "content":
-                        announcement.setContent(value);
+                    case "name":
+                        student.setName(value);
                         break;
-                    case "category":
-                        announcement.setCategory(value);
+                    case "email":
+                        student.setEmail(value);
                         break;
-                    case "postedBy":
-                        announcement.setPostedBy(Integer.parseInt(value));
+                    case "batchId":
+                        student.setBatchId(value);
                         break;
-                    case "validFrom":
-                        if (!value.isEmpty()) {
-                            announcement.setValidFrom(dateFormat.parse(value));
-                        } else {
-                            announcement.setValidFrom(new Date());
-                        }
+                    case "gender":
+                        student.setGender(value);
                         break;
-                    case "validUntil":
-                        if (!value.isEmpty()) {
-                            announcement.setValidUntil(dateFormat.parse(value));
-                        }
-                        break;
-                    case "status":
-                        announcement.setStatus(value);
+                    case "hostelRequired":
+                        student.setHostelRequired(parseBooleanOrDefault(value, false));
                         break;
                 }
             }
         }
 
-        return announcement;
+        return student;
     }
 
-    // Parse AcademicCalendar from JSON string
-    public static AcademicCalendar parseCalendarEvent(String jsonStr) throws Exception {
-        jsonStr = jsonStr.replaceAll("[{}\"]", "");
-        String[] pairs = jsonStr.split(",");
+    /**
+     * Split JSON string into key-value pairs
+     * @param jsonStr JSON string without outer braces
+     * @return Array of key-value pair strings
+     */
+    private static String[] splitJsonPairs(String jsonStr) {
+        // This handles nested objects and arrays by counting braces and brackets
+        java.util.List<String> pairs = new java.util.ArrayList<>();
 
-        AcademicCalendar event = new AcademicCalendar();
+        int start = 0;
+        int braceCount = 0;
+        int bracketCount = 0;
+        boolean inQuotes = false;
+        boolean escaped = false;
 
-        for (String pair : pairs) {
-            String[] keyValue = pair.split(":");
-            if (keyValue.length == 2) {
-                String key = keyValue[0].trim();
-                String value = keyValue[1].trim();
+        for (int i = 0; i < jsonStr.length(); i++) {
+            char c = jsonStr.charAt(i);
 
-                switch (key) {
-                    case "id":
-                        event.setId(Integer.parseInt(value));
-                        break;
-                    case "eventTitle":
-                        event.setEventTitle(value);
-                        break;
-                    case "description":
-                        event.setDescription(value);
-                        break;
-                    case "eventDate":
-                        if (!value.isEmpty()) {
-                            event.setEventDate(dateFormat.parse(value));
-                        } else {
-                            throw new Exception("Event date is required");
-                        }
-                        break;
-                    case "eventType":
-                        event.setEventType(value);
-                        break;
-                    case "createdBy":
-                        event.setCreatedBy(Integer.parseInt(value));
-                        break;
+            if (escaped) {
+                escaped = false;
+                continue;
+            }
+
+            if (c == '\\') {
+                escaped = true;
+                continue;
+            }
+
+            if (c == '"' && !escaped) {
+                inQuotes = !inQuotes;
+                continue;
+            }
+
+            if (!inQuotes) {
+                if (c == '{') braceCount++;
+                else if (c == '}') braceCount--;
+                else if (c == '[') bracketCount++;
+                else if (c == ']') bracketCount--;
+
+                if (c == ',' && braceCount == 0 && bracketCount == 0) {
+                    pairs.add(jsonStr.substring(start, i).trim());
+                    start = i + 1;
                 }
             }
         }
 
-        return event;
+        // Add the last pair
+        if (start < jsonStr.length()) {
+            pairs.add(jsonStr.substring(start).trim());
+        }
+
+        return pairs.toArray(new String[0]);
+    }
+
+    /**
+     * Split key-value pair string into key and value
+     * @param pair Key-value pair string
+     * @return Array with key and value
+     */
+    private static String[] splitKeyValue(String pair) {
+        int colonIndex = -1;
+        boolean inQuotes = false;
+        boolean escaped = false;
+
+        // Find the colon that separates key and value
+        for (int i = 0; i < pair.length(); i++) {
+            char c = pair.charAt(i);
+
+            if (escaped) {
+                escaped = false;
+                continue;
+            }
+
+            if (c == '\\') {
+                escaped = true;
+                continue;
+            }
+
+            if (c == '"' && !escaped) {
+                inQuotes = !inQuotes;
+                continue;
+            }
+
+            if (!inQuotes && c == ':') {
+                colonIndex = i;
+                break;
+            }
+        }
+
+        if (colonIndex == -1) {
+            return new String[0];
+        }
+
+        String key = pair.substring(0, colonIndex).trim();
+        String value = pair.substring(colonIndex + 1).trim();
+
+        // Remove quotes from key and value
+        if (key.startsWith("\"") && key.endsWith("\"")) {
+            key = key.substring(1, key.length() - 1);
+        }
+
+        if (value.startsWith("\"") && value.endsWith("\"")) {
+            value = value.substring(1, value.length() - 1);
+        }
+
+        return new String[]{key, value};
+    }
+
+    /**
+     * Parse JSON array string into array of strings
+     * @param arrayStr JSON array string without brackets
+     * @return Array of strings
+     */
+    private static String[] parseJsonArray(String arrayStr) {
+        java.util.List<String> items = new java.util.ArrayList<>();
+
+        int start = 0;
+        int braceCount = 0;
+        int bracketCount = 0;
+        boolean inQuotes = false;
+        boolean escaped = false;
+
+        for (int i = 0; i < arrayStr.length(); i++) {
+            char c = arrayStr.charAt(i);
+
+            if (escaped) {
+                escaped = false;
+                continue;
+            }
+
+            if (c == '\\') {
+                escaped = true;
+                continue;
+            }
+
+            if (c == '"' && !escaped) {
+                inQuotes = !inQuotes;
+                continue;
+            }
+
+            if (!inQuotes) {
+                if (c == '{') braceCount++;
+                else if (c == '}') braceCount--;
+                else if (c == '[') bracketCount++;
+                else if (c == ']') bracketCount--;
+
+                if (c == ',' && braceCount == 0 && bracketCount == 0) {
+                    String item = arrayStr.substring(start, i).trim();
+                    if (item.startsWith("\"") && item.endsWith("\"")) {
+                        item = item.substring(1, item.length() - 1);
+                    }
+                    items.add(item);
+                    start = i + 1;
+                }
+            }
+        }
+
+        // Add the last item
+        if (start < arrayStr.length()) {
+            String item = arrayStr.substring(start).trim();
+            if (item.startsWith("\"") && item.endsWith("\"")) {
+                item = item.substring(1, item.length() - 1);
+            }
+            items.add(item);
+        }
+
+        return items.toArray(new String[0]);
+    }
+
+    /**
+     * Parse integer from string
+     * @param str String to parse
+     * @param defaultValue Default value if parsing fails
+     * @return Parsed integer or default value
+     */
+    private static int parseIntOrDefault(String str, int defaultValue) {
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Parse boolean from string
+     * @param str String to parse
+     * @param defaultValue Default value if parsing fails
+     * @return Parsed boolean or default value
+     */
+    private static boolean parseBooleanOrDefault(String str, boolean defaultValue) {
+        if (str == null) {
+            return defaultValue;
+        }
+
+        str = str.trim().toLowerCase();
+
+        if (str.equals("true") || str.equals("yes") || str.equals("1")) {
+            return true;
+        } else if (str.equals("false") || str.equals("no") || str.equals("0")) {
+            return false;
+        } else {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Parse BigDecimal from string
+     * @param str String to parse
+     * @return Parsed BigDecimal or BigDecimal.ZERO
+     */
+    private static BigDecimal parseBigDecimal(String str) {
+        try {
+            return new BigDecimal(str);
+        } catch (NumberFormatException e) {
+            return BigDecimal.ZERO;
+        }
+    }
+
+    /**
+     * Parse date from string
+     * @param str String to parse
+     * @return Parsed date or null
+     */
+    private static Date parseDate(String str) {
+        try {
+            return DATE_FORMAT.parse(str);
+        } catch (ParseException e) {
+            return null;
+        }
     }
 }
