@@ -10,16 +10,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/filters/SyncServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8/storage_v2/_src_/schema/adhyana_course.Wgi8Mg.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8/storage_v2/_src_/schema/adhyana_course.Wgi8Mg.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8/storage_v2/_src_/schema/adhyana_auth.pwkCKA.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8/storage_v2/_src_/schema/adhyana_auth.pwkCKA.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/SyncServlet.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/StaffService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/StaffService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/adhyana/gateway/APIGateway.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/adhyana/gateway/APIGateway.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/DDBMSServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/DDBMSServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ddbms-service/src/main/resources/ddbms_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/resources/ddbms_schema.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/exam-service/src/main/resources/exam_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/exam-service/src/main/resources/exam_schema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,47 +65,48 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Database Script.admin_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.auth_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.course_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.ddbms_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.exam_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.student_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;Tomcat Server.API Gateway.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Administration Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Auth Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Course Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.DDBMS.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Exam Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Faculty Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Student Service.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;core-services&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
-    &quot;sql.rename.search.for.storage.occurrences&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Database Script.admin_schema.sql.executor": "Run",
+    "Database Script.auth_schema.sql.executor": "Run",
+    "Database Script.course_schema.sql.executor": "Run",
+    "Database Script.ddbms_schema.sql.executor": "Run",
+    "Database Script.exam_schema.sql.executor": "Run",
+    "Database Script.student_schema.sql.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Tomcat Server.API Gateway.executor": "Run",
+    "Tomcat Server.Administration Service.executor": "Run",
+    "Tomcat Server.Auth Service.executor": "Run",
+    "Tomcat Server.Course Service.executor": "Run",
+    "Tomcat Server.DDBMS.executor": "Run",
+    "Tomcat Server.Exam Service.executor": "Run",
+    "Tomcat Server.Faculty Service.executor": "Run",
+    "Tomcat Server.Student Service.executor": "Run",
+    "git-widget-placeholder": "core-services",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "sql.rename.search.for.storage.occurrences": "true",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
     ],
-    &quot;RunConfigurationTargetLRU&quot;: [
-      &quot;49f1bd22-26c2-4195-b1fc-ad75bf85e7c8&quot;
+    "RunConfigurationTargetLRU": [
+      "49f1bd22-26c2-4195-b1fc-ad75bf85e7c8"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP" />
@@ -124,13 +127,7 @@
       <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
-  <component name="RunManager" selected="Database Script.ddbms_schema.sql">
-    <configuration name="admin_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
-      <script-file value="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" />
-      <script-mode>FILE</script-mode>
-      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Tomcat Server.DDBMS">
     <configuration name="auth_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" />
       <script-mode>FILE</script-mode>
@@ -145,6 +142,12 @@
     </configuration>
     <configuration name="ddbms_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true">
       <script-file value="$PROJECT_DIR$/ddbms-service/src/main/resources/ddbms_schema.sql" />
+      <script-mode>FILE</script-mode>
+      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
+      <method v="2" />
+    </configuration>
+    <configuration name="exam_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/exam-service/src/main/resources/exam_schema.sql" />
       <script-mode>FILE</script-mode>
       <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
       <method v="2" />
@@ -527,7 +530,7 @@
       <server-settings>
         <option name="BASE_DIRECTORY_NAME" value="b17ef57f-3773-4940-9967-73042b39797b" />
         <option name="HTTP_PORT" value="8087" />
-        <option name="JNDI_PORT" value="1106" />
+        <option name="JNDI_PORT" value="1105" />
       </server-settings>
       <predefined_log_file enabled="true" id="Tomcat" />
       <predefined_log_file enabled="true" id="Tomcat Catalina" />
@@ -786,25 +789,25 @@
     </configuration>
     <list>
       <item itemvalue="Database Script.student_schema.sql" />
-      <item itemvalue="Database Script.admin_schema.sql" />
       <item itemvalue="Database Script.auth_schema.sql" />
       <item itemvalue="Database Script.course_schema.sql" />
       <item itemvalue="Database Script.ddbms_schema.sql" />
+      <item itemvalue="Database Script.exam_schema.sql" />
       <item itemvalue="Tomcat Server.API Gateway" />
       <item itemvalue="Tomcat Server.Auth Service" />
       <item itemvalue="Tomcat Server.Student Service" />
-      <item itemvalue="Tomcat Server.DDBMS" />
       <item itemvalue="Tomcat Server.Course Service" />
       <item itemvalue="Tomcat Server.Exam Service" />
       <item itemvalue="Tomcat Server.Administration Service" />
+      <item itemvalue="Tomcat Server.DDBMS" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Database Script.auth_schema.sql" />
         <item itemvalue="Database Script.ddbms_schema.sql" />
-        <item itemvalue="Database Script.admin_schema.sql" />
+        <item itemvalue="Database Script.exam_schema.sql" />
         <item itemvalue="Database Script.course_schema.sql" />
         <item itemvalue="Database Script.student_schema.sql" />
-        <item itemvalue="Database Script.auth_schema.sql" />
       </list>
     </recent_temporary>
   </component>
@@ -864,7 +867,7 @@
       <workItem from="1745521057931" duration="4840000" />
       <workItem from="1745553306170" duration="745000" />
       <workItem from="1745555737841" duration="1774000" />
-      <workItem from="1745619207547" duration="7297000" />
+      <workItem from="1745619207547" duration="11502000" />
     </task>
     <servers />
   </component>

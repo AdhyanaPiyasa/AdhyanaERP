@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS students (
 
 -- Shared Table: Semesters (Reference Only)
 CREATE TABLE IF NOT EXISTS semesters (
-                                         semester_id VARCHAR(20) PRIMARY KEY,
+                                         semester_id VARCHAR(25) PRIMARY KEY,
                                          batch_id VARCHAR(10) NOT NULL,
                                          course_id VARCHAR(10) NOT NULL,
                                          staff_id INT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS semesters (
 CREATE TABLE IF NOT EXISTS exams (
                                      exam_id INT PRIMARY KEY AUTO_INCREMENT,
                                      title VARCHAR(100) NOT NULL, -- e.g., "Midterm Exam", "Final Exam"
-                                     semester_id VARCHAR(15) NOT NULL, -- Links to the specific course offering
+                                     semester_id VARCHAR(25) NOT NULL, -- Links to the specific course offering
                                      exam_date DATE NOT NULL,
                                      start_time TIME NOT NULL,
                                      end_time TIME NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS assignments (
                                            assignment_id INT PRIMARY KEY AUTO_INCREMENT, -- Changed Aid to assignment_id
                                            title VARCHAR(100) NOT NULL,
                                            course_id VARCHAR(10) NOT NULL, -- Changed course to course_id
-                                           semester_id VARCHAR(15) NOT NULL, -- Added semester_id to link to offering
+                                           semester_id VARCHAR(25) NOT NULL, -- Added semester_id to link to offering
                                            type ENUM('Homework', 'Project', 'Quiz', 'Lab Report', 'Presentation', 'Online', 'Inclass') NOT NULL,
                                            due_date DATE NOT NULL,
                                            due_time TIME NULL,
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS grades (
                                       student_index INT NOT NULL, -- Changed Index_No
     -- name VARCHAR(100) NOT NULL, -- Removed name, can be fetched from student table
                                       course_id VARCHAR(10) NOT NULL, -- Changed course_code INT
-                                      semester_id VARCHAR(15) NOT NULL, -- Added semester_id
+                                      semester_id VARCHAR(25) NOT NULL, -- Added semester_id
     -- courseName VARCHAR(100) NOT NULL, -- Removed courseName, fetch from course table
                                       component_id INT NOT NULL, -- FK to either exams(exam_id) or assignments(assignment_id)
                                       component_type ENUM('EXAM', 'ASSIGNMENT') NOT NULL, -- To distinguish component_id source

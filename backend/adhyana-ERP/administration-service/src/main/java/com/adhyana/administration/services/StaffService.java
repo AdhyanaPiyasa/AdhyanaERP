@@ -5,6 +5,10 @@ import com.adhyana.administration.models.StaffRole;
 import com.adhyana.administration.utils.DatabaseConnection;
 import com.adhyana.administration.utils.DDBMSClient;
 
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,21 +62,24 @@ public class StaffService {
                 throw new Exception("Creating staff failed, no rows affected.");
             }
 
+            // build the *exact* SQL string we just ran
+            String filledSql = String.format(
+                    "INSERT INTO courses (code, name, year, semester, credits, duration) " +
+                            "VALUES (%d, '%s', %d, %d, %d, %d)",
+                    staff.getCode(),
+                    course.getName().replace("'", "''"),  // basic escaping
+                    course.getYear(),
+                    course.getSemester(),
+                    course.getCredits(),
+                    course.getDuration()
+            );
+
+            // **replicate** to DDBMS
+            replicateQuery(filledSql, "courses");
+
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     staff.setId(generatedKeys.getInt(1));
-
-                    // Notify DDBMS about the new staff creation
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("name", staff.getFirstName() + " " + staff.getLastName());
-                    data.put("email", staff.getEmail());
-                    data.put("phone", staff.getPhone());
-                    data.put("department", staff.getDepartment());
-                    data.put("position", staff.getPosition());
-                    data.put("hire_date", staff.getHireDate().toString());
-                    data.put("status", staff.getStatus());
-
-                    DDBMSClient.notifyDDBMS("staff", staff.getId(), "INSERT", data);
 
                     // Return the newly created staff object
                     return getStaffById(staff.getId());
@@ -185,5 +192,33 @@ public class StaffService {
         stmt.setString(6, staff.getPosition());
         stmt.setDate(7, staff.getHireDate() != null ? new java.sql.Date(staff.getHireDate().getTime()) : null);
         stmt.setString(8, staff.getStatus());
+    }
+
+    /**
+     * Sends the exact SQL string + table name to the DDBMS via your API Gateway.
+     */
+    private void replicateQuery(String sql, String table) {
+        try {
+            // build payload
+            String payload = String.format(
+                    "{\"query\":\"%s\",\"table\":\"%s\"}",
+                    sql.replace("\"", "\\\""),
+                    table
+            );
+
+            // call API Gateway → DDBMS
+            URL url = new URL("http://localhost:8081/api/ddbms/replicate");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json");
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(payload.getBytes(StandardCharsets.UTF_8));
+            }
+            conn.getResponseCode();  // you can check/handle errors if you like
+        } catch (Exception e) {
+            // swallow or log; best-effort replication
+            System.err.println("Replication failed: " + e.getMessage());
+        }
     }
 }

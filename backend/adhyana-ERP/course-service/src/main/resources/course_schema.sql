@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS batch_courses (
 
 -- Course Specific: Semesters (Defines offering of a course in a specific period)
 CREATE TABLE IF NOT EXISTS semesters (
-                                         semester_id VARCHAR(20) PRIMARY KEY, -- e.g., CS24F-CS1101-S1
+                                         semester_id VARCHAR(25) PRIMARY KEY, -- e.g., CS24F-CS1101-S1
                                          batch_id VARCHAR(10) NOT NULL,
                                          course_id VARCHAR(10) NOT NULL,
                                          staff_id INT NULL, -- Instructor teaching this semester offering (can be NULL initially)
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS semesters (
 CREATE TABLE IF NOT EXISTS feedbacks (
                                          feedback_id INT PRIMARY KEY AUTO_INCREMENT,
                                          course_id VARCHAR(10) NOT NULL,
-                                         semester_id VARCHAR(20) NULL, -- Link to specific offering if possible
+                                         semester_id VARCHAR(25) NULL, -- Link to specific offering if possible
                                          student_index INT NULL, -- NULL if anonymous
                                          rating_content TINYINT CHECK (rating_content BETWEEN 1 AND 5),
                                          rating_instructor TINYINT CHECK (rating_instructor BETWEEN 1 AND 5),
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS feedbacks (
 CREATE TABLE IF NOT EXISTS course_announcements ( -- Renamed from announcements
                                                     course_announcement_id INT PRIMARY KEY AUTO_INCREMENT,
                                                     course_id VARCHAR(10) NOT NULL,
-                                                    semester_id VARCHAR(15) NULL, -- Link to specific offering if needed
+                                                    semester_id VARCHAR(25) NULL, -- Link to specific offering if needed
                                                     title VARCHAR(200) NOT NULL,
                                                     content TEXT NOT NULL,
                                                     posted_by INT NULL, -- Staff ID
