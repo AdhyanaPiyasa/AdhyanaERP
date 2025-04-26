@@ -19,8 +19,8 @@ public class APIGateway extends HttpServlet {
     private static final String STUDENT_SERVICE = "http://localhost:8083";
     private static final String COURSE_SERVICE = "http://localhost:8084";
     private static final String EXAM_SERVICE = "http://localhost:8085";
-    private static final String FACULTY_SERVICE = "http://localhost:8086";
-    private static final String ADMINISTRATION_SERVICE = "http://localhost:8087";
+    private static final String ADMINISTRATION_SERVICE = "http://localhost:8086";
+    private static final String DDBMS_SERVICE = "http://localhost:8087";
 
     // Create a logger for this class
     private static final Logger LOGGER = Logger.getLogger(APIGateway.class.getName());
@@ -63,9 +63,9 @@ public class APIGateway extends HttpServlet {
         } else if (path.startsWith("/api/exams")) {
             targetUrl = EXAM_SERVICE + "/api" + path.substring(4);
             LOGGER.info("Routing to Exam Service: " + targetUrl);
-        } else if (path.startsWith("/api/faculty")) {
-            targetUrl = FACULTY_SERVICE + "/api" + path.substring(4);
-            LOGGER.info("Routing to Faculty Service: " + targetUrl);
+        } else if (path.startsWith("/api/ddbms")) {
+            targetUrl = DDBMS_SERVICE + "/api" + path.substring(4);
+            LOGGER.info("Routing to DDBMS Service: " + targetUrl);
         } else {
             LOGGER.warning(String.format("Invalid service path requested: %s from %s", path, ipAddress));
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid service path");
