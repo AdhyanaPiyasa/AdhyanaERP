@@ -10,17 +10,19 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-@WebFilter("/api/admin/*")
+/**
+ * Authentication filter for the Core Administration Service API.
+ * Verifies JWT tokens with the Auth Service and enforces role-based access control.
+ */
+@WebFilter("/api/core-admin/*")
 public class AuthFilter implements Filter {
 
     // Auth service URL (configurable properties would be better in production)
     private static final String AUTH_SERVICE_URL = "http://localhost:8082/auth/verify";
-    // If going through API gateway
-    // private static final String AUTH_SERVICE_URL = "http://localhost:8081/auth/verify";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("AUTH FILTER: Initializing authentication filter for /api/admin/*");
+        System.out.println("AUTH FILTER: Initializing authentication filter for /api/core-admin/*");
         System.out.println("AUTH FILTER: Using Auth Service at " + AUTH_SERVICE_URL);
     }
 
@@ -36,7 +38,7 @@ public class AuthFilter implements Filter {
         String authHeader = httpRequest.getHeader("Authorization");
         System.out.println("AUTH FILTER: Authorization header " + (authHeader != null ? "present" : "missing"));
 
-        // Skip auth for OPTIONS requests
+        // Skip auth for OPTIONS requests (CORS preflight)
         if (httpRequest.getMethod().equals("OPTIONS")) {
             System.out.println("AUTH FILTER: Skipping authentication for OPTIONS request");
             chain.doFilter(request, response);
@@ -69,6 +71,17 @@ public class AuthFilter implements Filter {
 
         System.out.println("AUTH FILTER: Token successfully validated with Auth Service");
         System.out.println("AUTH FILTER: User role from Auth Service: " + role);
+
+        // Only certain roles can access the Core Admin API
+        if (!isAuthorizedRole(role)) {
+            System.out.println("AUTH FILTER: ERROR - User lacks required role for Core Admin API (role: " + role + ")");
+            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Insufficient privileges");
+            System.out.println("AUTH FILTER: Sending 403 Forbidden response");
+            System.out.println("========== AUTH FILTER END ==========");
+            return;
+        }
+
+        System.out.println("AUTH FILTER: Role authorization passed");
 
         // For non-GET requests or sensitive endpoints, verify admin role
         boolean isGetMethod = httpRequest.getMethod().equals("GET");
@@ -107,15 +120,41 @@ public class AuthFilter implements Filter {
         System.out.println("========== AUTH FILTER END ==========");
     }
 
+    /**
+     * Check if the user's role is authorized to access the Core Admin API
+     * @param role User role
+     * @return true if authorized, false otherwise
+     */
+    private boolean isAuthorizedRole(String role) {
+        // Only ADMIN, FACULTY, and STAFF roles can access the Core Admin API
+        return "admin".equals(role) || "administrator".equals(role) || "sysadmin".equals(role);
+    }
+
+    /**
+     * Check if the requested endpoint is admin-only
+     * @param uri Request URI
+     * @return true if admin-only endpoint, false otherwise
+     */
     private boolean isAdminOnlyEndpoint(String uri) {
-        boolean isAdminEndpoint = uri.contains("/api/admin/staff") ||
-                uri.contains("/api/admin/payroll") ||
-                uri.contains("/api/admin/batch");
+        boolean isAdminEndpoint = uri.contains("/api/core-admin/staff") ||
+                uri.contains("/api/core-admin/payroll") ||
+                uri.contains("/api/core-admin/batch");
+
+        // Students endpoint GET is not admin-only, but POST/PUT/DELETE are
+        if (uri.contains("/api/core-admin/student")) {
+            // This will be checked in combination with the request method
+            return false;
+        }
 
         System.out.println("AUTH FILTER: Checking if " + uri + " is admin-only endpoint: " + isAdminEndpoint);
         return isAdminEndpoint;
     }
 
+    /**
+     * Verify token with Auth Service
+     * @param authHeader Authorization header
+     * @return User role if verification successful, null otherwise
+     */
     private String verifyTokenWithAuthService(String authHeader) {
         System.out.println("AUTH FILTER: Verifying token with Auth Service at " + AUTH_SERVICE_URL);
         HttpURLConnection connection = null;
@@ -148,8 +187,7 @@ public class AuthFilter implements Filter {
                 String responseBody = content.toString();
                 System.out.println("AUTH FILTER: Auth Service response: " + responseBody);
 
-                // Parse the JSON response manually to extract the role
-                // Looking for something like: {"success":true,"message":"Token valid","data":{"token":"...","role":"admin"}}
+                // Parse the JSON response to extract the role
                 String role = extractRoleFromJson(responseBody);
                 System.out.println("AUTH FILTER: Extracted role from response: " + role);
                 return role;
@@ -180,6 +218,11 @@ public class AuthFilter implements Filter {
         }
     }
 
+    /**
+     * Extract role from JSON response
+     * @param json JSON response
+     * @return User role
+     */
     private String extractRoleFromJson(String json) {
         try {
             // Simple JSON extraction - find "role":"value" pattern
@@ -212,6 +255,10 @@ public class AuthFilter implements Filter {
         }
     }
 
+    /**
+     * Log request details
+     * @param request HTTP request
+     */
     private void logRequestDetails(HttpServletRequest request) {
         System.out.println("AUTH FILTER: Detailed request information:");
         System.out.println("  Remote Address: " + request.getRemoteAddr());

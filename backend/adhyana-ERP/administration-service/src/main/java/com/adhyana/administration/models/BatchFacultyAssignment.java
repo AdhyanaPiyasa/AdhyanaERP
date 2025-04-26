@@ -2,14 +2,18 @@ package com.adhyana.administration.models;
 
 import java.util.Date;
 
+/**
+ * Represents a faculty member assigned to teach a batch.
+ * Updated based on schema changes.
+ */
 public class BatchFacultyAssignment {
-    private int id;
-    private int batchId;
+    private int assignmentId; // Changed from 'id' to 'assignmentId' for clarity
+    private String batchId; // Changed from int to String based on batch schema
     private int staffId;
-    private String subject;
+    private String courseId; // Changed from 'subject' to 'courseId' for schema consistency
     private Date assignmentDate;
     private Date endDate;
-    private String status;
+    private String status; // e.g., "ACTIVE", "COMPLETED", "CANCELLED"
     private Date createdAt;
     private Date updatedAt;
 
@@ -17,13 +21,13 @@ public class BatchFacultyAssignment {
     public BatchFacultyAssignment() {}
 
     // Constructor with all fields
-    public BatchFacultyAssignment(int id, int batchId, int staffId, String subject,
+    public BatchFacultyAssignment(int assignmentId, String batchId, int staffId, String courseId,
                                   Date assignmentDate, Date endDate, String status,
                                   Date createdAt, Date updatedAt) {
-        this.id = id;
+        this.assignmentId = assignmentId;
         this.batchId = batchId;
         this.staffId = staffId;
-        this.subject = subject;
+        this.courseId = courseId;
         this.assignmentDate = assignmentDate;
         this.endDate = endDate;
         this.status = status;
@@ -32,17 +36,17 @@ public class BatchFacultyAssignment {
     }
 
     // Getters and setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getAssignmentId() { return assignmentId; }
+    public void setAssignmentId(int assignmentId) { this.assignmentId = assignmentId; }
 
-    public int getBatchId() { return batchId; }
-    public void setBatchId(int batchId) { this.batchId = batchId; }
+    public String getBatchId() { return batchId; }
+    public void setBatchId(String batchId) { this.batchId = batchId; }
 
     public int getStaffId() { return staffId; }
     public void setStaffId(int staffId) { this.staffId = staffId; }
 
-    public String getSubject() { return subject; }
-    public void setSubject(String subject) { this.subject = subject; }
+    public String getCourseId() { return courseId; }
+    public void setCourseId(String courseId) { this.courseId = courseId; }
 
     public Date getAssignmentDate() { return assignmentDate; }
     public void setAssignmentDate(Date assignmentDate) { this.assignmentDate = assignmentDate; }
@@ -58,4 +62,23 @@ public class BatchFacultyAssignment {
 
     public Date getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+
+    /**
+     * Check if the assignment is currently active
+     * @return true if active, false otherwise
+     */
+    public boolean isActive() {
+        return "ACTIVE".equals(status);
+    }
+
+    /**
+     * Check if the assignment has ended
+     * @return true if ended, false otherwise
+     */
+    public boolean isEnded() {
+        if (endDate == null) {
+            return false;
+        }
+        return new Date().after(endDate);
+    }
 }

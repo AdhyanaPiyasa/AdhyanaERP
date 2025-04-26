@@ -7,16 +7,20 @@ import com.adhyana.administration.utils.JsonUtils;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
+/**
+ * Servlet for handling HTTP requests to the Core Administration Service.
+ */
 @WebServlet("/api/admin/*")
 public class AdminServlet extends HttpServlet {
     private final StaffService staffService = new StaffService();
     private final PayrollService payrollService = new PayrollService();
     private final BatchService batchService = new BatchService();
-    private final AnnouncementService announcementService = new AnnouncementService();
-    private final AcademicCalendarService calendarService = new AcademicCalendarService();
+    private final EnrollmentService enrollmentService = new EnrollmentService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -28,7 +32,7 @@ public class AdminServlet extends HttpServlet {
             if (pathInfo == null || pathInfo.equals("/")) {
                 // Root endpoint - return service info
                 System.out.println("GET: Accessing root endpoint");
-                ApiResponse<String> apiResponse = new ApiResponse<>(true, "Administration Service API", "v1.0");
+                ApiResponse<String> apiResponse = new ApiResponse<>(true, "Core Administration Service API", "v1.0");
                 sendJsonResponse(response, apiResponse);
                 return;
             }
@@ -56,13 +60,9 @@ public class AdminServlet extends HttpServlet {
                     System.out.println("GET: Handling batch request");
                     handleBatchGet(request, response, parts);
                     break;
-                case "announcements":
-                    System.out.println("GET: Handling announcements request");
-                    handleAnnouncementsGet(request, response, parts);
-                    break;
-                case "calendar":
-                    System.out.println("GET: Handling calendar request");
-                    handleCalendarGet(request, response, parts);
+                case "student":
+                    System.out.println("GET: Handling student request");
+                    handleStudentGet(request, response, parts);
                     break;
                 default:
                     System.out.println("ERROR: Invalid endpoint - " + parts[0]);
@@ -112,13 +112,9 @@ public class AdminServlet extends HttpServlet {
                     System.out.println("POST: Handling batch request");
                     handleBatchPost(request, response, parts);
                     break;
-                case "announcements":
-                    System.out.println("POST: Handling announcements request");
-                    handleAnnouncementsPost(request, response, parts);
-                    break;
-                case "calendar":
-                    System.out.println("POST: Handling calendar request");
-                    handleCalendarPost(request, response, parts);
+                case "student":
+                    System.out.println("POST: Handling student request");
+                    handleStudentPost(request, response, parts);
                     break;
                 default:
                     System.out.println("ERROR: Invalid endpoint for POST - " + parts[0]);
@@ -157,24 +153,20 @@ public class AdminServlet extends HttpServlet {
 
             switch (parts[0]) {
                 case "staff":
-                    System.out.println("PUT: Handling staff update request for ID: " + parts[1]);
+                    System.out.println("PUT: Handling staff update request");
                     handleStaffPut(request, response, parts);
                     break;
                 case "payroll":
-                    System.out.println("PUT: Handling payroll update request for ID: " + parts[1]);
+                    System.out.println("PUT: Handling payroll update request");
                     handlePayrollPut(request, response, parts);
                     break;
                 case "batch":
-                    System.out.println("PUT: Handling batch update request for ID: " + parts[1]);
+                    System.out.println("PUT: Handling batch update request");
                     handleBatchPut(request, response, parts);
                     break;
-                case "announcements":
-                    System.out.println("PUT: Handling announcements update request for ID: " + parts[1]);
-                    handleAnnouncementsPut(request, response, parts);
-                    break;
-                case "calendar":
-                    System.out.println("PUT: Handling calendar update request for ID: " + parts[1]);
-                    handleCalendarPut(request, response, parts);
+                case "student":
+                    System.out.println("PUT: Handling student update request");
+                    handleStudentPut(request, response, parts);
                     break;
                 default:
                     System.out.println("ERROR: Invalid endpoint for PUT - " + parts[0]);
@@ -213,24 +205,16 @@ public class AdminServlet extends HttpServlet {
 
             switch (parts[0]) {
                 case "staff":
-                    System.out.println("DELETE: Handling staff deletion request for ID: " + parts[1]);
+                    System.out.println("DELETE: Handling staff deletion request");
                     handleStaffDelete(request, response, parts);
                     break;
                 case "payroll":
-                    System.out.println("DELETE: Handling payroll deletion request for ID: " + parts[1]);
+                    System.out.println("DELETE: Handling payroll deletion request");
                     handlePayrollDelete(request, response, parts);
                     break;
                 case "batch":
-                    System.out.println("DELETE: Handling batch deletion request for ID: " + parts[1]);
+                    System.out.println("DELETE: Handling batch deletion request");
                     handleBatchDelete(request, response, parts);
-                    break;
-                case "announcements":
-                    System.out.println("DELETE: Handling announcements deletion request for ID: " + parts[1]);
-                    handleAnnouncementsDelete(request, response, parts);
-                    break;
-                case "calendar":
-                    System.out.println("DELETE: Handling calendar deletion request for ID: " + parts[1]);
-                    handleCalendarDelete(request, response, parts);
                     break;
                 default:
                     System.out.println("ERROR: Invalid endpoint for DELETE - " + parts[0]);
@@ -256,27 +240,39 @@ public class AdminServlet extends HttpServlet {
             sendJsonResponse(response, apiResponse);
         } else if (parts.length >= 2) {
             try {
-                int id = Integer.parseInt(parts[1]);
+                int staffId = Integer.parseInt(parts[1]);
 
                 if (parts.length == 2) {
                     // Get specific staff
-                    System.out.println("Retrieving staff with ID: " + id);
-                    Staff staff = staffService.getStaffById(id);
+                    System.out.println("Retrieving staff with ID: " + staffId);
+                    Staff staff = staffService.getStaffById(staffId);
                     if (staff != null) {
-                        System.out.println("Staff found: " + staff.getFirstName() + " " + staff.getLastName());
+                        System.out.println("Staff found: " + staff.getName());
                         ApiResponse<Staff> apiResponse = new ApiResponse<>(true, "Staff retrieved successfully", staff);
                         sendJsonResponse(response, apiResponse);
                     } else {
-                        System.out.println("Staff not found with ID: " + id);
+                        System.out.println("Staff not found with ID: " + staffId);
                         response.sendError(HttpServletResponse.SC_NOT_FOUND, "Staff not found");
                     }
-                } else if (parts.length == 3 && "roles".equals(parts[2])) {
-                    // Get staff roles
-                    System.out.println("Retrieving roles for staff ID: " + id);
-                    List<StaffRole> roles = staffService.getStaffRoles(id);
-                    System.out.println("Retrieved " + roles.size() + " roles for staff ID: " + id);
-                    ApiResponse<List<StaffRole>> apiResponse = new ApiResponse<>(true, "Staff roles retrieved successfully", roles);
-                    sendJsonResponse(response, apiResponse);
+                } else if (parts.length == 3) {
+                    if ("roles".equals(parts[2])) {
+                        // Get staff roles
+                        System.out.println("Retrieving roles for staff ID: " + staffId);
+                        List<StaffRole> roles = staffService.getStaffRoles(staffId);
+                        System.out.println("Retrieved " + roles.size() + " roles for staff ID: " + staffId);
+                        ApiResponse<List<StaffRole>> apiResponse = new ApiResponse<>(true, "Staff roles retrieved successfully", roles);
+                        sendJsonResponse(response, apiResponse);
+                    } else if ("attendance".equals(parts[2])) {
+                        // Get staff attendance
+                        System.out.println("Retrieving attendance for staff ID: " + staffId);
+                        List<StaffAttendance> attendance = staffService.getStaffAttendance(staffId);
+                        System.out.println("Retrieved " + attendance.size() + " attendance records for staff ID: " + staffId);
+                        ApiResponse<List<StaffAttendance>> apiResponse = new ApiResponse<>(true, "Staff attendance retrieved successfully", attendance);
+                        sendJsonResponse(response, apiResponse);
+                    } else {
+                        System.out.println("ERROR: Invalid staff request with parts: " + String.join("/", parts));
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid staff request");
+                    }
                 } else {
                     System.out.println("ERROR: Invalid staff request with parts: " + String.join("/", parts));
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid staff request");
@@ -293,11 +289,11 @@ public class AdminServlet extends HttpServlet {
         if (parts.length == 1) {
             // Create new staff
             System.out.println("Creating new staff member");
-            String requestBody = readRequestBody(request);
+            String requestBody = JsonUtils.readRequestBody(request);
             System.out.println("Request body: " + requestBody);
             Staff staff = JsonUtils.parseStaff(requestBody);
             Staff newStaff = staffService.addStaff(staff);
-            System.out.println("Staff created with ID: " + newStaff.getId() + ", Name: " + newStaff.getFirstName() + " " + newStaff.getLastName());
+            System.out.println("Staff created with ID: " + newStaff.getStaffId() + ", Name: " + newStaff.getName());
 
             ApiResponse<Staff> apiResponse = new ApiResponse<>(true,
                     "Staff created successfully", newStaff);
@@ -307,7 +303,7 @@ public class AdminServlet extends HttpServlet {
                 int staffId = Integer.parseInt(parts[1]);
                 // Add role to staff
                 System.out.println("Assigning role to staff ID: " + staffId);
-                String requestBody = readRequestBody(request);
+                String requestBody = JsonUtils.readRequestBody(request);
                 System.out.println("Role request body: " + requestBody);
                 StaffRole role = JsonUtils.parseStaffRole(requestBody);
                 role.setStaffId(staffId);
@@ -319,6 +315,25 @@ public class AdminServlet extends HttpServlet {
                 sendJsonResponse(response, apiResponse);
             } catch (NumberFormatException e) {
                 System.out.println("ERROR: Invalid staff ID format for role assignment: " + parts[1]);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid staff ID");
+            }
+        } else if (parts.length == 3 && "attendance".equals(parts[2])) {
+            try {
+                int staffId = Integer.parseInt(parts[1]);
+                // Record staff attendance
+                System.out.println("Recording attendance for staff ID: " + staffId);
+                String requestBody = JsonUtils.readRequestBody(request);
+                System.out.println("Attendance request body: " + requestBody);
+                StaffAttendance attendance = JsonUtils.parseStaffAttendance(requestBody);
+                attendance.setStaffId(staffId);
+                StaffAttendance newAttendance = staffService.recordAttendance(attendance);
+                System.out.println("Attendance recorded successfully for staff ID: " + staffId);
+
+                ApiResponse<StaffAttendance> apiResponse = new ApiResponse<>(true,
+                        "Attendance recorded successfully", newAttendance);
+                sendJsonResponse(response, apiResponse);
+            } catch (NumberFormatException e) {
+                System.out.println("ERROR: Invalid staff ID format for attendance recording: " + parts[1]);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid staff ID");
             }
         } else {
@@ -336,14 +351,14 @@ public class AdminServlet extends HttpServlet {
         }
 
         try {
-            int id = Integer.parseInt(parts[1]);
-            System.out.println("Updating staff with ID: " + id);
-            String requestBody = readRequestBody(request);
+            int staffId = Integer.parseInt(parts[1]);
+            System.out.println("Updating staff with ID: " + staffId);
+            String requestBody = JsonUtils.readRequestBody(request);
             System.out.println("Staff update request body: " + requestBody);
             Staff staff = JsonUtils.parseStaff(requestBody);
 
-            staffService.updateStaff(id, staff);
-            System.out.println("Staff updated successfully, ID: " + id + ", Name: " + staff.getFirstName() + " " + staff.getLastName());
+            staffService.updateStaff(staffId, staff);
+            System.out.println("Staff updated successfully, ID: " + staffId + ", Name: " + staff.getName());
 
             ApiResponse<Void> apiResponse = new ApiResponse<>(true,
                     "Staff updated successfully", null);
@@ -359,10 +374,10 @@ public class AdminServlet extends HttpServlet {
         if (parts.length == 2) {
             try {
                 // Delete staff
-                int id = Integer.parseInt(parts[1]);
-                System.out.println("Deleting staff with ID: " + id);
-                staffService.deleteStaff(id);
-                System.out.println("Staff deleted successfully, ID: " + id);
+                int staffId = Integer.parseInt(parts[1]);
+                System.out.println("Deleting staff with ID: " + staffId);
+                staffService.deleteStaff(staffId);
+                System.out.println("Staff deleted successfully, ID: " + staffId);
 
                 ApiResponse<Void> apiResponse = new ApiResponse<>(true,
                         "Staff deleted successfully", null);
@@ -374,14 +389,25 @@ public class AdminServlet extends HttpServlet {
         } else if (parts.length == 3 && "roles".equals(parts[2])) {
             // Delete staff role
             String roleIdParam = request.getParameter("roleId");
-            System.out.println("Deleting staff role, role ID: " + roleIdParam);
-            int roleId = Integer.parseInt(roleIdParam);
-            staffService.removeRole(roleId);
-            System.out.println("Staff role removed successfully, role ID: " + roleId);
+            if (roleIdParam == null) {
+                System.out.println("ERROR: Role ID required for role deletion");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Role ID required");
+                return;
+            }
 
-            ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                    "Role removed successfully", null);
-            sendJsonResponse(response, apiResponse);
+            try {
+                int roleId = Integer.parseInt(roleIdParam);
+                System.out.println("Deleting staff role, role ID: " + roleId);
+                staffService.removeRole(roleId);
+                System.out.println("Staff role removed successfully, role ID: " + roleId);
+
+                ApiResponse<Void> apiResponse = new ApiResponse<>(true,
+                        "Role removed successfully", null);
+                sendJsonResponse(response, apiResponse);
+            } catch (NumberFormatException e) {
+                System.out.println("ERROR: Invalid role ID format: " + roleIdParam);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid role ID");
+            }
         } else {
             System.out.println("ERROR: Invalid staff delete request with parts: " + String.join("/", parts));
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid staff delete request");
@@ -415,16 +441,16 @@ public class AdminServlet extends HttpServlet {
         } else if (parts.length == 2) {
             try {
                 // Get specific payroll by ID
-                int id = Integer.parseInt(parts[1]);
-                System.out.println("Retrieving payroll record with ID: " + id);
-                Payroll payroll = payrollService.getPayrollById(id);
+                int payrollId = Integer.parseInt(parts[1]);
+                System.out.println("Retrieving payroll record with ID: " + payrollId);
+                Payroll payroll = payrollService.getPayrollById(payrollId);
 
                 if (payroll != null) {
-                    System.out.println("Payroll record found, ID: " + id + ", Staff ID: " + payroll.getStaffId());
+                    System.out.println("Payroll record found, ID: " + payrollId + ", Staff ID: " + payroll.getStaffId());
                     ApiResponse<Payroll> apiResponse = new ApiResponse<>(true, "Payroll record retrieved successfully", payroll);
                     sendJsonResponse(response, apiResponse);
                 } else {
-                    System.out.println("Payroll record not found with ID: " + id);
+                    System.out.println("Payroll record not found with ID: " + payrollId);
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Payroll record not found");
                 }
             } catch (NumberFormatException e) {
@@ -441,16 +467,38 @@ public class AdminServlet extends HttpServlet {
                                    String[] parts) throws Exception {
         if (parts.length == 1) {
             // Process payroll
-            String requestBody = readRequestBody(request);
+            String requestBody = JsonUtils.readRequestBody(request);
             System.out.println("Processing payroll, request body: " + requestBody);
             Payroll payroll = JsonUtils.parsePayroll(requestBody);
             System.out.println("Processing payroll for staff ID: " + payroll.getStaffId() + ", Month: " + payroll.getSalaryMonth());
 
-            payrollService.processPayroll(payroll.getStaffId(), payroll.getSalaryMonth());
+            Payroll processedPayroll = payrollService.processPayroll(payroll.getStaffId(), payroll.getSalaryMonth());
             System.out.println("Payroll processed successfully for staff ID: " + payroll.getStaffId());
 
-            ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                    "Payroll processed successfully", null);
+            ApiResponse<Payroll> apiResponse = new ApiResponse<>(true,
+                    "Payroll processed successfully", processedPayroll);
+            sendJsonResponse(response, apiResponse);
+        } else if (parts.length == 2 && "bulk".equals(parts[1])) {
+            // Process bulk payroll
+            String requestBody = JsonUtils.readRequestBody(request);
+            System.out.println("Processing bulk payroll, request body: " + requestBody);
+
+            // Extract month from request
+            // For simplicity, assuming the request contains a payroll object with just the month
+            Payroll payroll = JsonUtils.parsePayroll(requestBody);
+
+            if (payroll.getSalaryMonth() == null) {
+                System.out.println("ERROR: Month required for bulk payroll processing");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Month required");
+                return;
+            }
+
+            int processedCount = payrollService.processBulkPayroll(payroll.getSalaryMonth());
+            System.out.println("Processed payroll for " + processedCount + " staff members");
+
+            ApiResponse<Integer> apiResponse = new ApiResponse<>(true,
+                    "Bulk payroll processed successfully for " + processedCount + " staff members",
+                    processedCount);
             sendJsonResponse(response, apiResponse);
         } else {
             System.out.println("ERROR: Invalid payroll POST request with parts: " + String.join("/", parts));
@@ -462,26 +510,70 @@ public class AdminServlet extends HttpServlet {
                                   String[] parts) throws Exception {
         if (parts.length == 2 && "pay".equals(parts[1])) {
             // Mark payroll as paid
-            String requestBody = readRequestBody(request);
+            String requestBody = JsonUtils.readRequestBody(request);
             System.out.println("Marking payroll as paid, request body: " + requestBody);
-            Payroll payroll = JsonUtils.parsePayroll(requestBody);
-            System.out.println("Marking payroll as paid, ID: " + payroll.getId());
 
-            payrollService.markPayrollAsPaid(payroll.getId(), new Date());
-            System.out.println("Payroll marked as paid successfully, ID: " + payroll.getId());
+            // Check if it's a single payroll or multiple
+            if (requestBody.contains("\"payrollIds\"")) {
+                // Handle multiple payrolls
+                // For simplicity, assuming format: {"payrollIds":[1,2,3],"paymentDate":"2025-04-26"}
+                try {
+                    List<Integer> payrollIds = new ArrayList<>();
+                    String idsStr = requestBody.substring(requestBody.indexOf("[") + 1, requestBody.indexOf("]"));
+                    for (String idStr : idsStr.split(",")) {
+                        payrollIds.add(Integer.parseInt(idStr.trim()));
+                    }
 
-            ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                    "Payroll marked as paid", null);
-            sendJsonResponse(response, apiResponse);
+                    // Extract payment date
+                    Date paymentDate = new Date(); // Default to current date
+                    int dateStart = requestBody.indexOf("\"paymentDate\":\"");
+                    if (dateStart != -1) {
+                        dateStart += 15; // Length of "paymentDate":"
+                        int dateEnd = requestBody.indexOf("\"", dateStart);
+                        if (dateEnd != -1) {
+                            String dateStr = requestBody.substring(dateStart, dateEnd);
+                            try {
+                                paymentDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+                            } catch (Exception e) {
+                                System.out.println("ERROR: Invalid date format. Using current date.");
+                            }
+                        }
+                    }
+
+                    System.out.println("Marking " + payrollIds.size() + " payrolls as paid");
+                    int updatedCount = payrollService.markMultiplePayrollsAsPaid(payrollIds, paymentDate);
+                    System.out.println(updatedCount + " payroll records marked as paid");
+
+                    ApiResponse<Integer> apiResponse = new ApiResponse<>(true,
+                            updatedCount + " payroll records marked as paid", updatedCount);
+                    sendJsonResponse(response, apiResponse);
+                } catch (Exception e) {
+                    System.out.println("ERROR: Invalid payroll IDs format");
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid payroll IDs format");
+                }
+            } else {
+                // Handle single payroll
+                Payroll payroll = JsonUtils.parsePayroll(requestBody);
+                System.out.println("Marking payroll as paid, ID: " + payroll.getPayrollId());
+
+                Date paymentDate = payroll.getPaymentDate() != null ? payroll.getPaymentDate() : new Date();
+                payrollService.markPayrollAsPaid(payroll.getPayrollId(), paymentDate);
+                System.out.println("Payroll marked as paid successfully, ID: " + payroll.getPayrollId());
+
+                ApiResponse<Void> apiResponse = new ApiResponse<>(true,
+                        "Payroll marked as paid", null);
+                sendJsonResponse(response, apiResponse);
+            }
         } else if (parts.length == 2) {
             try {
-                int id = Integer.parseInt(parts[1]);
+                int payrollId = Integer.parseInt(parts[1]);
                 // Update payroll details
-                String requestBody = readRequestBody(request);
-                System.out.println("Updating payroll details, ID: " + id + ", request body: " + requestBody);
+                String requestBody = JsonUtils.readRequestBody(request);
+                System.out.println("Updating payroll details, ID: " + payrollId + ", request body: " + requestBody);
                 Payroll payroll = JsonUtils.parsePayroll(requestBody);
-                // Update logic would go here
-                System.out.println("Payroll updated successfully, ID: " + id);
+
+                payrollService.updatePayroll(payrollId, payroll);
+                System.out.println("Payroll updated successfully, ID: " + payrollId);
 
                 ApiResponse<Void> apiResponse = new ApiResponse<>(true,
                         "Payroll updated successfully", null);
@@ -505,10 +597,10 @@ public class AdminServlet extends HttpServlet {
         }
 
         try {
-            int id = Integer.parseInt(parts[1]);
-            System.out.println("Deleting payroll record with ID: " + id);
-            payrollService.deletePayroll(id);
-            System.out.println("Payroll record deleted successfully, ID: " + id);
+            int payrollId = Integer.parseInt(parts[1]);
+            System.out.println("Deleting payroll record with ID: " + payrollId);
+            payrollService.deletePayroll(payrollId);
+            System.out.println("Payroll record deleted successfully, ID: " + payrollId);
 
             ApiResponse<Void> apiResponse = new ApiResponse<>(true,
                     "Payroll record deleted successfully", null);
@@ -530,36 +622,37 @@ public class AdminServlet extends HttpServlet {
             ApiResponse<List<Batch>> apiResponse = new ApiResponse<>(true, "Batches retrieved successfully", batches);
             sendJsonResponse(response, apiResponse);
         } else if (parts.length >= 2) {
-            try {
-                int id = Integer.parseInt(parts[1]);
+            String batchId = parts[1];
 
-                if (parts.length == 2) {
-                    // Get specific batch
-                    System.out.println("Retrieving batch with ID: " + id);
-                    Batch batch = batchService.getBatchById(id);
-                    if (batch != null) {
-                        System.out.println("Batch found, ID: " + id + ", Name: " + batch.getBatchName());
-                        ApiResponse<Batch> apiResponse = new ApiResponse<>(true, "Batch retrieved successfully", batch);
-                        sendJsonResponse(response, apiResponse);
-                    } else {
-                        System.out.println("Batch not found with ID: " + id);
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND, "Batch not found");
-                    }
-                } else if (parts.length == 3 && "faculty".equals(parts[2])) {
-                    // Get faculty assignments for batch
-                    System.out.println("Retrieving faculty assignments for batch ID: " + id);
-                    List<BatchFacultyAssignment> assignments =
-                            batchService.getBatchFacultyAssignments(id);
-                    System.out.println("Retrieved " + assignments.size() + " faculty assignments for batch ID: " + id);
-                    ApiResponse<List<BatchFacultyAssignment>> apiResponse = new ApiResponse<>(true, "Faculty assignments retrieved successfully", assignments);
+            if (parts.length == 2) {
+                // Get specific batch
+                System.out.println("Retrieving batch with ID: " + batchId);
+                Batch batch = batchService.getBatchById(batchId);
+                if (batch != null) {
+                    System.out.println("Batch found, ID: " + batchId + ", Name: " + batch.getBatchName());
+                    ApiResponse<Batch> apiResponse = new ApiResponse<>(true, "Batch retrieved successfully", batch);
                     sendJsonResponse(response, apiResponse);
                 } else {
-                    System.out.println("ERROR: Invalid batch request with parts: " + String.join("/", parts));
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid batch request");
+                    System.out.println("Batch not found with ID: " + batchId);
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Batch not found");
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("ERROR: Invalid batch ID format: " + parts[1]);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid batch ID");
+            } else if (parts.length == 3 && "faculty".equals(parts[2])) {
+                // Get faculty assignments for batch
+                System.out.println("Retrieving faculty assignments for batch ID: " + batchId);
+                List<BatchFacultyAssignment> assignments = batchService.getBatchFacultyAssignments(batchId);
+                System.out.println("Retrieved " + assignments.size() + " faculty assignments for batch ID: " + batchId);
+                ApiResponse<List<BatchFacultyAssignment>> apiResponse = new ApiResponse<>(true, "Faculty assignments retrieved successfully", assignments);
+                sendJsonResponse(response, apiResponse);
+            } else if (parts.length == 3 && "students".equals(parts[2])) {
+                // Get students in batch
+                System.out.println("Retrieving students for batch ID: " + batchId);
+                List<Student> students = enrollmentService.getStudentsByBatch(batchId);
+                System.out.println("Retrieved " + students.size() + " students for batch ID: " + batchId);
+                ApiResponse<List<Student>> apiResponse = new ApiResponse<>(true, "Students retrieved successfully", students);
+                sendJsonResponse(response, apiResponse);
+            } else {
+                System.out.println("ERROR: Invalid batch request with parts: " + String.join("/", parts));
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid batch request");
             }
         }
     }
@@ -568,34 +661,40 @@ public class AdminServlet extends HttpServlet {
                                  String[] parts) throws Exception {
         if (parts.length == 1) {
             // Create new batch
-            String requestBody = readRequestBody(request);
+            String requestBody = JsonUtils.readRequestBody(request);
             System.out.println("Creating new batch, request body: " + requestBody);
             Batch batch = JsonUtils.parseBatch(requestBody);
             Batch newBatch = batchService.createBatch(batch);
-            System.out.println("Batch created successfully, ID: " + newBatch.getId() + ", Name: " + newBatch.getBatchName());
+            System.out.println("Batch created successfully, ID: " + newBatch.getBatchId() + ", Name: " + newBatch.getBatchName());
 
             ApiResponse<Batch> apiResponse = new ApiResponse<>(true,
                     "Batch created successfully", newBatch);
             sendJsonResponse(response, apiResponse);
         } else if (parts.length == 3 && "faculty".equals(parts[2])) {
-            try {
-                int batchId = Integer.parseInt(parts[1]);
-                // Assign faculty to batch
-                String requestBody = readRequestBody(request);
-                System.out.println("Assigning faculty to batch ID: " + batchId + ", request body: " + requestBody);
-                BatchFacultyAssignment assignment =
-                        JsonUtils.parseBatchFacultyAssignment(requestBody);
-                assignment.setBatchId(batchId);
-                batchService.assignFacultyToBatch(assignment);
-                System.out.println("Faculty (ID: " + assignment.getStaffId() + ") assigned to batch ID: " + batchId);
+            // Assign faculty to batch
+            String batchId = parts[1];
+            String requestBody = JsonUtils.readRequestBody(request);
+            System.out.println("Assigning faculty to batch ID: " + batchId + ", request body: " + requestBody);
+            BatchFacultyAssignment assignment = JsonUtils.parseBatchFacultyAssignment(requestBody);
+            assignment.setBatchId(batchId);
+            batchService.assignFacultyToBatch(assignment);
+            System.out.println("Faculty (ID: " + assignment.getStaffId() + ") assigned to batch ID: " + batchId);
 
-                ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                        "Faculty assigned successfully", null);
-                sendJsonResponse(response, apiResponse);
-            } catch (NumberFormatException e) {
-                System.out.println("ERROR: Invalid batch ID format for faculty assignment: " + parts[1]);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid batch ID");
-            }
+            ApiResponse<Void> apiResponse = new ApiResponse<>(true,
+                    "Faculty assigned successfully", null);
+            sendJsonResponse(response, apiResponse);
+        } else if (parts.length == 3 && "enrollment".equals(parts[2])) {
+            // Bulk enroll students to batch
+            String batchId = parts[1];
+            System.out.println("Performing bulk enrollment for batch ID: " + batchId);
+
+            // Perform bulk enrollment
+            int enrolledCount = enrollmentService.bulkEnrollStudents(batchId);
+            System.out.println("Enrolled " + enrolledCount + " students to batch ID: " + batchId);
+
+            ApiResponse<Integer> apiResponse = new ApiResponse<>(true,
+                    "Enrolled " + enrolledCount + " students successfully", enrolledCount);
+            sendJsonResponse(response, apiResponse);
         } else {
             System.out.println("ERROR: Invalid batch POST request with parts: " + String.join("/", parts));
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid batch request");
@@ -610,41 +709,31 @@ public class AdminServlet extends HttpServlet {
             return;
         }
 
-        try {
-            int id = Integer.parseInt(parts[1]);
-            String requestBody = readRequestBody(request);
-            System.out.println("Updating batch with ID: " + id + ", request body: " + requestBody);
-            Batch batch = JsonUtils.parseBatch(requestBody);
+        String batchId = parts[1];
+        String requestBody = JsonUtils.readRequestBody(request);
+        System.out.println("Updating batch with ID: " + batchId + ", request body: " + requestBody);
+        Batch batch = JsonUtils.parseBatch(requestBody);
 
-            batchService.updateBatch(id, batch);
-            System.out.println("Batch updated successfully, ID: " + id + ", Name: " + batch.getBatchName());
+        batchService.updateBatch(batchId, batch);
+        System.out.println("Batch updated successfully, ID: " + batchId + ", Name: " + batch.getBatchName());
 
-            ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                    "Batch updated successfully", null);
-            sendJsonResponse(response, apiResponse);
-        } catch (NumberFormatException e) {
-            System.out.println("ERROR: Invalid batch ID format for update: " + parts[1]);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid batch ID");
-        }
+        ApiResponse<Void> apiResponse = new ApiResponse<>(true,
+                "Batch updated successfully", null);
+        sendJsonResponse(response, apiResponse);
     }
 
     private void handleBatchDelete(HttpServletRequest request, HttpServletResponse response,
                                    String[] parts) throws Exception {
         if (parts.length == 2) {
-            try {
-                // Delete batch
-                int id = Integer.parseInt(parts[1]);
-                System.out.println("Deleting batch with ID: " + id);
-                batchService.deleteBatch(id);
-                System.out.println("Batch deleted successfully, ID: " + id);
+            // Delete batch
+            String batchId = parts[1];
+            System.out.println("Deleting batch with ID: " + batchId);
+            batchService.deleteBatch(batchId);
+            System.out.println("Batch deleted successfully, ID: " + batchId);
 
-                ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                        "Batch deleted successfully", null);
-                sendJsonResponse(response, apiResponse);
-            } catch (NumberFormatException e) {
-                System.out.println("ERROR: Invalid batch ID format for deletion: " + parts[1]);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid batch ID");
-            }
+            ApiResponse<Void> apiResponse = new ApiResponse<>(true,
+                    "Batch deleted successfully", null);
+            sendJsonResponse(response, apiResponse);
         } else if (parts.length == 3 && "faculty".equals(parts[2])) {
             // Remove faculty assignment
             String assignmentIdParam = request.getParameter("assignmentId");
@@ -673,294 +762,88 @@ public class AdminServlet extends HttpServlet {
         }
     }
 
-    // Announcements handlers
-    private void handleAnnouncementsGet(HttpServletRequest request, HttpServletResponse response,
-                                        String[] parts) throws Exception {
+    // Student handlers
+    private void handleStudentGet(HttpServletRequest request, HttpServletResponse response,
+                                  String[] parts) throws Exception {
         if (parts.length == 1) {
-            // Get active announcements
-            System.out.println("Retrieving active announcements");
-            List<Announcement> announcements = announcementService.getActiveAnnouncements();
-            System.out.println("Retrieved " + announcements.size() + " active announcements");
-            ApiResponse<List<Announcement>> apiResponse = new ApiResponse<>(true, "Announcements retrieved successfully", announcements);
+            // Get all students
+            System.out.println("Retrieving all students");
+            List<Student> students = enrollmentService.getAllStudents();
+            System.out.println("Retrieved " + students.size() + " students");
+            ApiResponse<List<Student>> apiResponse = new ApiResponse<>(true, "Students retrieved successfully", students);
             sendJsonResponse(response, apiResponse);
         } else if (parts.length == 2) {
-            if ("all".equals(parts[1])) {
-                // Get all announcements including drafts and archived
-                System.out.println("Retrieving all announcements");
-                List<Announcement> announcements = announcementService.getAllAnnouncements();
-                System.out.println("Retrieved " + announcements.size() + " announcements (including drafts and archived)");
-                ApiResponse<List<Announcement>> apiResponse = new ApiResponse<>(true, "All announcements retrieved successfully", announcements);
-                sendJsonResponse(response, apiResponse);
-            } else {
-                try {
-                    // Get specific announcement
-                    int id = Integer.parseInt(parts[1]);
-                    System.out.println("Retrieving announcement with ID: " + id);
-                    Announcement announcement = announcementService.getAnnouncementById(id);
+            try {
+                // Get specific student by index number
+                int indexNumber = Integer.parseInt(parts[1]);
+                System.out.println("Retrieving student with index number: " + indexNumber);
+                Student student = enrollmentService.getStudentByIndex(indexNumber);
 
-                    if (announcement != null) {
-                        System.out.println("Announcement found, ID: " + id + ", Title: " + announcement.getTitle());
-                        ApiResponse<Announcement> apiResponse = new ApiResponse<>(true, "Announcement retrieved successfully", announcement);
-                        sendJsonResponse(response, apiResponse);
-                    } else {
-                        System.out.println("Announcement not found with ID: " + id);
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND, "Announcement not found");
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("ERROR: Invalid announcement ID format: " + parts[1]);
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid announcement ID");
-                }
-            }
-        } else {
-            System.out.println("ERROR: Invalid announcement request with parts: " + String.join("/", parts));
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid announcement request");
-        }
-    }
-
-    private void handleAnnouncementsPost(HttpServletRequest request, HttpServletResponse response,
-                                         String[] parts) throws Exception {
-        if (parts.length != 1) {
-            System.out.println("ERROR: Invalid announcement create request with parts: " + String.join("/", parts));
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid announcement create request");
-            return;
-        }
-
-        String requestBody = readRequestBody(request);
-        System.out.println("Creating new announcement, request body: " + requestBody);
-        Announcement announcement = JsonUtils.parseAnnouncement(requestBody);
-        Announcement newAnnouncement = announcementService.createAnnouncement(announcement);
-        System.out.println("Announcement created successfully, ID: " + newAnnouncement.getId() + ", Title: " + newAnnouncement.getTitle());
-
-        ApiResponse<Announcement> apiResponse = new ApiResponse<>(true,
-                "Announcement created successfully", newAnnouncement);
-        sendJsonResponse(response, apiResponse);
-    }
-
-    private void handleAnnouncementsPut(HttpServletRequest request, HttpServletResponse response,
-                                        String[] parts) throws Exception {
-        if (parts.length < 2) {
-            System.out.println("ERROR: Invalid announcement update request with parts: " + String.join("/", parts));
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid announcement update request");
-            return;
-        }
-
-        try {
-            int id = Integer.parseInt(parts[1]);
-
-            if (parts.length == 2) {
-                // Update announcement
-                String requestBody = readRequestBody(request);
-                System.out.println("Updating announcement with ID: " + id + ", request body: " + requestBody);
-                Announcement announcement = JsonUtils.parseAnnouncement(requestBody);
-
-                announcementService.updateAnnouncement(id, announcement);
-                System.out.println("Announcement updated successfully, ID: " + id + ", Title: " + announcement.getTitle());
-
-                ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                        "Announcement updated successfully", null);
-                sendJsonResponse(response, apiResponse);
-            } else if (parts.length == 3) {
-                // Change announcement status
-                if ("publish".equals(parts[2])) {
-                    System.out.println("Publishing announcement with ID: " + id);
-                    announcementService.publishAnnouncement(id);
-                    System.out.println("Announcement published successfully, ID: " + id);
-                    ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                            "Announcement published successfully", null);
-                    sendJsonResponse(response, apiResponse);
-                } else if ("archive".equals(parts[2])) {
-                    System.out.println("Archiving announcement with ID: " + id);
-                    announcementService.archiveAnnouncement(id);
-                    System.out.println("Announcement archived successfully, ID: " + id);
-                    ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                            "Announcement archived successfully", null);
+                if (student != null) {
+                    System.out.println("Student found, Index: " + indexNumber + ", Name: " + student.getName());
+                    ApiResponse<Student> apiResponse = new ApiResponse<>(true, "Student retrieved successfully", student);
                     sendJsonResponse(response, apiResponse);
                 } else {
-                    System.out.println("ERROR: Invalid announcement action: " + parts[2]);
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid announcement action");
+                    System.out.println("Student not found with index number: " + indexNumber);
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Student not found");
                 }
-            } else {
-                System.out.println("ERROR: Invalid announcement update request with too many parts: " + String.join("/", parts));
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid announcement update request");
+            } catch (NumberFormatException e) {
+                System.out.println("ERROR: Invalid student index number format: " + parts[1]);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid student index number");
             }
-        } catch (NumberFormatException e) {
-            System.out.println("ERROR: Invalid announcement ID format for update: " + parts[1]);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid announcement ID");
+        } else {
+            System.out.println("ERROR: Invalid student request with parts: " + String.join("/", parts));
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid student request");
         }
     }
 
-    private void handleAnnouncementsDelete(HttpServletRequest request, HttpServletResponse response,
-                                           String[] parts) throws Exception {
-        if (parts.length != 2) {
-            System.out.println("ERROR: Invalid announcement delete request with parts: " + String.join("/", parts));
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid announcement delete request");
-            return;
-        }
-
-        try {
-            int id = Integer.parseInt(parts[1]);
-            System.out.println("Deleting announcement with ID: " + id);
-            announcementService.deleteAnnouncement(id);
-            System.out.println("Announcement deleted successfully, ID: " + id);
-
-            ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                    "Announcement deleted successfully", null);
-            sendJsonResponse(response, apiResponse);
-        } catch (NumberFormatException e) {
-            System.out.println("ERROR: Invalid announcement ID format for deletion: " + parts[1]);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid announcement ID");
-        }
-    }
-
-    // Calendar handlers
-    private void handleCalendarGet(HttpServletRequest request, HttpServletResponse response,
+    private void handleStudentPost(HttpServletRequest request, HttpServletResponse response,
                                    String[] parts) throws Exception {
         if (parts.length == 1) {
-            // Get all events
-            System.out.println("Retrieving all calendar events");
-            List<AcademicCalendar> events = calendarService.getAllEvents();
-            System.out.println("Retrieved " + events.size() + " calendar events");
-            ApiResponse<List<AcademicCalendar>> apiResponse = new ApiResponse<>(true, "Calendar events retrieved successfully", events);
+            // Enroll new student
+            String requestBody = JsonUtils.readRequestBody(request);
+            System.out.println("Enrolling new student, request body: " + requestBody);
+            Student student = JsonUtils.parseStudent(requestBody);
+            Student enrolledStudent = enrollmentService.enrollStudent(student);
+            System.out.println("Student enrolled successfully, Index: " + enrolledStudent.getIndexNumber() +
+                    ", Name: " + enrolledStudent.getName());
+
+            ApiResponse<Student> apiResponse = new ApiResponse<>(true,
+                    "Student enrolled successfully", enrolledStudent);
             sendJsonResponse(response, apiResponse);
-        } else if (parts.length == 2 && "upcoming".equals(parts[1])) {
-            // Get upcoming events
-            String daysParam = request.getParameter("days");
-            int days = daysParam != null ? Integer.parseInt(daysParam) : 30;
-            System.out.println("Retrieving upcoming events for next " + days + " days");
-
-            List<AcademicCalendar> events = calendarService.getUpcomingEvents(days);
-            System.out.println("Retrieved " + events.size() + " upcoming events");
-            ApiResponse<List<AcademicCalendar>> apiResponse = new ApiResponse<>(true, "Upcoming events retrieved successfully", events);
-            sendJsonResponse(response, apiResponse);
-        } else if (parts.length == 2 && "month".equals(parts[1])) {
-            // Get events for specific month
-            String yearParam = request.getParameter("year");
-            String monthParam = request.getParameter("month");
-
-            if (yearParam == null || monthParam == null) {
-                System.out.println("ERROR: Year and month parameters required for monthly events");
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Year and month parameters required");
-                return;
-            }
-
-            try {
-                int year = Integer.parseInt(yearParam);
-                int month = Integer.parseInt(monthParam);
-                System.out.println("Retrieving calendar events for year: " + year + ", month: " + month);
-
-                List<AcademicCalendar> events = calendarService.getEventsByMonth(year, month);
-                System.out.println("Retrieved " + events.size() + " events for year: " + year + ", month: " + month);
-                ApiResponse<List<AcademicCalendar>> apiResponse = new ApiResponse<>(true, "Monthly events retrieved successfully", events);
-                sendJsonResponse(response, apiResponse);
-            } catch (NumberFormatException e) {
-                System.out.println("ERROR: Invalid year or month parameters: year=" + yearParam + ", month=" + monthParam);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid year or month parameters");
-            }
-        } else if (parts.length == 2) {
-            try {
-                // Get specific event
-                int id = Integer.parseInt(parts[1]);
-                System.out.println("Retrieving calendar event with ID: " + id);
-                AcademicCalendar event = calendarService.getEventById(id);
-
-                if (event != null) {
-                    System.out.println("Calendar event found, ID: " + id + ", Title: " + event.getEventTitle());
-                    ApiResponse<AcademicCalendar> apiResponse = new ApiResponse<>(true, "Event retrieved successfully", event);
-                    sendJsonResponse(response, apiResponse);
-                } else {
-                    System.out.println("Calendar event not found with ID: " + id);
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Calendar event not found");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("ERROR: Invalid event ID format: " + parts[1]);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid event ID");
-            }
         } else {
-            System.out.println("ERROR: Invalid calendar request with parts: " + String.join("/", parts));
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid calendar request");
+            System.out.println("ERROR: Invalid student POST request with parts: " + String.join("/", parts));
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid student request");
         }
     }
 
-    private void handleCalendarPost(HttpServletRequest request, HttpServletResponse response,
-                                    String[] parts) throws Exception {
-        if (parts.length != 1) {
-            System.out.println("ERROR: Invalid calendar event create request with parts: " + String.join("/", parts));
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid calendar event create request");
-            return;
-        }
-
-        String requestBody = readRequestBody(request);
-        System.out.println("Creating calendar event, request body: " + requestBody);
-        AcademicCalendar event = JsonUtils.parseCalendarEvent(requestBody);
-        calendarService.addEvent(event);
-        System.out.println("Calendar event added successfully, Title: " + event.getEventTitle());
-
-        ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                "Calendar event added successfully", null);
-        sendJsonResponse(response, apiResponse);
-    }
-
-    private void handleCalendarPut(HttpServletRequest request, HttpServletResponse response,
-                                   String[] parts) throws Exception {
+    private void handleStudentPut(HttpServletRequest request, HttpServletResponse response,
+                                  String[] parts) throws Exception {
         if (parts.length != 2) {
-            System.out.println("ERROR: Invalid calendar event update request with parts: " + String.join("/", parts));
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid calendar event update request");
+            System.out.println("ERROR: Invalid student update request with parts: " + String.join("/", parts));
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid student update request");
             return;
         }
 
         try {
-            int id = Integer.parseInt(parts[1]);
-            String requestBody = readRequestBody(request);
-            System.out.println("Updating calendar event with ID: " + id + ", request body: " + requestBody);
-            AcademicCalendar event = JsonUtils.parseCalendarEvent(requestBody);
+            int indexNumber = Integer.parseInt(parts[1]);
+            String requestBody = JsonUtils.readRequestBody(request);
+            System.out.println("Updating student with index number: " + indexNumber + ", request body: " + requestBody);
+            Student student = JsonUtils.parseStudent(requestBody);
 
-            calendarService.updateEvent(id, event);
-            System.out.println("Calendar event updated successfully, ID: " + id + ", Title: " + event.getEventTitle());
-
-            ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                    "Calendar event updated successfully", null);
-            sendJsonResponse(response, apiResponse);
-        } catch (NumberFormatException e) {
-            System.out.println("ERROR: Invalid event ID format for update: " + parts[1]);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid event ID");
-        }
-    }
-
-    private void handleCalendarDelete(HttpServletRequest request, HttpServletResponse response,
-                                      String[] parts) throws Exception {
-        if (parts.length != 2) {
-            System.out.println("ERROR: Invalid calendar event delete request with parts: " + String.join("/", parts));
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid calendar event delete request");
-            return;
-        }
-
-        try {
-            int id = Integer.parseInt(parts[1]);
-            System.out.println("Deleting calendar event with ID: " + id);
-            calendarService.deleteEvent(id);
-            System.out.println("Calendar event deleted successfully, ID: " + id);
+            enrollmentService.updateStudent(indexNumber, student);
+            System.out.println("Student updated successfully, Index: " + indexNumber + ", Name: " + student.getName());
 
             ApiResponse<Void> apiResponse = new ApiResponse<>(true,
-                    "Calendar event deleted successfully", null);
+                    "Student updated successfully", null);
             sendJsonResponse(response, apiResponse);
         } catch (NumberFormatException e) {
-            System.out.println("ERROR: Invalid event ID format for deletion: " + parts[1]);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid event ID");
+            System.out.println("ERROR: Invalid student index number format for update: " + parts[1]);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid student index number");
         }
     }
 
     // Helper methods
-    private String readRequestBody(HttpServletRequest request) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader reader = request.getReader()) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-        }
-        return sb.toString();
-    }
-
     private void sendJsonResponse(HttpServletResponse response, ApiResponse<?> apiResponse)
             throws IOException {
         response.setContentType("application/json");
@@ -979,7 +862,6 @@ public class AdminServlet extends HttpServlet {
         sendJsonResponse(response, apiResponse);
     }
 
-    // Logging helper method
     private void logRequestInfo(HttpServletRequest request, String method) {
         System.out.println("\n========== REQUEST START ==========");
         System.out.println(method + " Request: " + request.getRequestURL() +
@@ -994,12 +876,6 @@ public class AdminServlet extends HttpServlet {
             System.out.println("  " + key + ": " + String.join(", ", values));
         });
 
-        System.out.println("Request Headers:");
-        java.util.Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            System.out.println("  " + headerName + ": " + request.getHeader(headerName));
-        }
         System.out.println("===================================");
     }
 }

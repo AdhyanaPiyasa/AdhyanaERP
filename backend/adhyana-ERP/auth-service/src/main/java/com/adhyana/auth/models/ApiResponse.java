@@ -15,7 +15,7 @@ public class ApiResponse<T> {
         StringBuilder json = new StringBuilder();
         json.append("{");
         json.append("\"success\":").append(success).append(",");
-        json.append("\"message\":\"").append(message).append("\"");
+        json.append("\"message\":\"").append(escapeJson(message)).append("\"");
 
         if (data != null) {
             json.append(",\"data\":");
@@ -25,7 +25,13 @@ public class ApiResponse<T> {
                         .append("\",\"role\":\"").append(tr.getRole()).append("\"}");
             } else if (data instanceof User) {
                 User user = (User) data;
-                json.append("{\"role\":\"").append(user.getRole()).append("\"}");
+                json.append("{\"role\":\"").append(user.getRole()).append("\"");
+                if (user.getUserId() != null) {
+                    json.append(",\"userId\":\"").append(user.getUserId()).append("\"");
+                }
+                json.append("}");
+            } else if (data instanceof String) {
+                json.append("\"").append(escapeJson((String) data)).append("\"");
             } else {
                 json.append("null");
             }
@@ -35,5 +41,13 @@ public class ApiResponse<T> {
 
         json.append("}");
         return json.toString();
+    }
+
+    private String escapeJson(String text) {
+        if (text == null) return "";
+        return text.replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 }

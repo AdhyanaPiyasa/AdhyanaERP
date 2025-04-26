@@ -59,6 +59,8 @@ CREATE TABLE IF NOT EXISTS students (
                                         name VARCHAR(100) NOT NULL,
                                         email VARCHAR(100) NOT NULL UNIQUE,
                                         batch_id VARCHAR(10) NULL, -- Can be null initially, assigned later
+                                        gender ENUM('Male', 'Female', 'Other') NOT NULL, -- Use ENUM
+                                        hostel_required BOOLEAN DEFAULT FALSE, -- Use BOOLEAN
                                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                         FOREIGN KEY (batch_id) REFERENCES batches(batch_id) ON DELETE SET NULL ON UPDATE CASCADE -- Student remains if batch deleted

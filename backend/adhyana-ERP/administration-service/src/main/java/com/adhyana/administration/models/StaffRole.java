@@ -2,8 +2,11 @@ package com.adhyana.administration.models;
 
 import java.util.Date;
 
+/**
+ * Represents a role assigned to a staff member.
+ */
 public class StaffRole {
-    private int id;
+    private int roleId; // Changed from 'id' to 'roleId' for consistency
     private int staffId;
     private String role;
     private Date assignedDate;
@@ -14,9 +17,9 @@ public class StaffRole {
     public StaffRole() {}
 
     // Constructor with all fields
-    public StaffRole(int id, int staffId, String role, Date assignedDate,
+    public StaffRole(int roleId, int staffId, String role, Date assignedDate,
                      Date createdAt, Date updatedAt) {
-        this.id = id;
+        this.roleId = roleId;
         this.staffId = staffId;
         this.role = role;
         this.assignedDate = assignedDate;
@@ -25,8 +28,8 @@ public class StaffRole {
     }
 
     // Getters and setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getRoleId() { return roleId; }
+    public void setRoleId(int roleId) { this.roleId = roleId; }
 
     public int getStaffId() { return staffId; }
     public void setStaffId(int staffId) { this.staffId = staffId; }
