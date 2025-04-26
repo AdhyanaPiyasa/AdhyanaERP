@@ -4,12 +4,12 @@ const AppState = {
     isLoading: false,
     error: null,
     notifications: [],
-    isAuthenticated: false,
-    token: localStorage.getItem('token') || null,
-    userRole: localStorage.getItem('userRole') || null
-    // isAuthenticated: true,
-    // token: 'dev-token',
-    // userRole: 'administrator'
+    // isAuthenticated: false,
+    // token: localStorage.getItem('token') || null,
+    // userRole: localStorage.getItem('userRole') || null
+    isAuthenticated: true,
+    token: 'dev-token',
+    userRole: 'admin'
 };
 const initializeApp = async () => {
     try {
@@ -50,8 +50,11 @@ const initializeApp = async () => {
     }
 };
 const checkAuthStatus = async () => {
-    const token = localStorage.getItem('token');
-    const userRole = localStorage.getItem('userRole');
+    // const token = localStorage.getItem('token');
+    // const userRole = localStorage.getItem('userRole');
+
+    const token = 'dev-token';
+    const userRole = 'admin';
 
     // const token = 'dev-token';
     // const userRole = 'administrator';

@@ -1,18 +1,69 @@
 // components/Admin/exams/EditExam.js
 const EditExam = ({ exam, onClose }) => {
     const [formData, setFormData] = MiniReact.useState({
-        course: exam.course,
-        courseCode: exam.courseCode,
-        date: exam.date,
-        startTime: exam.startTime,
-        endTime: exam.endTime,
-        room: exam.room,
-        teacher: exam.teacher
+        title: exam.title || '',
+        semester_id: exam.semester_id || '',
+        exam_date: exam.exam_date || '',
+        start_time: exam.start_time || '',
+        end_time: exam.end_time || '',
+        location: exam.location || '',
+        type: exam.type || 'FINAL'
     });
+    
+    const [isSubmitting, setIsSubmitting] = MiniReact.useState(false);
+    const [error, setError] = MiniReact.useState(null);
 
-    const handleSubmit = () => {
-        console.log('Form submitted:', formData);
-        onClose();
+    const handleSubmit = async () => {
+        try {
+            setIsSubmitting(true);
+            setError(null);
+            
+            // Validate form data
+            if (!formData.title || !formData.semester_id || !formData.exam_date || 
+                !formData.start_time || !formData.end_time || !formData.location || 
+                !formData.type) {
+                setError("All fields are required");
+                setIsSubmitting(false);
+                return;
+            }
+            
+            // Format date and time for SQL compatibility if needed
+            // Create the exam object to match backend expectations
+            const examData = {
+                title: formData.title,
+                semester_id: formData.semester_id,
+                exam_date: formData.exam_date, // browser date input format (YYYY-MM-DD) is SQL compatible
+                start_time: formData.start_time, // browser time input format (HH:MM) is SQL compatible with proper settings
+                end_time: formData.end_time,
+                location: formData.location,
+                type: formData.type,
+                exam_id: exam.exam_id // Include ID in the body as well for reference
+            };
+            
+            // Send data to backend API
+            const response = await fetch(`/api/exams/${exam.exam_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(examData)
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update exam');
+            }
+            
+            console.log('Exam updated successfully');
+            onClose();
+            
+        } catch (err) {
+            console.error('Error updating exam:', err);
+            setError(err.message || 'An error occurred while updating the exam');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return {
@@ -26,81 +77,106 @@ const EditExam = ({ exam, onClose }) => {
                     type: 'form',
                     props: {
                         children: [
-                            {
-                                type: TextField,
+                            // Display error message if exists
+                            error && {
+                                type: 'div',
                                 props: {
-                                    label: 'Course',
-                                    value: formData.course,
-                                    onChange: (e) => setFormData({...formData, course: e.target.value})
+                                    style: {
+                                        color: theme.colors.error,
+                                        padding: theme.spacing.sm,
+                                        marginBottom: theme.spacing.md,
+                                        backgroundColor: `${theme.colors.error}15`,
+                                        borderRadius: theme.borderRadius.sm
+                                    },
+                                    children: [error]
                                 }
                             },
                             {
                                 type: TextField,
                                 props: {
-                                    label: 'Course Code',
-                                    value: formData.courseCode,
-                                    onChange: (e) => setFormData({...formData, courseCode: e.target.value})
+                                    label: 'Title',
+                                    placeholder: 'Midterm exam',
+                                    value: formData.title,
+                                    onChange: (e) => setFormData({...formData, title: e.target.value})
                                 }
                             },
                             {
                                 type: TextField,
                                 props: {
-                                    label: 'Date',
-                                    value: formData.date,
-                                    onChange: (e) => setFormData({...formData, date: e.target.value})
+                                    label: 'Semester ID',
+                                    value: formData.semester_id,
+                                    placeholder: 'e.g., FALL2024',
+                                    onChange: (e) => setFormData({...formData, semester_id: e.target.value})
                                 }
                             },
                             {
                                 type: TextField,
                                 props: {
-                                    label: 'Start time',
-                                    value: formData.startTime,
-                                    onChange: (e) => setFormData({...formData, startTime: e.target.value})
+                                    label: 'Exam Date',
+                                    value: formData.exam_date,
+                                    type: 'date',
+                                    onChange: (e) => setFormData({...formData, exam_date: e.target.value})
                                 }
                             },
                             {
                                 type: TextField,
                                 props: {
-                                    label: 'End time',
-                                    value: formData.endTime,
-                                    onChange: (e) => setFormData({...formData, endTime: e.target.value})
+                                    label: 'Start Time',
+                                    placeholder: 'HH:MM:SS',
+                                    value: formData.start_time,
+                                    type: 'time',
+                                    onChange: (e) => setFormData({...formData, start_time: e.target.value})
+                                }
+                            },
+                            {
+                                type: TextField,
+                                props: {
+                                    label: 'End Time',
+                                    placeholder: 'HH:MM:SS',
+                                    value: formData.end_time,
+                                    type: 'time',
+                                    onChange: (e) => setFormData({...formData, end_time: e.target.value})
+                                }
+                            },
+                            {
+                                type: TextField,
+                                props: {
+                                    label: 'Location',
+                                    value: formData.location,
+                                    placeholder: 'e.g., Room 101',
+                                    onChange: (e) => setFormData({...formData, location: e.target.value})
                                 }
                             },
                             {
                                 type: Select,
                                 props: {
-                                    label: 'Room',
-                                    value: formData.room,
-                                    onChange: (e) => setFormData({...formData, room: e.target.value}),
+                                    label: 'Exam Type',
+                                    value: formData.type,
+                                    onChange: (e) => setFormData({...formData, type: e.target.value}),
                                     options: [
-                                        { value: '', label: 'Select room' },
-                                        { value: 'room1', label: 'Room 1' },
-                                        { value: 'room2', label: 'Room 2' }
+                                        { value: 'FINAL', label: 'Final Exam' },
+                                        { value: 'MIDTERM', label: 'Midterm Exam' },
+                                        { value: 'QUIZ', label: 'Quiz' },
+                                        { value: 'OTHER', label: 'Other' }
                                     ]
                                 }
                             },
                             {
-                                type: TextField,
-                                props: {
-                                    label: 'Teacher',
-                                    value: formData.teacher,
-                                    onChange: (e) => setFormData({...formData, teacher: e.target.value})
-                                }
-                            },
-                            {
                                 type: 'div',
-                                props:  {
+                                props: {
                                     style: {
                                         display: 'flex',
-                                        gap: theme.spacing.sm
+                                        justifyContent: 'flex-end',
+                                        gap: theme.spacing.md,
+                                        marginTop: theme.spacing.xl
                                     },
-                                    
                                     children: [
                                         {
                                             type: Button,
                                             props: {
                                                 variant: 'secondary',
                                                 onClick: onClose,
+                                                disabled: isSubmitting,
                                                 children: 'Cancel'
                                             }
                                         },
@@ -108,13 +184,15 @@ const EditExam = ({ exam, onClose }) => {
                                             type: Button,
                                             props: {
                                                 onClick: handleSubmit,
-                                                children: 'Save changes'
+                                                loading: isSubmitting,
+                                                disabled: isSubmitting,
+                                                children: isSubmitting ? 'Saving...' : 'Save changes'
                                             }
                                         }
                                     ]
                                 }
                             }
-                        ]
+                        ].filter(Boolean)
                     }
                 }
             ]

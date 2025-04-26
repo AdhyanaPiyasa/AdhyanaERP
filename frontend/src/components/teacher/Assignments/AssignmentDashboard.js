@@ -158,11 +158,11 @@ const AssignmentDashboard = () => {
     // };
 
 
-    const quickLinks = [
-        { title: 'Create Assignment', link: 'teacher/Assignments/Create' },
-        { title: 'Past Assignments', link: 'teacher/exams/Assignments/Past' },
-        { title: 'View Student Submissions', link: 'teacher/Assignments/Submissions' }
-    ];
+    // const quickLinks = [
+    //     { title: 'Create Assignment', link: 'teacher/Assignments/Create' },
+    //     { title: 'Past Assignments', link: 'teacher/exams/Assignments/Past' },
+    //     { title: 'View Student Submissions', link: 'teacher/Assignments/Submissions' }
+    // ];
 
     return {
         type: 'div',
