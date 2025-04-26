@@ -147,18 +147,18 @@ public class EnrollmentService {
                     throw new Exception("Failed to create user profile for student: " + student.getName());
                 }
 
-                // Create guardian user profile
-                if (student.getGuardianName() != null && student.getGuardianEmail() != null) {
-                    boolean guardianProfileCreated = userProfileService.createGuardianUserProfile(
-                            student.getGuardianName(),
-                            student.getGuardianEmail(),
-                            student.getIndexNumber());
-
-                    if (!guardianProfileCreated) {
-                        System.err.println("Warning: Failed to create guardian user profile for student: " + student.getName());
-                        // Continue with enrollment even if guardian profile creation fails
-                    }
-                }
+//                // Create guardian user profile
+//                if (student.getGuardianName() != null && student.getGuardianEmail() != null) {
+//                    boolean guardianProfileCreated = userProfileService.createGuardianUserProfile(
+//                            student.getGuardianName(),
+//                            student.getGuardianEmail(),
+//                            student.getIndexNumber());
+//
+//                    if (!guardianProfileCreated) {
+//                        System.err.println("Warning: Failed to create guardian user profile for student: " + student.getName());
+//                        // Continue with enrollment even if guardian profile creation fails
+//                    }
+//                }
             } catch (Exception e) {
                 // Log the error and consider whether to roll back the student enrollment
                 System.err.println("Error creating user profile: " + e.getMessage());
