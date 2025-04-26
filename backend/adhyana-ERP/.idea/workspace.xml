@@ -14,6 +14,7 @@
       <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/AdminServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/AdminServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/PayrollService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/PayrollService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/staff/Payroll.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/staff/Payroll.js" afterDir="false" />
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,9 +70,10 @@
     "Tomcat Server.Exam Service.executor": "Run",
     "Tomcat Server.Faculty Service.executor": "Run",
     "Tomcat Server.Student Service.executor": "Run",
-    "git-widget-placeholder": "administration-service",
+    "git-widget-placeholder": "Course-Service",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP/ddbms-service/src/main/resources/ddbms_schema.sql",
+    "last_opened_file_path": "C:/Users/User/OneDrive/Desktop/kruthi/year 2/group_project/Dev2",
+
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",

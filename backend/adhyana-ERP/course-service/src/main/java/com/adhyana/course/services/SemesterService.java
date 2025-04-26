@@ -1,4 +1,3 @@
-// semester-service/src/main/java/com/adhyana/semester/services/SemesterService.java
 package com.adhyana.course.services;
 
 import com.adhyana.course.models.Semester;
@@ -14,14 +13,13 @@ public class SemesterService {
     private static final Map<String, String> FIELD_MAPPINGS = new HashMap<>();
 
     static {
-        FIELD_MAPPINGS.put("id", "id");
-        FIELD_MAPPINGS.put("batchId", "batchId");
-        FIELD_MAPPINGS.put("courseId", "courseId");
-        FIELD_MAPPINGS.put("teacherId", "teacherId");
-        FIELD_MAPPINGS.put("year", "year");
-        FIELD_MAPPINGS.put("semester", "semester");
-        FIELD_MAPPINGS.put("startedAt", "started_at");
-        FIELD_MAPPINGS.put("endedAt", "ended_at");
+        FIELD_MAPPINGS.put("semesterId", "semester_id");
+        FIELD_MAPPINGS.put("batchId", "batch_id");
+        FIELD_MAPPINGS.put("academicYear", "academic_year");
+        FIELD_MAPPINGS.put("semesterNum", "semester_num");
+        FIELD_MAPPINGS.put("startDate", "start_date");
+        FIELD_MAPPINGS.put("endDate", "end_date");
+        FIELD_MAPPINGS.put("status", "status");
     }
 
     // Get all semesters
@@ -41,14 +39,14 @@ public class SemesterService {
     }
 
     // Get semesters by batch ID
-    public List<Semester> getSemestersByBatchId(int batchId) throws Exception {
+    public List<Semester> getSemestersByBatchId(String batchId) throws Exception {
         List<Semester> semesters = new ArrayList<>();
-        String query = "SELECT * FROM semesters WHERE batchId = ?";
+        String query = "SELECT * FROM semesters WHERE batch_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, batchId);
+            stmt.setString(1, batchId);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -61,11 +59,11 @@ public class SemesterService {
     // Generic search method that can handle any field
     public List<Semester> searchSemestersByField(String fieldName, String fieldValue) throws Exception {
         // Validate that the field name is valid
-        if (!FIELD_MAPPINGS.containsKey(fieldName.toLowerCase())) {
+        if (!FIELD_MAPPINGS.containsKey(fieldName)) {
             throw new IllegalArgumentException("Invalid field name: " + fieldName);
         }
 
-        String columnName = FIELD_MAPPINGS.get(fieldName.toLowerCase());
+        String columnName = FIELD_MAPPINGS.get(fieldName);
         List<Semester> semesters = new ArrayList<>();
 
         // Build different queries based on field type
@@ -92,12 +90,17 @@ public class SemesterService {
 
         // Handle special cases based on column type
         switch (columnName) {
-            case "id":
-            case "batchId":
-            case "courseId":
-            case "teacherId":
-            case "year":
-            case "semester":
+            case "semester_id":
+            case "batch_id":
+            case "status":
+                // String fields - exact match
+                query = "SELECT * FROM semesters WHERE " + columnName + " = ?";
+                stmt = conn.prepareStatement(query);
+                stmt.setString(1, fieldValue);
+                break;
+
+            case "academic_year":
+            case "semester_num":
                 // Numeric fields - exact match
                 query = "SELECT * FROM semesters WHERE " + columnName + " = ?";
                 stmt = conn.prepareStatement(query);
@@ -112,12 +115,20 @@ public class SemesterService {
                 }
                 break;
 
-            case "started_at":
-            case "ended_at":
-                // Text field for dates - use LIKE for partial matches
-                query = "SELECT * FROM semesters WHERE " + columnName + " LIKE ?";
+            case "start_date":
+            case "end_date":
+                // Date fields
+                query = "SELECT * FROM semesters WHERE " + columnName + " = ?";
                 stmt = conn.prepareStatement(query);
-                stmt.setString(1, "%" + fieldValue + "%");
+
+                try {
+                    // Try to parse as date (assuming ISO format)
+                    Date dateValue = Date.valueOf(fieldValue);
+                    stmt.setDate(1, dateValue);
+                } catch (IllegalArgumentException e) {
+                    // Handle invalid date format
+                    throw new SQLException("Invalid date format for " + columnName + ": " + fieldValue);
+                }
                 break;
 
             default:
@@ -129,103 +140,65 @@ public class SemesterService {
 
     // Helper method to extract a Semester object from ResultSet
     private Semester extractSemesterFromResultSet(ResultSet rs) throws SQLException {
-        // Format month and year for started_at and ended_at
-        Date startedDate = rs.getDate("started_at");
-        Date endedDate = rs.getDate("ended_at");
-
-        String startedAt = formatMonthYear(startedDate);
-        String endedAt = formatMonthYear(endedDate);
-
         return new Semester(
-                rs.getInt("id"),
-                rs.getInt("batchId"),
-                rs.getInt("courseId"),
-                rs.getInt("teacherId"),
-                rs.getInt("year"),
-                rs.getInt("semester"),
-                startedAt,
-                endedAt,
+                rs.getString("semester_id"),
+                rs.getString("batch_id"),
+                rs.getInt("academic_year"),
+                rs.getInt("semester_num"),
+                rs.getDate("start_date"),
+                rs.getDate("end_date"),
+                rs.getString("status"),
                 rs.getDate("created_at"),
                 rs.getDate("updated_at")
         );
     }
 
-    // Helper method to format date as Month Year
-    private String formatMonthYear(Date date) {
-        if (date == null) return null;
-
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        cal.setTime(date);
-
-        String[] months = {
-                "January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
-        };
-
-        int month = cal.get(java.util.Calendar.MONTH);
-        int year = cal.get(java.util.Calendar.YEAR);
-
-        return months[month] + " " + year;
-    }
-
     // Get a semester by ID
-    public Semester getSemesterById(int id) throws Exception {
-        List<Semester> semesters = searchSemestersByField("id", String.valueOf(id));
+    public Semester getSemesterById(String semesterId) throws Exception {
+        List<Semester> semesters = searchSemestersByField("semesterId", semesterId);
         return semesters.isEmpty() ? null : semesters.get(0);
     }
 
     // Create a new semester
     public Semester createSemester(Semester semester) throws Exception {
-        String query = "INSERT INTO semesters (batchId, courseId, teacherId, year, semester, started_at, ended_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO semesters (semester_id, batch_id, academic_year, semester_num, " +
+                "start_date, end_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, semester.getBatchId());
-            stmt.setInt(2, semester.getCourseId());
-            stmt.setInt(3, semester.getTeacherId());
-            stmt.setInt(4, semester.getYear());
-            stmt.setInt(5, semester.getSemester());
-
-            // Parse the month and year strings to Date objects
-            stmt.setDate(6, parseMonthYearToDate(semester.getStartedAt()));
-            stmt.setDate(7, parseMonthYearToDate(semester.getEndedAt()));
+            stmt.setString(1, semester.getSemesterId());
+            stmt.setString(2, semester.getBatchId());
+            stmt.setInt(3, semester.getAcademicYear());
+            stmt.setInt(4, semester.getSemesterNum());
+            stmt.setDate(5, semester.getStartDate());
+            stmt.setDate(6, semester.getEndDate());
+            stmt.setString(7, semester.getStatus());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
                 throw new SQLException("Creating semester failed, no rows affected.");
             }
 
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    semester.setId(generatedKeys.getInt(1));
-                    return getSemesterById(semester.getId());
-                } else {
-                    throw new SQLException("Creating semester failed, no ID obtained.");
-                }
-            }
+            return getSemesterById(semester.getSemesterId());
         }
     }
 
     // Update an existing semester
     public boolean updateSemester(Semester semester) throws Exception {
-        String query = "UPDATE semesters SET batchId = ?, courseId = ?, teacherId = ?, " +
-                "year = ?, semester = ?, started_at = ?, ended_at = ? WHERE id = ?";
+        String query = "UPDATE semesters SET batch_id = ?, academic_year = ?, semester_num = ?, " +
+                "start_date = ?, end_date = ?, status = ? WHERE semester_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, semester.getBatchId());
-            stmt.setInt(2, semester.getCourseId());
-            stmt.setInt(3, semester.getTeacherId());
-            stmt.setInt(4, semester.getYear());
-            stmt.setInt(5, semester.getSemester());
-
-            // Parse the month and year strings to Date objects
-            stmt.setDate(6, parseMonthYearToDate(semester.getStartedAt()));
-            stmt.setDate(7, parseMonthYearToDate(semester.getEndedAt()));
-            stmt.setInt(8, semester.getId());
+            stmt.setString(1, semester.getBatchId());
+            stmt.setInt(2, semester.getAcademicYear());
+            stmt.setInt(3, semester.getSemesterNum());
+            stmt.setDate(4, semester.getStartDate());
+            stmt.setDate(5, semester.getEndDate());
+            stmt.setString(6, semester.getStatus());
+            stmt.setString(7, semester.getSemesterId());
 
             int affectedRows = stmt.executeUpdate();
             return affectedRows > 0;
@@ -233,61 +206,15 @@ public class SemesterService {
     }
 
     // Delete a semester
-    public boolean deleteSemester(int id) throws Exception {
-        String query = "DELETE FROM semesters WHERE id = ?";
+    public boolean deleteSemester(String semesterId) throws Exception {
+        String query = "DELETE FROM semesters WHERE semester_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, id);
+            stmt.setString(1, semesterId);
             int affectedRows = stmt.executeUpdate();
             return affectedRows > 0;
-        }
-    }
-
-    // Helper method to parse Month Year string to SQL Date
-    private java.sql.Date parseMonthYearToDate(String monthYear) throws SQLException {
-        if (monthYear == null || monthYear.trim().isEmpty()) {
-            return null;
-        }
-
-        try {
-            String[] parts = monthYear.split(" ");
-            if (parts.length != 2) {
-                throw new SQLException("Invalid month year format: " + monthYear + ". Expected format: 'Month Year'");
-            }
-
-            String month = parts[0].trim();
-            int year = Integer.parseInt(parts[1].trim());
-
-            java.util.Calendar cal = java.util.Calendar.getInstance();
-            cal.clear();
-
-            // Map month name to month number (0-based in Calendar)
-            String[] months = {
-                    "January", "February", "March", "April", "May", "June",
-                    "July", "August", "September", "October", "November", "December"
-            };
-
-            int monthIndex = -1;
-            for (int i = 0; i < months.length; i++) {
-                if (months[i].equalsIgnoreCase(month)) {
-                    monthIndex = i;
-                    break;
-                }
-            }
-
-            if (monthIndex == -1) {
-                throw new SQLException("Invalid month name: " + month);
-            }
-
-            cal.set(year, monthIndex, 1); // Day is set to 1
-
-            return new java.sql.Date(cal.getTimeInMillis());
-        } catch (NumberFormatException e) {
-            throw new SQLException("Invalid year format in: " + monthYear, e);
-        } catch (Exception e) {
-            throw new SQLException("Error parsing month year: " + monthYear, e);
         }
     }
 }
