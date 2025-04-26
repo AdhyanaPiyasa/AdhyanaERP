@@ -37,7 +37,7 @@ public class EnrollmentService {
      */
     public List<Student> getAllStudents() throws Exception {
         List<Student> students = new ArrayList<>();
-        String query = "SELECT * FROM students ORDER BY index_number";
+        String query = "SELECT * FROM students ORDER BY student_index";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -56,7 +56,7 @@ public class EnrollmentService {
      * @return Student object or null if not found
      */
     public Student getStudentByIndex(int indexNumber) throws Exception {
-        String query = "SELECT * FROM students WHERE index_number = ?";
+        String query = "SELECT * FROM students WHERE student_index = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -78,7 +78,7 @@ public class EnrollmentService {
      */
     public List<Student> getStudentsByBatch(String batchId) throws Exception {
         List<Student> students = new ArrayList<>();
-        String query = "SELECT * FROM students WHERE batch_id = ? ORDER BY index_number";
+        String query = "SELECT * FROM students WHERE batch_id = ? ORDER BY student_index";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -121,7 +121,7 @@ public class EnrollmentService {
             student.setRegistrationNumber(generateRegistrationNumber(student));
         }
 
-        String query = "INSERT INTO students (index_number, registration_number, name, email, batch_id, gender, hostel_required) " +
+        String query = "INSERT INTO students (student_index, registration_number, name, email, batch_id, gender, hostel_required) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -145,6 +145,19 @@ public class EnrollmentService {
                 boolean profileCreated = userProfileService.createStudentUserProfile(student);
                 if (!profileCreated) {
                     throw new Exception("Failed to create user profile for student: " + student.getName());
+                }
+
+                // Create guardian user profile
+                if (student.getGuardianName() != null && student.getGuardianEmail() != null) {
+                    boolean guardianProfileCreated = userProfileService.createGuardianUserProfile(
+                            student.getGuardianName(),
+                            student.getGuardianEmail(),
+                            student.getIndexNumber());
+
+                    if (!guardianProfileCreated) {
+                        System.err.println("Warning: Failed to create guardian user profile for student: " + student.getName());
+                        // Continue with enrollment even if guardian profile creation fails
+                    }
                 }
             } catch (Exception e) {
                 // Log the error and consider whether to roll back the student enrollment
@@ -211,7 +224,7 @@ public class EnrollmentService {
         }
 
         String query = "UPDATE students SET name = ?, email = ?, batch_id = ?, gender = ?, " +
-                "hostel_required = ? WHERE index_number = ?";
+                "hostel_required = ? WHERE student_index = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -254,7 +267,7 @@ public class EnrollmentService {
             throw new Exception("Batch not found with id: " + batchId);
         }
 
-        String query = "UPDATE students SET batch_id = ? WHERE index_number = ?";
+        String query = "UPDATE students SET batch_id = ? WHERE student_index = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -279,7 +292,7 @@ public class EnrollmentService {
         // Query to get accepted applications that haven't been enrolled yet
         String query = "SELECT sa.* FROM student_applications sa " +
                 "LEFT JOIN students s ON sa.email = s.email " +
-                "WHERE sa.status = 'Accepted' AND s.index_number IS NULL";
+                "WHERE sa.status = 'Accepted' AND s.student_index IS NULL";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -442,7 +455,7 @@ public class EnrollmentService {
      * @return Next available index number
      */
     private int getNextAvailableIndexNumber() throws Exception {
-        String query = "SELECT MAX(index_number) FROM students";
+        String query = "SELECT MAX(student_index) FROM students";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -463,7 +476,7 @@ public class EnrollmentService {
      */
     private Student mapResultSetToStudent(ResultSet rs) throws SQLException {
         Student student = new Student();
-        student.setIndexNumber(rs.getInt("index_number"));
+        student.setIndexNumber(rs.getInt("student_index"));
         student.setRegistrationNumber(rs.getString("registration_number"));
         student.setName(rs.getString("name"));
         student.setEmail(rs.getString("email"));
