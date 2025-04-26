@@ -29,6 +29,26 @@ public class PayrollService {
     }
 
     /**
+     * Get all payroll records
+     * @return List of all payroll records
+     */
+    public List<Payroll> getAllPayroll() throws Exception {
+        List<Payroll> allPayroll = new ArrayList<>();
+        String query = "SELECT * FROM payroll ORDER BY salary_month DESC";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                allPayroll.add(mapResultSetToPayroll(rs));
+            }
+        }
+        return allPayroll;
+    }
+
+    /**
      * Get payroll history for a staff member
      * @param staffId Staff ID
      * @return List of payroll records

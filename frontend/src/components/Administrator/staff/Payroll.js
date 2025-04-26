@@ -265,10 +265,15 @@ const Payroll = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            let url = 'http://localhost:8081/api/payroll';
+            // Base URL
+            let url = 'http://localhost:8081/api/api/admin/payroll';
             
-            if (currentStaff) {
-                url = `http://localhost:8081/api/api/admin/payroll/staff/${currentStaff}`;
+            // If a staff is selected, use the correct endpoint with query parameter
+            if (currentStaff && currentStaff !== '') {
+                console.log(`Fetching payroll for staff ID: ${currentStaff}`);
+                url = `http://localhost:8081/api/api/admin/payroll/staff?id=${currentStaff}`;
+            } else {
+                console.log('Fetching all payroll data');
             }
             
             const response = await fetch(url, {
@@ -286,6 +291,7 @@ const Payroll = () => {
             const data = await response.json();
             if (data.success) {
                 setPayrollData(data.data || []);
+                console.log(`Retrieved ${data.data ? data.data.length : 0} payroll records`);
             } else {
                 setError(data.message || "Failed to fetch payroll data");
             }
@@ -308,7 +314,7 @@ const Payroll = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8081/api/api/admin/payroll/process', {
+            const response = await fetch('http://localhost:8081/api/api/admin/payroll', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -316,7 +322,7 @@ const Payroll = () => {
                 },
                 body: JSON.stringify({
                     staffId: staffId,
-                    month: month
+                    salaryMonth: month
                 })
             });
             
@@ -345,14 +351,14 @@ const Payroll = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8081/api/api/admin/payroll/process-bulk', {
+            const response = await fetch('http://localhost:8081/api/api/admin/payroll/bulk', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    month: month
+                    salaryMonth: month
                 })
             });
             
@@ -381,15 +387,15 @@ const Payroll = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8081/api/api/admin/payroll/mark-paid', {
-                method: 'POST',
+            const response = await fetch('http://localhost:8081/api/api/admin/payroll/pay', {
+                method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     payrollIds: Array.isArray(payrollIds) ? payrollIds : [payrollIds],
-                    paymentDate: new Date().toISOString()
+                    paymentDate: new Date().toISOString().split('T')[0] // Format date as YYYY-MM-DD
                 })
             });
             
@@ -482,11 +488,12 @@ const Payroll = () => {
     
     // Handle staff selection change
     const handleStaffChange = (e) => {
-        setCurrentStaff(e.target.value);
+        const staffId = e.target.value;
+        setCurrentStaff(staffId);
         // Fetch payroll data for selected staff
-        if (e.target.value) {
+        setTimeout(() => {
             fetchPayrollData();
-        }
+        }, 0);
     };
     
     // Format currency values

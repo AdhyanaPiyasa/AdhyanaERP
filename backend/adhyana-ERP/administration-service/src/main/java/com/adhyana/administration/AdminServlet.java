@@ -417,7 +417,16 @@ public class AdminServlet extends HttpServlet {
     // Payroll handlers
     private void handlePayrollGet(HttpServletRequest request, HttpServletResponse response,
                                   String[] parts) throws Exception {
-        if (parts.length == 2 && "staff".equals(parts[1])) {
+        if (parts.length == 1) {
+            // Get all payroll records
+            System.out.println("Retrieving all payroll records");
+            List<Payroll> allPayroll = payrollService.getAllPayroll();
+            System.out.println("Retrieved " + allPayroll.size() + " payroll records");
+
+            ApiResponse<List<Payroll>> apiResponse = new ApiResponse<>(true, "All payroll records retrieved successfully", allPayroll);
+            sendJsonResponse(response, apiResponse);
+            return;
+        } else if (parts.length == 2 && "staff".equals(parts[1])) {
             // Get payroll history for staff by staff ID
             String staffIdParam = request.getParameter("id");
             if (staffIdParam == null) {
