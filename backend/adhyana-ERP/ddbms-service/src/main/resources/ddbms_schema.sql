@@ -3,8 +3,8 @@
 -- Purpose: Combined schema for distributed DBMS
 -- =============================================
 
-CREATE DATABASE IF NOT EXISTS adhyana_grand;
-USE adhyana_grand;
+CREATE DATABASE IF NOT EXISTS adhyana_ddbms;
+USE adhyana_ddbms;
 
 -- ================ CENTRAL/ADMIN TABLES ================
 
