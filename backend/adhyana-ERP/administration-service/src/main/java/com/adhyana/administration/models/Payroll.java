@@ -3,16 +3,21 @@ package com.adhyana.administration.models;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * Represents a payroll record for a staff member.
+ * Updated based on the schema changes.
+ */
 public class Payroll {
-    private int id;
+    private int payrollId; // Changed from 'id' to 'payrollId' based on schema
     private int staffId;
     private Date salaryMonth;
     private BigDecimal basicSalary;
     private BigDecimal allowances;
     private BigDecimal deductions;
-    private BigDecimal netSalary;
-    private String paymentStatus;
+    private BigDecimal netSalary; // Now calculated by database (GENERATED ALWAYS AS)
+    private String paymentStatus; // ENUM: 'PENDING', 'PROCESSED', 'PAID', 'FAILED'
     private Date paymentDate;
+    private String notes; // Added based on schema updates
     private Date createdAt;
     private Date updatedAt;
 
@@ -20,10 +25,11 @@ public class Payroll {
     public Payroll() {}
 
     // Constructor with all fields
-    public Payroll(int id, int staffId, Date salaryMonth, BigDecimal basicSalary,
+    public Payroll(int payrollId, int staffId, Date salaryMonth, BigDecimal basicSalary,
                    BigDecimal allowances, BigDecimal deductions, BigDecimal netSalary,
-                   String paymentStatus, Date paymentDate, Date createdAt, Date updatedAt) {
-        this.id = id;
+                   String paymentStatus, Date paymentDate, String notes,
+                   Date createdAt, Date updatedAt) {
+        this.payrollId = payrollId;
         this.staffId = staffId;
         this.salaryMonth = salaryMonth;
         this.basicSalary = basicSalary;
@@ -32,13 +38,14 @@ public class Payroll {
         this.netSalary = netSalary;
         this.paymentStatus = paymentStatus;
         this.paymentDate = paymentDate;
+        this.notes = notes;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
     // Getters and setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getPayrollId() { return payrollId; }
+    public void setPayrollId(int payrollId) { this.payrollId = payrollId; }
 
     public int getStaffId() { return staffId; }
     public void setStaffId(int staffId) { this.staffId = staffId; }
@@ -64,9 +71,32 @@ public class Payroll {
     public Date getPaymentDate() { return paymentDate; }
     public void setPaymentDate(Date paymentDate) { this.paymentDate = paymentDate; }
 
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 
     public Date getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+
+    /**
+     * Calculate net salary (in case it's not provided by database)
+     * @return The calculated net salary
+     */
+    public BigDecimal calculateNetSalary() {
+        if (basicSalary == null) return BigDecimal.ZERO;
+
+        BigDecimal baseAmount = basicSalary;
+
+        if (allowances != null) {
+            baseAmount = baseAmount.add(allowances);
+        }
+
+        if (deductions != null) {
+            baseAmount = baseAmount.subtract(deductions);
+        }
+
+        return baseAmount;
+    }
 }

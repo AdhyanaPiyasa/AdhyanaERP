@@ -152,7 +152,7 @@ public class APIGateway extends HttpServlet {
                 "STUDENT=" + STUDENT_SERVICE + ", " +
                 "COURSE=" + COURSE_SERVICE + ", " +
                 "EXAM=" + EXAM_SERVICE + ", " +
-                "FACULTY=" + FACULTY_SERVICE);
+                "DDBMS=" + DDBMS_SERVICE);
         super.init();
     }
 

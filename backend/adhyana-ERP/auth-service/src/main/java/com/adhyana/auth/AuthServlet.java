@@ -33,6 +33,9 @@ public class AuthServlet extends HttpServlet {
         } else if ("/logout".equals(path)) {
             System.out.println("AUTH SERVICE: Handling logout request");
             handleLogout(request, response);
+        } else if ("/profiles".equals(path)) {
+            System.out.println("AUTH SERVICE: Handling user profile creation request");
+            handleProfileCreation(request, response);
         } else {
             System.out.println("AUTH SERVICE: ERROR - Invalid path: " + path);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -110,6 +113,78 @@ public class AuthServlet extends HttpServlet {
             }
         } catch (Exception e) {
             System.out.println("AUTH SERVICE: ERROR - Exception during login process: " + e.getMessage());
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            ApiResponse<Void> apiResponse = new ApiResponse<>(false, "Error: " + e.getMessage(), null);
+            response.getWriter().write(apiResponse.toJson());
+        }
+    }
+
+    /**
+     * Handle user profile creation requests from other services
+     */
+    private void handleProfileCreation(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            // Read JSON body
+            StringBuilder buffer = new StringBuilder();
+            BufferedReader reader = request.getReader();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line);
+            }
+
+            String json = buffer.toString();
+            System.out.println("AUTH SERVICE: Received profile creation request JSON: " + json);
+
+            // Parse JSON using a simplified approach (no external libraries)
+            json = json.replaceAll("\\s", "").replace("{", "").replace("}", "");
+            String userId = null;
+            String username = null;
+            String password = null;
+            String role = null;
+
+            String[] pairs = json.split(",");
+            for (String pair : pairs) {
+                String[] keyValue = pair.split(":");
+                if (keyValue.length == 2) {
+                    String key = keyValue[0].replace("\"", "");
+                    String value = keyValue[1].replace("\"", "");
+
+                    if ("userId".equals(key)) {
+                        userId = value;
+                    } else if ("username".equals(key)) {
+                        username = value;
+                    } else if ("password".equals(key)) {
+                        password = value;
+                    } else if ("role".equals(key)) {
+                        role = value;
+                    }
+                }
+            }
+
+            // Validate required fields
+            if (username == null || password == null || role == null) {
+                System.out.println("AUTH SERVICE: ERROR - Missing required fields");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                ApiResponse<Void> apiResponse = new ApiResponse<>(false, "Missing required fields", null);
+                response.getWriter().write(apiResponse.toJson());
+                return;
+            }
+
+            // Create user profile
+            System.out.println("AUTH SERVICE: Creating user profile for username: " + username + ", role: " + role + ", userId: " + userId);
+            User user = new User(username, password, role, userId);
+            user = authService.createUserProfile(user);
+
+            // Send success response
+            response.setContentType("application/json");
+            ApiResponse<User> apiResponse = new ApiResponse<>(true, "User profile created successfully", user);
+            response.getWriter().write(apiResponse.toJson());
+            System.out.println("AUTH SERVICE: User profile created successfully with ID: " + user.getId());
+
+        } catch (Exception e) {
+            System.out.println("AUTH SERVICE: ERROR - Exception during profile creation: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             ApiResponse<Void> apiResponse = new ApiResponse<>(false, "Error: " + e.getMessage(), null);

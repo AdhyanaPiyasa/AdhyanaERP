@@ -2,16 +2,19 @@ package com.adhyana.administration.models;
 
 import java.util.Date;
 
+/**
+ * Represents a staff member in the Core Administration Service.
+ * Based on the updated schema, staff_id field is used instead of id.
+ */
 public class Staff {
-    private int id;
-    private String firstName;
-    private String lastName;
+    private int staffId; // Changed from 'id' to 'staffId' based on schema changes
+    private String name; // Changed from firstName/lastName to name based on schema
     private String email;
     private String phone;
     private String department;
     private String position;
     private Date hireDate;
-    private String status;
+    private String status; // ACTIVE or INACTIVE
     private Date createdAt;
     private Date updatedAt;
 
@@ -19,12 +22,11 @@ public class Staff {
     public Staff() {}
 
     // Constructor with all fields
-    public Staff(int id, String firstName, String lastName, String email, String phone,
+    public Staff(int staffId, String name, String email, String phone,
                  String department, String position, Date hireDate, String status,
                  Date createdAt, Date updatedAt) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.staffId = staffId;
+        this.name = name;
         this.email = email;
         this.phone = phone;
         this.department = department;
@@ -36,14 +38,11 @@ public class Staff {
     }
 
     // Getters and setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getStaffId() { return staffId; }
+    public void setStaffId(int staffId) { this.staffId = staffId; }
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
