@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS courses (
 
 -- Shared Table: Students (Reference Only)
 CREATE TABLE IF NOT EXISTS students (
-                                        index_number INT PRIMARY KEY,
+                                        student_index INT PRIMARY KEY,
                                         registration_number VARCHAR(20) NOT NULL UNIQUE,
                                         name VARCHAR(100) NOT NULL,
                                         email VARCHAR(100) NOT NULL UNIQUE,
@@ -122,10 +122,10 @@ INSERT INTO courses (course_id, name, year, credits, duration) VALUES
                                                                    ('ENG1001', 'Calculus I', 1, 3, 45)
 ON DUPLICATE KEY UPDATE course_id=course_id;
 
-INSERT INTO students (index_number, registration_number, name, email, batch_id) VALUES
+INSERT INTO students (student_index, registration_number, name, email, batch_id) VALUES
                                                                                     (20240001, '2024CS001','Janith Perera' ,'janith.p@student.adhyana.lk', 'CS24F'),
                                                                                     (20240002, '2024CS002','Aisha Khan' ,'aisha.k@student.adhyana.lk', 'CS24F')
-ON DUPLICATE KEY UPDATE index_number=index_number;
+ON DUPLICATE KEY UPDATE student_index=student_index;
 
 INSERT INTO semesters (semester_id, batch_id, course_id, academic_year, semester_num, status) VALUES
                                                                                                   ('CS24F-CS1101-S1', 'CS24F', 'CS1101', 2024, 1, 'COMPLETED'),

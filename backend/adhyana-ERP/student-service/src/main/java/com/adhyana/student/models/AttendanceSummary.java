@@ -1,8 +1,7 @@
-// student-service/src/main/java/com/adhyana/student/models/AttendanceSummary.java
 package com.adhyana.student.models;
 
 public class AttendanceSummary {
-    private int studentId;
+    private int studentIndex;
     private String studentName;
     private String courseCode;
     private String courseName;
@@ -11,9 +10,10 @@ public class AttendanceSummary {
     private int absentCount;
     private double attendancePercentage;
 
-    public AttendanceSummary(int studentId, String studentName, String courseCode, String courseName,
-                             int totalSessions, int presentCount) {
-        this.studentId = studentId;
+    // Constructor
+    public AttendanceSummary(int studentIndex, String studentName, String courseCode,
+                             String courseName, int totalSessions, int presentCount) {
+        this.studentIndex = studentIndex;
         this.studentName = studentName;
         this.courseCode = courseCode;
         this.courseName = courseName;
@@ -23,6 +23,7 @@ public class AttendanceSummary {
         this.calculateAttendancePercentage();
     }
 
+    // Calculate attendance percentage
     private void calculateAttendancePercentage() {
         if (totalSessions > 0) {
             this.attendancePercentage = ((double) presentCount / totalSessions) * 100.0;
@@ -32,8 +33,8 @@ public class AttendanceSummary {
     }
 
     // Getters and setters
-    public int getStudentId() { return studentId; }
-    public void setStudentId(int studentId) { this.studentId = studentId; }
+    public int getStudentIndex() { return studentIndex; }
+    public void setStudentIndex(int studentIndex) { this.studentIndex = studentIndex; }
 
     public String getStudentName() { return studentName; }
     public void setStudentName(String studentName) { this.studentName = studentName; }
