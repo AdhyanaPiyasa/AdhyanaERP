@@ -503,7 +503,6 @@ const CourseContentArea = ({ state, setState }) => {
       if (data.success) {
         // Transform API data to match the format expected by the UI components
         const formattedCourses = data.data.map((course) => ({
-          id: course.courseId,
           code: course.courseId,
           name: course.name,
           year: course.year,
@@ -520,7 +519,7 @@ const CourseContentArea = ({ state, setState }) => {
         // If a course was previously selected, update its data
         if (selectedCourse) {
           const updatedSelectedCourse = formattedCourses.find(
-            (c) => c.id === selectedCourse.id || c.code === selectedCourse.code
+            (c) => c.code === selectedCourse.code
           );
 
           if (updatedSelectedCourse) {
@@ -534,36 +533,36 @@ const CourseContentArea = ({ state, setState }) => {
       console.error("Error fetching courses:", error);
       setError(error.message || "Failed to fetch courses");
 
-      // Fallback to sample data for development/testing
-      const sampleCourses = [
-        {
-          id: "CS101",
-          code: "CS101",
-          name: "Introduction to Programming",
-          year: 1,
-          semester: 1,
-          credits: 3,
-          duration: 45,
-          rating: 4,
-          created_at: "2025-01-15 14:30:22",
-          updated_at: "2025-02-10 09:45:17",
-        },
-        {
-          id: "CS201",
-          code: "CS201",
-          name: "Data Structures",
-          year: 2,
-          semester: 1,
-          credits: 4,
-          duration: 60,
-          rating: 5,
-          created_at: "2025-01-20 10:15:43",
-          updated_at: "2025-03-05 11:20:35",
-        },
-      ];
+      // // Fallback to sample data for development/testing
+      // const sampleCourses = [
+      //   {
+      //     id: "CS101",
+      //     code: "CS101",
+      //     name: "Introduction to Programming",
+      //     year: 1,
+      //     semester: 1,
+      //     credits: 3,
+      //     duration: 45,
+      //     rating: 4,
+      //     created_at: "2025-01-15 14:30:22",
+      //     updated_at: "2025-02-10 09:45:17",
+      //   },
+      //   {
+      //     id: "CS201",
+      //     code: "CS201",
+      //     name: "Data Structures",
+      //     year: 2,
+      //     semester: 1,
+      //     credits: 4,
+      //     duration: 60,
+      //     rating: 5,
+      //     created_at: "2025-01-20 10:15:43",
+      //     updated_at: "2025-03-05 11:20:35",
+      //   },
+      // ];
 
-      setCourses(sampleCourses);
-      console.log("Using sample data due to fetch error");
+      // setCourses(sampleCourses);
+      // console.log("Using sample data due to fetch error");
     } finally {
       setLoading(false);
     }
