@@ -194,7 +194,7 @@ const ViewApplication = ({ application, onClose }) => {
                             fontWeight: 'bold',
                             color: theme.colors.textPrimary
                         },
-                        children: [`Application Review: ${application.id || 'New Application'}`]
+                        children: [`Application Review: ${application.student_application_id || 'New Application'}`]
                     }
                 },
                 
@@ -229,7 +229,7 @@ const ViewApplication = ({ application, onClose }) => {
                                     children: [
                                         // Personal Information
                                         renderInfoSection('Personal Information', [
-                                            ['Applicant ID', application.id],
+                                            ['Applicant ID', application.student_application_id],
                                             ['Name', application.name],
                                             ['National ID', application.nationalId],
                                             ['Email', application.email],

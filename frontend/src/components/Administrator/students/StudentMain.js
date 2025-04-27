@@ -1,41 +1,18 @@
 // components/Administrator/students/StudentMain.js
 const StudentMain = () => {
-    // Statistics data for applicants and enrolled students
-    const applicantStats = {
-        totalApplications: 45,
-        approvedApplications: 20,
-        rejectedApplications: 30
-    };
-
-    const enrollmentStats = {
-        totalDegreePrograms: 10,
-        totalBatches: 5,
-        totalStudents: 1000
-    };
-
     // Cards data
     const cardItems = [
         {
             id: 'applicants',
             title: 'New Applicants',
             path: 'students/applicants',
-            icon: '👨‍🎓',
-            stats: [
-                { label: 'Total Applications', value: applicantStats.totalApplications },
-                { label: 'Approved Applications', value: applicantStats.approvedApplications },
-                { label: 'Rejected Applications', value: applicantStats.rejectedApplications }
-            ]
+            icon: '👨‍🎓'
         },
         {
             id: 'studentDegree',
             title: 'Enrolled students',
             path: 'students/StudentDegree',
-            icon: '🎓',
-            stats: [
-                { label: 'Total Degree Programs', value: enrollmentStats.totalDegreePrograms },
-                { label: 'Total Batches', value: enrollmentStats.totalBatches },
-                { label: 'Total Students', value: enrollmentStats.totalStudents }
-            ]
+            icon: '🎓'
         }
     ];
 
@@ -44,13 +21,17 @@ const StudentMain = () => {
         type: Card,
         props: {
             variant: 'elevated',
-            onClick: () =>{
+            onClick: () => {
                 if (navigation.getCurrentRoute() !== item.path) {
                     navigation.navigate(item.path);
                 }
             },
             style: {
                 margin: theme.spacing.md,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: theme.spacing.lg
             },
             children: [
                 // Card header with title
@@ -59,90 +40,52 @@ const StudentMain = () => {
                     props: {
                         variant: 'ghost',
                         noPadding: true,
+                        style: {
+                            width: '100%'
+                        },
                         children: [
                             {
-                                type: 'div',
+                                type: 'h2',
                                 props: {
                                     style: {
-                                        display: 'flex',
-                                        alignItems: 'center',
+                                        textAlign: 'center',
+                                        borderBottom: '2px solid #eee',
+                                        paddingBottom: theme.spacing.sm,
+                                        width: '100%'
                                     },
-                                    children: [
-                                        // Icon
-                                        {
-                                            type: 'div',
-                                            props: {
-                                                style: {
-                                                    fontSize: '48px',
-                                                },
-                                                children: [item.icon]
-                                            }
-                                        },
-                                        // Title
-                                        {
-                                            type: 'h2',
-                                            props: {
-                                                style: {
-                                                    textAlign: 'center',
-                                                    borderBottom: '2px solid #eee',
-                                                    paddingBottom: theme.spacing.sm,
-                                                    width: '100%'
-                                                },
-                                                children: [item.title]
-                                            }
-                                        }
-                                    ]
+                                    children: [item.title]
                                 }
                             }
                         ]
                     }
                 },
                 
-                // Stats items
-                ...item.stats.map(stat => ({
-                    type: Card,
+                // Large centered icon
+                {
+                    type: 'div',
                     props: {
-                        variant: 'ghost',
                         style: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.02)'
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            padding: theme.spacing.xl,
+                            height: '250px',
+                            width: '100%'
                         },
                         children: [
                             {
                                 type: 'div',
                                 props: {
                                     style: {
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
+                                        fontSize: '100px',
+                                        textAlign: 'center'
                                     },
-                                    children: [
-                                        // Label
-                                        {
-                                            type: 'span',
-                                            props: {
-                                                style: {
-                                                    fontWeight: 'bold',
-                                                    color: theme.colors.textSecondary
-                                                },
-                                                children: [`${stat.label} :`]
-                                            }
-                                        },
-                                        // Value
-                                        {
-                                            type: 'span',
-                                            props: {
-                                                style: {
-                                                    fontSize: '18px',
-                                                    fontWeight: 'bold'
-                                                },
-                                                children: [stat.value]
-                                            }
-                                        }
-                                    ]
+                                    children: [item.icon]
                                 }
                             }
                         ]
                     }
-                }))
+                }
             ]
         }
     }));
