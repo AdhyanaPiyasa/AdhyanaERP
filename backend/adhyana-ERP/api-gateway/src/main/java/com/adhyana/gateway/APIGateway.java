@@ -21,6 +21,10 @@ public class APIGateway extends HttpServlet {
     private static final String EXAM_SERVICE = "http://localhost:8085";
     private static final String ADMINISTRATION_SERVICE = "http://localhost:8086";
     private static final String DDBMS_SERVICE = "http://localhost:8087";
+    private static final String HOSTEL_SERVICE = "http://localhost:8088";
+    private static final String SCHOLARSHIP_SERVICE = "http://localhost:8089";
+    private static final String CALENDAR_SERVICE = "http://localhost:8090";
+    private static final String ANNOUNCEMENT_SERVICE = "http://localhost:8091";
 
     // Create a logger for this class
     private static final Logger LOGGER = Logger.getLogger(APIGateway.class.getName());
@@ -66,6 +70,18 @@ public class APIGateway extends HttpServlet {
         } else if (path.startsWith("/api/ddbms")) {
             targetUrl = DDBMS_SERVICE + "/api" + path.substring(4);
             LOGGER.info("Routing to DDBMS Service: " + targetUrl);
+        } else if (path.startsWith("/api/hostel")) {
+            targetUrl = HOSTEL_SERVICE + "/api" + path.substring(4);
+            LOGGER.info("Routing to Hostel Service: " + targetUrl);
+        } else if (path.startsWith("/api/scholarship")) {
+            targetUrl = SCHOLARSHIP_SERVICE + "/api" + path.substring(4);
+            LOGGER.info("Routing to Scholarship Service: " + targetUrl);
+        } else if (path.startsWith("/api/calendar")) {
+            targetUrl = CALENDAR_SERVICE + "/api" + path.substring(4);
+            LOGGER.info("Routing to Calendar Service: " + targetUrl);
+        } else if (path.startsWith("/api/attendance")) {
+            targetUrl = ANNOUNCEMENT_SERVICE + "/api" + path.substring(4);
+            LOGGER.info("Routing to Announcement Service: " + targetUrl);
         } else {
             LOGGER.warning(String.format("Invalid service path requested: %s from %s", path, ipAddress));
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid service path");
@@ -152,7 +168,11 @@ public class APIGateway extends HttpServlet {
                 "STUDENT=" + STUDENT_SERVICE + ", " +
                 "COURSE=" + COURSE_SERVICE + ", " +
                 "EXAM=" + EXAM_SERVICE + ", " +
-                "DDBMS=" + DDBMS_SERVICE);
+                "DDBMS=" + DDBMS_SERVICE + ", " +
+                "HOSTEL=" + HOSTEL_SERVICE + ", " +
+                "SCHOLARSHIP=" + SCHOLARSHIP_SERVICE + ", " +
+                "CALENDAR=" + CALENDAR_SERVICE + ", " +
+                "ANNOUNCEMENT=" + ANNOUNCEMENT_SERVICE);
         super.init();
     }
 
