@@ -235,38 +235,72 @@ navigate(path, params = {}) {
 
     init() {
         const userRole = localStorage.getItem('userRole');
+        const hash = window.location.hash.slice(1); // Get initial hash
         
-        if (!userRole) {
-            // Change from redirecting to login.html
-            this.currentRoute = 'login';
-            MiniReact.rerender();
-            return;
+        if (hash === this.routes.APPLICATION_FORM) { // Check if it's the public apply route
+            this.currentRoute = hash;
+            this.currentRole = null; // No role needed for public route
+        } else {
+            // Not the public apply route, check for user role
+            if (!userRole) {
+                // No role, redirect to login
+                this.currentRoute = 'login';
+            } else {
+                // Role exists, set it internally first
+                this.currentRole = userRole; // Set the role
+
+                // Now check if the requested hash (if any) is accessible by this role
+                if (hash && this.canAccess(hash)) {
+                    this.currentRoute = hash;
+                } else {
+                    // No hash, or hash not accessible for this role
+                    // Default to dashboard, with a fallback to login if dashboard isn't accessible
+                    this.currentRoute = this.routes.DASHBOARD; // Default to dashboard
+                    if (!this.canAccess(this.currentRoute)) {
+                        console.warn(`Role ${userRole} cannot access default dashboard, redirecting to login.`);
+                        this.currentRoute = 'login'; // Fallback to login
+                    }
+                    // Log if a specific inaccessible hash was initially requested
+                    if (hash && !this.canAccess(hash)) {
+                        console.warn(`Role ${userRole} cannot access requested route '${hash}', redirecting to '${this.currentRoute}'.`);
+                    }
+                }
+            }
         }
- 
-        this.setRole(userRole);
- 
+        console.log(`Navigation Init: Initial route determined as: ${this.currentRoute}, Role: ${this.currentRole}`);
+
+        // --- End Corrected Logic ---
+
+
+        // 2. Add the popstate listener (handles browser back/forward)
         window.addEventListener('popstate', (event) => {
-            if (event.state?.route && this.canAccess(event.state.route)) {
-                this.currentRoute = event.state.route;
-                this.params = event.state.params || {};
-                MiniReact.rerender();
+            const targetRoute = event.state?.route || '';
+            const targetParams = event.state?.params || {};
+            console.log(`Popstate event: Navigating to ${targetRoute}`);
+
+            // Get the current role from storage *at the time of the event*
+            const currentRoleOnPop = localStorage.getItem('userRole');
+            this.currentRole = currentRoleOnPop; // Update internal role state
+
+            if (targetRoute === this.routes.APPLICATION_FORM) {
+                // Always allow navigating to the public 'apply' route
+                this.currentRoute = targetRoute;
+                this.params = targetParams;
+                this.currentRole = null; // Ensure role is null for public route
+                console.log(`Popstate: Allowed public route ${targetRoute}`);
+            } else if (currentRoleOnPop && this.canAccess(targetRoute)) {
+                // Role exists and can access the target protected route
+                this.currentRoute = targetRoute;
+                this.params = targetParams;
+                console.log(`Popstate: Allowed protected route ${targetRoute} for role ${currentRoleOnPop}`);
             } else {
-                // Change from redirecting to login.html
+                // No role OR cannot access the target route
+                console.warn(`Popstate: Cannot access ${targetRoute} (Role: ${currentRoleOnPop}), redirecting to login.`);
                 this.currentRoute = 'login';
-                MiniReact.rerender();
+                this.params = {};
             }
+            MiniReact.rerender(); // Re-render the UI based on the new route/state
         });
- 
-        const hash = window.location.hash.slice(1);
-        if (hash) {
-            if (!this.canAccess(hash)) {
-                // Change from redirecting to login.html
-                this.currentRoute = 'login';
-                MiniReact.rerender();
-            } else {
-                this.currentRoute = hash;
-            }
-        }
     }
  };
 

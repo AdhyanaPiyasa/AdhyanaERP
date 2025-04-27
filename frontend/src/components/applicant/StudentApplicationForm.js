@@ -7,7 +7,7 @@ const StudentApplicationForm = ({ onClose, onSuccess, isStandalone = false }) =>
 
     // State for application submission success
     const [isSubmitted, setIsSubmitted] = MiniReact.useState(false);
-    const [applicantId, setApplicationId] = MiniReact.useState('');
+    const [applicationId, setApplicationId] = MiniReact.useState('');
 
     // Initial state with empty values
     const [formData, setFormData] = MiniReact.useState({
