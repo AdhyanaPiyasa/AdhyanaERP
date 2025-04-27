@@ -70,7 +70,7 @@ const HostelInfo = () => {
         setError(null);
     };
 
-    // --- Styles (keep existing, including centering) ---
+    // --- Styles 
     const styles = {
         container: {
             padding: theme.spacing.lg,
@@ -125,10 +125,36 @@ const HostelInfo = () => {
          }
     };
 
-    // --- Render Functions (keep existing) ---
-    const renderFacilityRow = (label, value) => ({ /* ... */ });
-    const renderInfoRow = (label, value) => ({ /* ... */ });
-    const renderBlockCard = (block) => ({ /* ... */ });
+    // --- Render Functions ---
+    const renderFacilityRow = (label, value) => ({ /* ... existing renderFacilityRow ... */
+        type: 'div', props: { style: styles.infoRow, children: [ { type: 'span', props: { children: [label] } }, { type: 'span', props: { style: styles.infoValue, children: [value ? 'Yes' : 'No'] } } ] }
+   });
+
+   const renderInfoRow = (label, value) => ({ /* ... existing renderInfoRow ... */
+       type: 'div', props: { style: styles.infoRow, children: [ { type: 'span', props: { style: styles.infoLabel, children: [`${label} :`] } }, { type: 'span', props: { style: styles.infoValue, children: [value] } } ] }
+   });
+
+   const renderBlockCard = (block) => ({
+       type: Card,
+       props: {
+           key: block.hostelId, // Use unique key
+           variant: 'outlined',
+           children: [
+               { type: 'div', props: { style: styles.blockName, children: [block.name] } },
+               renderInfoRow('ID', block.hostelId), // Display ID
+               renderInfoRow('Capacity', block.capacity), // Use capacity
+               renderInfoRow('Occupancy', block.occupancy), // Use occupancy
+               renderInfoRow('Vacancy', block.capacity - block.occupancy), // Calculate vacancy
+               renderInfoRow('Gender', block.gender), // Use gender
+               renderInfoRow('Assistant', block.assistantName || 'N/A'), // Use assistantName
+               { type: 'div', props: { style: styles.facilitiesTitle, children: ['Facilities'] } },
+               renderFacilityRow('WiFi', block.wifi), // Use wifi
+               renderFacilityRow('Kitchen', block.kitchen), // Use kitchen
+               renderFacilityRow('Laundry', block.laundry), // Use laundry
+               renderFacilityRow('Study Area', block.studyArea), // Use studyArea
+           ]
+       }
+   });
 
     // --- Main Return ---
     return {

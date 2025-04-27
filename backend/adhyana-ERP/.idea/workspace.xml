@@ -10,23 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/models/CourseEnrollment.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/models/EnrolledStudent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/AttendanceServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/AttendanceServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/StudentCoreServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/StudentCoreServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/models/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/models/ApiResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/models/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/models/Student.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/services/AttendanceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/services/AttendanceService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/services/StudentApplicationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/services/StudentApplicationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/services/StudentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/services/StudentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/students/StudentDegree.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/students/StudentDegree.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/students/StudentMain.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/students/StudentMain.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/applicant/StudentApplicationForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/applicant/StudentApplicationForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/reviewer/applications/AcceptApplication.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/reviewer/applications/AcceptApplication.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/reviewer/applications/ApplicationList.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/reviewer/applications/ApplicationList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/reviewer/applications/RejectApplication.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/reviewer/applications/RejectApplication.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/reviewer/applications/ViewApplication.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/reviewer/applications/ViewApplication.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
