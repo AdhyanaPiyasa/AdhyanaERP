@@ -6,12 +6,4 @@
 
     <display-name>Hostel Service</display-name>
 
-    <servlet>
-        <servlet-name>HostelServlet</servlet-name>
-        <servlet-class>com.adhyana.hostel.HostelServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>HostelServlet</servlet-name>
-        <url-pattern>/api/hostel/*</url-pattern> </servlet-mapping>
-
 </web-app>
