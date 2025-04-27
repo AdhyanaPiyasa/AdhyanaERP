@@ -75,11 +75,11 @@ const Login = () => {
     };
 
     const handleInputChange = (field) => (e) => {
-        setFormState({
-            ...formState,
+        setFormState(prevState => ({
+            ...prevState,
             [field]: e.target.value,
-            error: '' // Clear error when user types
-        });
+            error: '' 
+        }));
     };
 
     const handleSubmit = async (e) => {
@@ -90,51 +90,53 @@ const Login = () => {
 
         // Basic validation
         if (!username || !password) {
-            setFormState({
-                ...formState,
+            setFormState(prevState => ({
+                ...prevState,
                 error: 'Please enter both username and password'
-            });
+            }));
             return;
         }
 
         try {
-            setFormState({
-                ...formState,
+            setFormState(prevState => ({
+                ...prevState,
                 isLoading: true,
                 error: ''
-            });
+            }));
 
-            const response = await fetch('http://localhost:8081/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password })
-            });
+            const responseData = await authService.login(username, password);
 
-            const data = await response.json();
+            if (typeof AppState !== 'undefined' && AppState.isAuthenticated) {
+                console.log('Login component: AppState updated with user:', AppState.userId, AppState.userRole);
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Login failed');
+                // Set navigation role before rerender 
+                if (typeof navigation !== 'undefined') {
+                    navigation.setRole(AppState.userRole); 
+                } else {
+                    console.warn("Navigation object not found.");
+                }
+
+                // Trigger rerender 
+                if (typeof MiniReact !== 'undefined') {
+                     MiniReact.rerender(); 
+                } else {
+                     console.warn("MiniReact object not found.");
+                }
+
+            } else {
+                 console.error("Login component: Login succeeded but AppState not updated or auth failed.");
+                 // Use the message from the response if available
+                 const errorMessage = responseData?.message || 'Login failed unexpectedly after API call.';
+                 setFormState(prevState => ({
+                    ...prevState,
+                    error: errorMessage,
+                    isLoading: false
+                }));
             }
 
-            if (data.success && data.data) {
-                localStorage.setItem('token', data.data.token);
-                localStorage.setItem('userRole', data.data.role);
-                
-                Object.assign(AppState, {
-                    isAuthenticated: true,
-                    token: data.data.token,
-                    userRole: data.data.role
-                });
-
-                // Set navigation role before rerender
-                navigation.setRole(data.data.role);
-                
-                MiniReact.rerender();
-            }
         } catch (err) {
-            console.error('Login error:', err);
+            console.error('Login component error:', err);
+            // Display the error message
             setFormState(prevState => ({
                 ...prevState,
                 error: err.message || 'An error occurred during login',

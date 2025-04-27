@@ -5,6 +5,7 @@ target/
 
 ### IntelliJ IDEA ###
 .idea/dataSources/
+.idea/workspace.xml
 .idea/sqldialects.xml
 .idea/uiDesigner.xml
 .idea/encodings.xml
