@@ -8,14 +8,19 @@ const AdminHostelInfo = () => {
     // --- API Helper ---
     const apiFetch = async (url, options = {}) => {
         try {
+            // Get the stored auth token
+            const token = localStorage.getItem('token');
+            
             const response = await fetch(url, {
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     ...options.headers,
                 },
                 ...options,
             });
+            
             if (!response.ok) {
                 // Try to parse error response from backend
                 let errorData;
@@ -27,10 +32,12 @@ const AdminHostelInfo = () => {
                 }
                 throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
             }
+            
             // Handle cases where response might be empty (e.g., DELETE 204)
             if (response.status === 204) {
-                 return null; // Or return a specific indicator if needed
+                return null; // Or return a specific indicator if needed
             }
+            
             const data = await response.json();
             if (!data.success) {
                 throw new Error(data.message || 'API request failed');
@@ -49,7 +56,7 @@ const AdminHostelInfo = () => {
             setLoading(true);
             setError(null);
             try {
-                const data = await apiFetch('/api/hostel/hostels');
+                const data = await apiFetch('http://localhost:8081/api/api/hostel/hostels');
                 setHostelBlocks(data || []); // Use fetched data
             } catch (err) {
                 // Error state is set within apiFetch
@@ -74,7 +81,7 @@ const AdminHostelInfo = () => {
         setLoading(true); // Indicate loading state
         setError(null);
         try {
-            const savedHostel = await apiFetch(`/api/hostel/hostels/${hostelId}`, {
+            const savedHostel = await apiFetch(`http://localhost:8081/api/api/hostel/hostels/${hostelId}`, {
                 method: 'PUT',
                 body: JSON.stringify(updatedData),
             });
@@ -104,7 +111,7 @@ const AdminHostelInfo = () => {
         setLoading(true);
         setError(null);
         try {
-            await apiFetch(`/api/hostel/hostels/${hostelId}`, {
+            await apiFetch(`http://localhost:8081/api/api/hostel/hostels/${hostelId}`, {
                 method: 'DELETE',
             });
             // Remove the hostel from the list
