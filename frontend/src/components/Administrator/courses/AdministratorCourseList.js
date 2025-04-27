@@ -15,24 +15,22 @@ const AdministratorCourseList = () => {
   });
 
   const handleTabChange = (tab) => {
-    if (tab !== activeTab) {
-      setActiveTab(tab);
+    setActiveTab(tab);
 
-      if (tab === "courses") {
-        setCurrentSemesterState({
-          ...currentSemesterState,
-          showAddModal: false,
-          showEditModal: false,
-          showDeleteModal: false,
-        });
-      } else if (tab === "semesters") {
-        setCurrentCourseState({
-          ...currentCourseState,
-          showAddModal: false,
-          showEditModal: false,
-          showDeleteModal: false,
-        });
-      }
+    if (tab === "courses") {
+      setCurrentSemesterState({
+        ...currentSemesterState,
+        showAddModal: false,
+        showEditModal: false,
+        showDeleteModal: false,
+      });
+    } else if (tab === "semesters") {
+      setCurrentCourseState({
+        ...currentCourseState,
+        showAddModal: false,
+        showEditModal: false,
+        showDeleteModal: false,
+      });
     }
   };
 
