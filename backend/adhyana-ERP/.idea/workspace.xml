@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="auth-service:war exploded" />
+      <artifact name="hostel-service:war exploded" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -11,11 +11,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/AuthServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/AuthServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/ApiResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/TokenResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/TokenResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/services/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/services/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/service/authService.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/service/authService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/UserProfileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/UserProfileService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +113,7 @@
       <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
-  <component name="RunManager" selected="Tomcat Server.Auth Service">
+  <component name="RunManager" selected="Tomcat Server.DDBMS">
     <configuration name="auth_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" />
       <script-mode>FILE</script-mode>
@@ -690,9 +686,9 @@
       <option name="BROWSER_ID" value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
-        <artifact name="ddmbs-service:war exploded">
+        <artifact name="ddbms-service:war exploded">
           <settings>
-            <option name="CONTEXT_PATH" value="" />
+            <option name="CONTEXT_PATH" value="/ddbms_service_war_exploded" />
           </settings>
         </artifact>
       </deployment>
@@ -772,7 +768,7 @@
       <method v="2">
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
-          <artifact name="ddmbs-service:war exploded" />
+          <artifact name="ddbms-service:war exploded" />
         </option>
       </method>
     </configuration>
