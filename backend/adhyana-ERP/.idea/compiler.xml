@@ -13,7 +13,9 @@
         <module name="administration-service" />
         <module name="api-gateway" />
         <module name="student-service" />
+        <module name="calendar-service" />
         <module name="ddbms-service" />
+        <module name="scholarship-service" />
         <module name="hostel-service" />
         <module name="exam-service" />
       </profile>
