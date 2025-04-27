@@ -17,6 +17,7 @@
         <module>exam-service</module>
         <module>administration-service</module>
         <module>ddbms-service</module>
+        <module>hostel-service</module>
     </modules>
 
     <properties>

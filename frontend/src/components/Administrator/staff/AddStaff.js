@@ -1,5 +1,5 @@
 // components/Admin/other/Staff/AddStaff.js
-const AddStaff = ({ onClose }) => {
+const AddStaff = ({ onClose, onSuccess }) => {
     const [formData, setFormData] = MiniReact.useState({
         name: '',
         position: '',
@@ -11,6 +11,13 @@ const AddStaff = ({ onClose }) => {
 
     const [imagePreview, setImagePreview] = MiniReact.useState(null);
     const [imageError, setImageError] = MiniReact.useState('');
+    const [loading, setLoading] = MiniReact.useState(false);
+    const [error, setError] = MiniReact.useState(null);
+
+    // Helper function for page refresh
+    const refreshPage = () => {
+        window.location.reload();
+    };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -39,15 +46,62 @@ const AddStaff = ({ onClose }) => {
         }
     };
 
-    const handleSubmit = () => {
-        // Create FormData for file upload
-        const submitData = new FormData();
-        Object.keys(formData).forEach(key => {
-            submitData.append(key, formData[key]);
-        });
+    const handleSubmit = async () => {
+        // Validate form data
+        if (!formData.name || !formData.position || !formData.department || !formData.email) {
+            setError("Please fill in all required fields");
+            return;
+        }
 
-        console.log('Form submitted:', formData);
-        onClose();
+        setLoading(true);
+        setError(null);
+
+        try {
+            // Create FormData for file upload
+            const submitData = new FormData();
+            Object.keys(formData).forEach(key => {
+                if (formData[key] !== null) {
+                    submitData.append(key, formData[key]);
+                }
+            });
+
+            console.log('Submitting staff data:', formData);
+
+            // Send POST request to the API endpoint
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:8081/api/api/admin/staff/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                    // Note: Don't set Content-Type header when sending FormData
+                },
+                body: submitData
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Close modal first
+                if (onSuccess) {
+                    onSuccess(data.data);
+                } else {
+                    onClose();
+                }
+                // Refresh the page after closing modal
+                setTimeout(refreshPage, 300);
+            } else {
+                setError(data.message || "Failed to add staff member");
+            }
+        } catch (error) {
+            setError(error.message || "An error occurred while adding staff member");
+            console.error("Error adding staff member:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const styles = {
@@ -112,6 +166,14 @@ const AddStaff = ({ onClose }) => {
             onClose: onClose,
             title: 'Add Staff Member',
             children: [
+                // Display error message if present
+                error && {
+                    type: 'div',
+                    props: {
+                        style: styles.errorText,
+                        children: [error]
+                    }
+                },
                 {
                     type: 'form',
                     props: {
@@ -184,6 +246,8 @@ const AddStaff = ({ onClose }) => {
                                 props: {
                                     label: 'Name',
                                     value: formData.name,
+                                    required: true,
+                                    placeholder: 'Enter full name',
                                     onChange: (e) => setFormData({...formData, name: e.target.value})
                                 }
                             },
@@ -192,6 +256,8 @@ const AddStaff = ({ onClose }) => {
                                 props: {
                                     label: 'Position',
                                     value: formData.position,
+                                    required: true,
+                                    placeholder: 'Enter staff position',
                                     onChange: (e) => setFormData({...formData, position: e.target.value})
                                 }
                             },
@@ -200,6 +266,8 @@ const AddStaff = ({ onClose }) => {
                                 props: {
                                     label: 'Department',
                                     value: formData.department,
+                                    required: true,
+                                    placeholder: 'Enter department',
                                     onChange: (e) => setFormData({...formData, department: e.target.value})
                                 }
                             },
@@ -208,6 +276,8 @@ const AddStaff = ({ onClose }) => {
                                 props: {
                                     label: 'Email',
                                     value: formData.email,
+                                    required: true,
+                                    placeholder: 'Enter email address',
                                     onChange: (e) => setFormData({...formData, email: e.target.value}),
                                     type: 'email'
                                 }
@@ -217,6 +287,7 @@ const AddStaff = ({ onClose }) => {
                                 props: {
                                     label: 'Phone',
                                     value: formData.phone,
+                                    placeholder: 'Enter phone number',
                                     onChange: (e) => setFormData({...formData, phone: e.target.value})
                                 }
                             },
@@ -230,15 +301,24 @@ const AddStaff = ({ onClose }) => {
                                             type: Button,
                                             props: {
                                                 variant: 'secondary',
-                                                onClick: onClose,
+                                                onClick: () => {
+                                                    onClose();
+                                                    setTimeout(refreshPage, 300); // Refresh on cancel too
+                                                },
+                                                disabled: loading,
                                                 children: 'Cancel'
                                             }
                                         },
                                         {
                                             type: Button,
                                             props: {
-                                                onClick: handleSubmit,
-                                                children: 'Add Staff'
+                                                onClick: (e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    handleSubmit();
+                                                },
+                                                disabled: loading,
+                                                children: loading ? 'Adding...' : 'Add Staff'
                                             }
                                         }
                                     ]

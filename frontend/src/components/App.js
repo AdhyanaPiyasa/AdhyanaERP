@@ -149,7 +149,7 @@ const App = () => {
                 case 'staff/Attendance':
                 return { type: StaffAttendance };
                 case 'staff/Payroll':
-                return { type: Payroll };
+                return { type: PayrollDashboard };
                 case 'staff/StaffList':
                 return { type: StaffList };
             case 'other':
@@ -163,8 +163,8 @@ const App = () => {
                 return { type: ExamMain };
                 case 'other/exams/RoomAssignments':
                 return { type: RoomAssignments };
-                case 'other/exams/CreateExam':
-                return { type: CreateExam };
+                case 'other/exams/ExamList':
+                return { type: ExamList };
                 case 'other/exams/FinalTimetable':
                 return { type: FinalTimetable };                                       
                 case 'other/events':

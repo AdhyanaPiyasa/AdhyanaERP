@@ -2,21 +2,73 @@
 const CreateExam = ({ onClose }) => {
     const [formData, setFormData] = MiniReact.useState({
         title: '',
-        course: '',
-        courseCode: '',
-        date: '',
-        startTime: '',
-        endTime: '',
-        room: '',
-        teacher: ''
+        semester_id: '',
+        exam_date: '',
+        start_time: '',
+        end_time: '',
+        location: '',
+        type: 'FINAL' // Default type
     });
+    
+    const [isSubmitting, setIsSubmitting] = MiniReact.useState(false);
+    const [error, setError] = MiniReact.useState(null);
 
-    const handleSubmit = () => {
-        // Handle form submission
-        console.log('Form submitted:', formData);
-        onClose();
+    const handleSubmit = async () => {
+        try {
+            setIsSubmitting(true);
+            setError(null);
+            
+            // Validate form data
+            if (!formData.title || !formData.semester_id || !formData.exam_date || 
+                !formData.start_time || !formData.end_time || !formData.location || 
+                !formData.type) {
+                setError("All fields are required");
+                setIsSubmitting(false);
+                return;
+            }
+            
+            // Format the date and time properly for the backend
+            // Create the exam object to match backend expectations
+            const examData = {
+                title: formData.title,
+                semester_id: formData.semester_id,
+                exam_date: formData.exam_date,
+                start_time: formData.start_time,
+                end_time: formData.end_time,
+                location: formData.location,
+                type: formData.type
+            };
+            
+            // Send data to backend API
+            const response = await fetch('http://localhost:8081/api/api/exams', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(examData)
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to create exam');
+            }
+            
+            const data = await response.json();
+            console.log('Exam created successfully:', data);
+            
+            // Close the modal and show success notification
+            onClose();
+            
+            // You could add a notification system here to show success message
+            
+        } catch (err) {
+            console.error('Error creating exam:', err);
+            setError(err.message || 'An error occurred while creating the exam');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
-
 
     return {
         type: Modal,
@@ -29,6 +81,20 @@ const CreateExam = ({ onClose }) => {
                     type: 'form',
                     props: {
                         children: [
+                            // Display error message if exists
+                            error && {
+                                type: 'div',
+                                props: {
+                                    style: {
+                                        color: theme.colors.error,
+                                        padding: theme.spacing.sm,
+                                        marginBottom: theme.spacing.md,
+                                        backgroundColor: `${theme.colors.error}15`,
+                                        borderRadius: theme.borderRadius.sm
+                                    },
+                                    children: [error]
+                                }
+                            },
                             {
                                 type: TextField,
                                 props: {
@@ -41,65 +107,62 @@ const CreateExam = ({ onClose }) => {
                             {
                                 type: TextField,
                                 props: {
-                                    label: 'Course',
-                                    value: formData.course,
-                                    onChange: (e) => setFormData({...formData, course: e.target.value})
+                                    label: 'Semester ID',
+                                    value: formData.semester_id,
+                                    placeholder: 'e.g., FALL2024',
+                                    onChange: (e) => setFormData({...formData, semester_id: e.target.value})
                                 }
                             },
                             {
                                 type: TextField,
                                 props: {
-                                    label: 'Course Code',
-                                    value: formData.courseCode,
-                                    onChange: (e) => setFormData({...formData, courseCode: e.target.value})
-                                }
-                            },
-                            {
-                                type: TextField,
-                                props: {
-                                    label: 'Date',
-                                    value: formData.date,
+                                    label: 'Exam Date',
+                                    value: formData.exam_date,
                                     type: 'date',
-                                    onChange: (e) => setFormData({...formData, date: e.target.value})
+                                    onChange: (e) => setFormData({...formData, exam_date: e.target.value})
                                 }
                             },
                             {
                                 type: TextField,
                                 props: {
-                                    label: 'Start time',
-                                    placeholder: '00:00 AM/PM',
-                                    value: formData.startTime,
-                                    onChange: (e) => setFormData({...formData, startTime: e.target.value})
+                                    label: 'Start Time',
+                                    placeholder: 'HH:MM:SS',
+                                    value: formData.start_time,
+                                    type: 'time',
+                                    onChange: (e) => setFormData({...formData, start_time: e.target.value})
                                 }
                             },
                             {
                                 type: TextField,
                                 props: {
-                                    label: 'End time',
-                                    placeholder: '00:00 AM/PM',
-                                    value: formData.endTime,
-                                    onChange: (e) => setFormData({...formData, endTime: e.target.value})
+                                    label: 'End Time',
+                                    placeholder: 'HH:MM:SS',
+                                    value: formData.end_time,
+                                    type: 'time',
+                                    onChange: (e) => setFormData({...formData, end_time: e.target.value})
+                                }
+                            },
+                            {
+                                type: TextField,
+                                props: {
+                                    label: 'Location',
+                                    value: formData.location,
+                                    placeholder: 'e.g., Room 101',
+                                    onChange: (e) => setFormData({...formData, location: e.target.value})
                                 }
                             },
                             {
                                 type: Select,
                                 props: {
-                                    label: 'Room',
-                                    value: formData.room,
-                                    onChange: (e) => setFormData({...formData, room: e.target.value}),
+                                    label: 'Exam Type',
+                                    value: formData.type,
+                                    onChange: (e) => setFormData({...formData, type: e.target.value}),
                                     options: [
-                                        { value: '', label: 'Select room' },
-                                        { value: 'room1', label: 'Room 1' },
-                                        { value: 'room2', label: 'Room 2' }
+                                        { value: 'FINAL', label: 'Final Exam' },
+                                        { value: 'MIDTERM', label: 'Midterm Exam' },
+                                        { value: 'QUIZ', label: 'Quiz' },
+                                        { value: 'OTHER', label: 'Other' }
                                     ]
-                                }
-                            },
-                            {
-                                type: TextField,
-                                props: {
-                                    label: 'Teacher',
-                                    value: formData.teacher,
-                                    onChange: (e) => setFormData({...formData, teacher: e.target.value})
                                 }
                             },
                             {
@@ -117,6 +180,7 @@ const CreateExam = ({ onClose }) => {
                                             props: {
                                                 variant: 'secondary',
                                                 onClick: onClose,
+                                                disabled: isSubmitting,
                                                 children: 'Cancel'
                                             }
                                         },
@@ -124,13 +188,15 @@ const CreateExam = ({ onClose }) => {
                                             type: Button,
                                             props: {
                                                 onClick: handleSubmit,
-                                                children: 'Create Exam'
+                                                loading: isSubmitting,
+                                                disabled: isSubmitting,
+                                                children: isSubmitting ? 'Creating...' : 'Create Exam'
                                             }
                                         }
                                     ]
                                 }
                             }
-                        ]
+                        ].filter(Boolean)
                     }
                 }
             ]

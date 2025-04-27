@@ -112,7 +112,7 @@ const TeacherDashboard = () => {
                                                         type: Button,
                                                         props: {
                                                             onClick: () => setShowassignment(true),
-                                                            children: 'Go to Assignments'
+                                                            children: 'Assignments'
                                                         }
                                                     },
                                                     {

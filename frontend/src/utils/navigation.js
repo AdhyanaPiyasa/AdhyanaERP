@@ -90,8 +90,10 @@ const navigation = {
             { label: 'Dashboard', path: 'dashboard' },
             { label: 'Students', path: 'students' },
             { label: 'Courses', path: 'courses' },
-            { label: 'Staff', path: 'Staff' },
-            { label: 'Profile', path: 'profile' },
+            { 
+                label: 'Staff', 
+                path: 'Staff'
+            },
             { 
                 label: 'Other', 
                 path: 'other',

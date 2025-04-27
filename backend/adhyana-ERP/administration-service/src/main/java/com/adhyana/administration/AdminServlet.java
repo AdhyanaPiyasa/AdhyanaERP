@@ -4,9 +4,11 @@ import com.adhyana.administration.models.*;
 import com.adhyana.administration.services.*;
 import com.adhyana.administration.utils.JsonUtils;
 
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
  * Servlet for handling HTTP requests to the Core Administration Service.
  */
 @WebServlet("/api/admin/*")
+@MultipartConfig
 public class AdminServlet extends HttpServlet {
     private final StaffService staffService = new StaffService();
     private final PayrollService payrollService = new PayrollService();
@@ -289,9 +292,43 @@ public class AdminServlet extends HttpServlet {
         if (parts.length == 1) {
             // Create new staff
             System.out.println("Creating new staff member");
-            String requestBody = JsonUtils.readRequestBody(request);
-            System.out.println("Request body: " + requestBody);
-            Staff staff = JsonUtils.parseStaff(requestBody);
+
+            Staff staff = new Staff();
+
+            // Properly extract text fields from multipart request
+            Part namePart = request.getPart("name");
+            if (namePart != null) {
+                staff.setName(new String(namePart.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+            }
+
+            Part positionPart = request.getPart("position");
+            if (positionPart != null) {
+                staff.setPosition(new String(positionPart.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+            }
+
+            Part departmentPart = request.getPart("department");
+            if (departmentPart != null) {
+                staff.setDepartment(new String(departmentPart.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+            }
+
+            Part emailPart = request.getPart("email");
+            if (emailPart != null) {
+                staff.setEmail(new String(emailPart.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+            }
+
+            Part phonePart = request.getPart("phone");
+            if (phonePart != null) {
+                staff.setPhone(new String(phonePart.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+            }
+
+            // Handle profile picture if needed
+            Part profilePicturePart = request.getPart("profilePicture");
+            if (profilePicturePart != null && profilePicturePart.getSize() > 0) {
+                // Process the profile picture - save to disk or database
+                // Example: byte[] imageBytes = profilePicturePart.getInputStream().readAllBytes();
+            }
+
+            System.out.println("Staff data received: " + staff);
             Staff newStaff = staffService.addStaff(staff);
             System.out.println("Staff created with ID: " + newStaff.getStaffId() + ", Name: " + newStaff.getName());
 
@@ -417,7 +454,16 @@ public class AdminServlet extends HttpServlet {
     // Payroll handlers
     private void handlePayrollGet(HttpServletRequest request, HttpServletResponse response,
                                   String[] parts) throws Exception {
-        if (parts.length == 2 && "staff".equals(parts[1])) {
+        if (parts.length == 1) {
+            // Get all payroll records
+            System.out.println("Retrieving all payroll records");
+            List<Payroll> allPayroll = payrollService.getAllPayroll();
+            System.out.println("Retrieved " + allPayroll.size() + " payroll records");
+
+            ApiResponse<List<Payroll>> apiResponse = new ApiResponse<>(true, "All payroll records retrieved successfully", allPayroll);
+            sendJsonResponse(response, apiResponse);
+            return;
+        } else if (parts.length == 2 && "staff".equals(parts[1])) {
             // Get payroll history for staff by staff ID
             String staffIdParam = request.getParameter("id");
             if (staffIdParam == null) {
