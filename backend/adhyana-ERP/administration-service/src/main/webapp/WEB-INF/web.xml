@@ -4,7 +4,21 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
-    <display-name>Faculty Service</display-name>
+    <display-name>Administration Service</display-name>
+<!--    <servlet>-->
+<!--    <servlet-name>AdminServlet</servlet-name>-->
+<!--    <servlet-class>com.adhyana.administration.AdminServlet</servlet-class>-->
+<!--</servlet>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>AdminServlet</servlet-name>-->
+<!--        <url-pattern>/api/admin/*</url-pattern> </servlet-mapping>-->
+
+<!--    <servlet>-->
+<!--        <servlet-name>SyncServlet</servlet-name>-->
+<!--        <servlet-class>com.adhyana.administration.filters.SyncServlet</servlet-class> </servlet>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>SyncServlet</servlet-name>-->
+<!--        <url-pattern>/api/sync</url-pattern> </servlet-mapping>-->
 
     <filter>
         <filter-name>AuthFilter</filter-name>
@@ -12,6 +26,8 @@
     </filter>
     <filter-mapping>
         <filter-name>AuthFilter</filter-name>
-        <url-pattern>/api/*</url-pattern>
+        <url-pattern>/api/admin/*</url-pattern>
     </filter-mapping>
+
 </web-app>
+    
