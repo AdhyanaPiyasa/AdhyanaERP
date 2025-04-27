@@ -45,6 +45,7 @@ const navigation = {
         ADMIN_EXAMS: 'other/exams',
         ADMIN_FACULTY: 'other/faculty',
         ADMIN_STAFF: 'staff',
+        ADMIN_PROFILE:'profile',
 
         // Reviewer Routes
         REVIEWER_APPLICATIONS: 'applications',
@@ -58,7 +59,6 @@ const navigation = {
             { label: 'Dashboard', path: 'dashboard' },
             { label: 'Courses', path: 'courses' },
             { label: 'Events', path: 'events' },
-            { label: 'Announcements', path: 'announcements' },
             { label: 'Profile', path: 'profile' },
             { 
                 label: 'Other', 
@@ -76,15 +76,13 @@ const navigation = {
             { label: 'Dashboard', path: 'dashboard' },
             { label: 'Courses', path: 'courses' },
             { label: 'Timetable', path: 'timetable' },
-            { label: 'Calendar', path: 'calendar' },
-            { label: 'Profile', path: 'profile' },
+            { label: 'Calendar', path: 'calendar' }
         ],
         parent: [
             { label: 'Dashboard', path: 'dashboard' },
             { label: 'Student Profile', path: 'studentProfile' },
             { label: 'Hostel', path: 'hostel' },
-            { label: 'Events', path: 'events' },
-            { label: 'Profile', path: 'profile' },
+            { label: 'Events', path: 'events' }
         ],
         admin: [
             { label: 'Dashboard', path: 'dashboard' },
@@ -110,13 +108,14 @@ const navigation = {
         reviewer:[
             // { label: 'Dashboard', path: 'dashboard' },
             { label: 'Applications', path: 'applications' },
+            { label: 'Profile', path: 'profile' }
         ],
     },
 
 
 
     protectedRoutes: {
-        student: ['dashboard', 'courses', 'events', 'announcements', 'other', 'profile'],
+        student: ['dashboard', 'courses', 'events', 'communication', 'other', 'profile'],
         teacher: ['dashboard', 'courses', 'timetable', 'communication', 'calendar', 'profile'],
         parent: ['dashboard', 'studentProfile', 'hostel', 'events', 'profile'],
         admin: ['dashboard', 'students', 'courses','staff', 'other', 'profile'],
