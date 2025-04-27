@@ -7,8 +7,13 @@ const HostelInfo = () => {
      // --- API Helper (can be shared or defined here) ---
     const apiFetch = async (url, options = {}) => {
        try {
+            const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
+
             const response = await fetch(url, {
-                headers: { 'Accept': 'application/json', ...options.headers },
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                     ...options.headers },
                 ...options,
             });
             if (!response.ok) {
@@ -33,7 +38,7 @@ const HostelInfo = () => {
             setLoading(true);
             setError(null);
             try {
-                const data = await apiFetch('/api/hostel/hostels'); // Fetch from backend
+                const data = await apiFetch('http://localhost:8081/api/api/hostel/hostels'); // Fetch from backend
                 setHostelBlocks(data || []);
             } catch (err) {
                  setHostelBlocks([]);

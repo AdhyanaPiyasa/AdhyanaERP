@@ -11,7 +11,33 @@ const ApplyForHostel = ({ studentIndex, onClose }) => { // Needs studentIndex pr
     const [successMessage, setSuccessMessage] = MiniReact.useState(null);
 
     // --- API Helper (reuse or define) ---
-    const apiFetch = async (url, options = {}) => { /* ... apiFetch implementation ... */ };
+    const apiFetch = async (url, options = {}) => {
+        try {
+             const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
+ 
+             const response = await fetch(url, {
+                 headers: { 
+                     'Authorization': `Bearer ${token}`,
+                     'Content-Type': 'application/json',
+                      ...options.headers 
+                     },
+                 ...options,
+             });
+             if (!response.ok) {
+                 let errorData;
+                 try { errorData = await response.json(); } catch (e) { /* ignore */ }
+                 throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+             }
+             if (response.status === 204) return null;
+             const data = await response.json();
+             if (!data.success) throw new Error(data.message || 'API request failed');
+             return data.data;
+         } catch (err) {
+             console.error("API Fetch Error:", err);
+             setError(err.message);
+             throw err;
+         }
+     };
 
     // --- Fetch available hostels for dropdown ---
     MiniReact.useEffect(() => {
@@ -20,7 +46,7 @@ const ApplyForHostel = ({ studentIndex, onClose }) => { // Needs studentIndex pr
             try {
                 // Ideally, backend provides an endpoint for suitable hostels based on student gender/eligibility
                 // Using the general endpoint for now
-                const hostels = await apiFetch('/api/hostel/hostels');
+                const hostels = await apiFetch('http://localhost:8081/api/api/hostel/hostels');
                 setAvailableHostels(hostels || []);
             } catch (err) {
                 setError("Could not load hostel list.");
