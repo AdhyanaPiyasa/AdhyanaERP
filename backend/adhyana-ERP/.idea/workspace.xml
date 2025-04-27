@@ -2,14 +2,16 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="administration-service:war exploded" />
+      <artifact name="course-service:war exploded" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="" />
+    <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -108,7 +110,7 @@
       <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
-  <component name="RunManager" selected="Tomcat Server.Administration Service">
+  <component name="RunManager" selected="Tomcat Server.Course Service">
     <configuration name="admin_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" />
       <script-mode>FILE</script-mode>
@@ -938,7 +940,7 @@
       <workItem from="1745530725004" duration="7000" />
       <workItem from="1745553283147" duration="21000" />
       <workItem from="1745741301840" duration="70000" />
-      <workItem from="1745741382696" duration="1403000" />
+      <workItem from="1745741382696" duration="2184000" />
     </task>
     <servers />
   </component>
