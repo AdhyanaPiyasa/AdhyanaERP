@@ -3,19 +3,53 @@ package com.adhyana.student.services;
 import com.adhyana.student.models.Attendance;
 import com.adhyana.student.models.AttendanceSummary;
 import com.adhyana.student.models.CourseSession;
+import com.adhyana.student.models.CourseEnrollment;
 import com.adhyana.student.utils.DatabaseConnection;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class AttendanceService {
 
     /**
+     * Get all students enrolled in a specific course
+     * @param courseCode The course code to get enrollments for
+     * @return List of CourseEnrollment objects containing student index and name
+     */
+    public List<CourseEnrollment> getStudentsEnrolledInCourse(String courseCode) throws Exception {
+        List<CourseEnrollment> enrolledStudents = new ArrayList<>();
+
+        // Query to get student index and name from student_semester_courses join
+        String query = "SELECT s.student_index, s.name FROM students s " +
+                "JOIN student_semester_courses ssc ON s.student_index = ssc.student_index " +
+                "WHERE ssc.course_id = ? " +
+                "ORDER BY s.name";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, courseCode);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int studentIndex = rs.getInt("student_index");
+                String studentName = rs.getString("name");
+
+                enrolledStudents.add(new CourseEnrollment(studentIndex, studentName));
+            }
+        }
+        return enrolledStudents;
+    }
+
+    /**
      * Record attendance for multiple students in a batch for a course session
+     * @param courseCode Course ID to record attendance for
+     * @param date Date of the attendance session
+     * @param studentAttendance Map of student indices to attendance status (true=present, false=absent)
+     * @return boolean indicating if the operation was successful
      */
     public boolean recordBatchAttendance(String courseCode, LocalDate date,
                                          Map<Integer, Boolean> studentAttendance) throws Exception {
@@ -55,6 +89,9 @@ public class AttendanceService {
 
     /**
      * Get the attendance percentage for a specific course on a specific date
+     * @param courseCode Course ID to get attendance for
+     * @param date Date to get attendance for
+     * @return CourseSession object with attendance details
      */
     public CourseSession getCourseSessionAttendance(String courseCode, LocalDate date) throws Exception {
         String query = "SELECT course_id, " +
@@ -81,7 +118,38 @@ public class AttendanceService {
     }
 
     /**
-     * Get all course sessions for a specific course
+     * Get attendance summary for a specific student across all courses
+     * @param studentIndex Student ID to get attendance summary for
+     * @return List of AttendanceSummary objects for each course
+     */
+    public List<AttendanceSummary> getStudentAttendanceSummary(int studentIndex) throws Exception {
+        List<AttendanceSummary> summaries = new ArrayList<>();
+        String query = "SELECT a.course_id, " +
+                "(SELECT name FROM courses WHERE course_id = a.course_id) as course_name, " +
+                "COUNT(DISTINCT a.date) as total_sessions, " +
+                "SUM(CASE WHEN a.present = true THEN 1 ELSE 0 END) as present_count, " +
+                "(SELECT name FROM students WHERE student_index = ?) as student_name " +
+                "FROM attendance a WHERE a.student_index = ? " +
+                "GROUP BY a.course_id";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, studentIndex);
+            stmt.setInt(2, studentIndex);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                summaries.add(mapResultSetToAttendanceSummary(rs, studentIndex));
+            }
+        }
+        return summaries;
+    }
+
+    /**
+     * Get all course sessions for a specific course with attendance percentages
+     * @param courseCode Course ID to get history for
+     * @return List of CourseSession objects with attendance details for each date
      */
     public List<CourseSession> getCourseSessionHistory(String courseCode) throws Exception {
         List<CourseSession> sessions = new ArrayList<>();
@@ -113,85 +181,6 @@ public class AttendanceService {
             }
         }
         return sessions;
-    }
-
-    /**
-     * Get students for a specific course with their attendance status for a date
-     */
-    public List<Attendance> getStudentAttendanceForSession(String courseCode, LocalDate date) throws Exception {
-        List<Attendance> attendanceList = new ArrayList<>();
-
-        // This query gets all enrolled students and their attendance status if available
-        String query = "SELECT s.student_index, a.attendance_id, a.course_id, a.date, " +
-                "COALESCE(a.present, false) as present " +
-                "FROM students s " +
-                "JOIN student_courses sc ON s.student_index = sc.student_index " +
-                "LEFT JOIN attendance a ON s.student_index = a.student_index " +
-                "AND a.course_id = ? AND a.date = ? " +
-                "WHERE sc.course_id = ? " +
-                "ORDER BY s.name";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, courseCode);
-            stmt.setDate(2, Date.valueOf(date));
-            stmt.setString(3, courseCode);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                attendanceList.add(mapResultSetToAttendance(rs, date));
-            }
-        }
-        return attendanceList;
-    }
-
-    /**
-     * Get attendance summary for a specific student
-     */
-    public List<AttendanceSummary> getStudentAttendanceSummary(int studentIndex) throws Exception {
-        List<AttendanceSummary> summaries = new ArrayList<>();
-        String query = "SELECT a.course_id, " +
-                "(SELECT name FROM courses WHERE course_id = a.course_id) as course_name, " +
-                "COUNT(DISTINCT a.date) as total_sessions, " +
-                "SUM(CASE WHEN a.present = true THEN 1 ELSE 0 END) as present_count, " +
-                "(SELECT name FROM students WHERE student_index = ?) as student_name " +
-                "FROM attendance a WHERE a.student_index = ? " +
-                "GROUP BY a.course_id";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, studentIndex);
-            stmt.setInt(2, studentIndex);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                summaries.add(mapResultSetToAttendanceSummary(rs, studentIndex));
-            }
-        }
-        return summaries;
-    }
-
-    /**
-     * Get detailed attendance for a student in a specific course
-     */
-    public List<Attendance> getStudentCourseAttendance(int studentIndex, String courseCode) throws Exception {
-        List<Attendance> attendanceList = new ArrayList<>();
-        String query = "SELECT * FROM attendance WHERE student_index = ? AND course_id = ? ORDER BY date DESC";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, studentIndex);
-            stmt.setString(2, courseCode);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                attendanceList.add(mapResultSetToAttendance(rs));
-            }
-        }
-        return attendanceList;
     }
 
     /**
@@ -238,34 +227,6 @@ public class AttendanceService {
                 rs.getString("course_name"),
                 rs.getInt("total_sessions"),
                 rs.getInt("present_count")
-        );
-    }
-
-    /**
-     * Helper method to map ResultSet to Attendance (for existing attendance records)
-     */
-    private Attendance mapResultSetToAttendance(ResultSet rs) throws SQLException {
-        return new Attendance(
-                rs.getInt("attendance_id"),
-                rs.getInt("student_index"),
-                rs.getString("course_id"),
-                rs.getDate("date").toLocalDate(),
-                rs.getBoolean("present")
-        );
-    }
-
-    private Attendance mapResultSetToAttendance(ResultSet rs, LocalDate date) throws SQLException {
-        int id = rs.getInt("attendance_id");
-        int studentIndex = rs.getInt("student_index");
-        String courseCode = rs.getString("course_id");
-        boolean present = rs.getBoolean("present");
-
-        return new Attendance(
-                id,
-                studentIndex,
-                courseCode,
-                date,
-                present
         );
     }
 }

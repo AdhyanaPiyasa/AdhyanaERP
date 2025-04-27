@@ -202,7 +202,7 @@ const filteredApplications = applications.filter(application => {
                                 props: {
                                     headers: ['Application ID', 'Name', 'Program', 'Submitted Date', 'Status', 'Actions'],
                                     data: filteredApplications.map(application => ({
-                                        'Application ID': application.id,
+                                        'Application ID': application.student_application_id,
                                         'Name': application.name,
                                         'Program': application.appliedProgram,
                                         'Submitted Date': application.applicationDate,

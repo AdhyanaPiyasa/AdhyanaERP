@@ -7,7 +7,7 @@ const StudentApplicationForm = ({ onClose, onSuccess, isStandalone = false }) =>
 
     // State for application submission success
     const [isSubmitted, setIsSubmitted] = MiniReact.useState(false);
-    const [applicationId, setApplicationId] = MiniReact.useState('');
+    const [applicantId, setApplicationId] = MiniReact.useState('');
 
     // Initial state with empty values
     const [formData, setFormData] = MiniReact.useState({
@@ -184,6 +184,7 @@ const StudentApplicationForm = ({ onClose, onSuccess, isStandalone = false }) =>
             // Create a submission data structure that matches backend expectations
             const submissionData = {
                 personalInfo: {
+            
                     name: formData.name,
                     nationalId: formData.nationalId,
                     email: formData.email,
@@ -209,7 +210,8 @@ const StudentApplicationForm = ({ onClose, onSuccess, isStandalone = false }) =>
                     contactNumber: formData.guardianContactNumber,
                     email: formData.guardianEmail
                 },
-                hostelRequired: formData.hostelRequired
+                hostelRequired: formData.hostelRequired,
+                status: 'Pending' // Default status
             };
 
             console.log("Submitting application data:", submissionData);
@@ -694,10 +696,10 @@ const StudentApplicationForm = ({ onClose, onSuccess, isStandalone = false }) =>
                                 type: TextField,
                                 props: {
                                     label: 'Do you hope to apply for hostel?',
-                                    value: formData.hostel,
+                                    value: formData.hostelRequired,
                                     placeholder: 'Yes/No',
-                                    onChange: (e) => setFormData({...formData, hostel: e.target.value}),
-                                    error: errors.name
+                                    onChange: (e) => setFormData({...formData, hostelRequired: e.target.value}),
+                                    error: errors.hostelRequired
                                 }
                             },
                         ]
