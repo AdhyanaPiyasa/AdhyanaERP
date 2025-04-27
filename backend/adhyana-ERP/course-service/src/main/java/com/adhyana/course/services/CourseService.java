@@ -14,12 +14,15 @@ public class CourseService {
     private static final Map<String, String> FIELD_MAPPINGS = new HashMap<>();
 
     static {
-        FIELD_MAPPINGS.put("courseId", "course_id");
+        // Store both camelCase and lowercase versions for case-insensitive matching
+        FIELD_MAPPINGS.put("courseId", "course_id"); // Original camelCase
+        FIELD_MAPPINGS.put("courseid", "course_id"); // Lowercase version
         FIELD_MAPPINGS.put("name", "name");
         FIELD_MAPPINGS.put("year", "year");
         FIELD_MAPPINGS.put("credits", "credits");
         FIELD_MAPPINGS.put("duration", "duration");
-        FIELD_MAPPINGS.put("avgRating", "avg_rating");
+        FIELD_MAPPINGS.put("avgRating", "avg_rating"); // Original camelCase
+        FIELD_MAPPINGS.put("avgrating", "avg_rating"); // Lowercase version
     }
 
     // Get all courses
@@ -40,12 +43,18 @@ public class CourseService {
 
     // Generic search method that can handle any field
     public List<Course> searchCoursesByField(String fieldName, String fieldValue) throws Exception {
-        // Validate that the field name is valid
-        if (!FIELD_MAPPINGS.containsKey(fieldName.toLowerCase())) {
-            throw new IllegalArgumentException("Invalid field name: " + fieldName);
+        // Keep original field name for error messages
+        String originalFieldName = fieldName;
+
+        // Try exact match first, then try lowercase
+        if (!FIELD_MAPPINGS.containsKey(fieldName)) {
+            fieldName = fieldName.toLowerCase();
+            if (!FIELD_MAPPINGS.containsKey(fieldName)) {
+                throw new IllegalArgumentException("Invalid field name: " + originalFieldName);
+            }
         }
 
-        String columnName = FIELD_MAPPINGS.get(fieldName.toLowerCase());
+        String columnName = FIELD_MAPPINGS.get(fieldName);
         List<Course> courses = new ArrayList<>();
 
         // Build different queries based on field type
@@ -141,7 +150,7 @@ public class CourseService {
 
     // Get a course by ID - kept for backward compatibility
     public Course getCourseById(String courseId) throws Exception {
-        List<Course> courses = searchCoursesByField("courseId", courseId);
+        List<Course> courses = searchCoursesByField("courseid", courseId);
         return courses.isEmpty() ? null : courses.get(0);
     }
 
