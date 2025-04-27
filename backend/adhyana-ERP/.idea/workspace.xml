@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="course-service:war exploded" />
+      <artifact name="hostel-service:war exploded" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -10,13 +10,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/AddCourse.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/AddCourse.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/AdministratorCourseList.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/AdministratorCourseList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/CourseFocusPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/CourseFocusPanel.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/CourseTable.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/CourseTable.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/EditCourse.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/EditCourse.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/coursesDeleteConfirmation.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/coursesDeleteConfirmation.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/calendar-service/main/java/com/adhyana/calendar/CalendarServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/calendar-service/main/java/com/adhyana/calendar/services/CalendarService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/calendar-service/main/java/com/adhyana/calendar/utils/DatabaseConnection.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/calendar-service/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/calendar-service/main/resources/calendar_schema.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/calendar-service/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/calendar-service/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scholarship-service/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scholarship-service/src/main/java/com/adhyana/scholarship/ScholarshipServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scholarship-service/src/main/java/com/adhyana/scholarship/services/ScholarshipService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scholarship-service/src/main/java/com/adhyana/scholarship/utils/DatabaseConnection.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scholarship-service/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scholarship-service/src/main/resources/scholarship_schema.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scholarship-service/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/announcement-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/announcement-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hostel-service/src/main/java/com/adhyana/hostel/models/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/hostel-service/src/main/java/com/adhyana/hostel/models/ApiResponse.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,6 +76,7 @@
     "Database Script.course_schema.sql.executor": "Run",
     "Database Script.ddbms_schema.sql.executor": "Run",
     "Database Script.exam_schema.sql.executor": "Run",
+    "Database Script.hostel_schema.sql.executor": "Run",
     "Database Script.student_schema.sql.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "Tomcat Server.API Gateway.executor": "Run",
@@ -71,8 +86,9 @@
     "Tomcat Server.DDBMS.executor": "Run",
     "Tomcat Server.Exam Service.executor": "Run",
     "Tomcat Server.Faculty Service.executor": "Run",
+    "Tomcat Server.Hostel Service.executor": "Run",
     "Tomcat Server.Student Service.executor": "Run",
-    "git-widget-placeholder": "Course-Service",
+    "git-widget-placeholder": "administration-service",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP",
     "node.js.detected.package.eslint": "true",
@@ -81,8 +97,8 @@
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "preferences.lookFeel",
     "sql.rename.search.for.storage.occurrences": "true",
     "vue.rearranger.settings.migration": "true"
@@ -98,11 +114,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\viduranga\Documents\GitHub\AdhyanaERP\backend\adhyana-ERP" />
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP" />
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\course-service\src\main" />
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\exam-service\src\main" />
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\course-service\src\main\resources" />
-      <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\exam-service\src\main\resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\faculty-service\src\main" />
@@ -116,13 +132,7 @@
       <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
-  <component name="RunManager" selected="Tomcat Server.Course Service">
-    <configuration name="admin_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
-      <script-file value="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" />
-      <script-mode>FILE</script-mode>
-      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Tomcat Server.Calendar Service">
     <configuration name="auth_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" />
       <script-mode>FILE</script-mode>
@@ -142,6 +152,12 @@
     </configuration>
     <configuration name="exam_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/exam-service/src/main/resources/exam_schema.sql" />
+      <script-mode>FILE</script-mode>
+      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
+      <method v="2" />
+    </configuration>
+    <configuration name="hostel_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/hostel-service/src/main/resources/hostel_schema.sql" />
       <script-mode>FILE</script-mode>
       <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
       <method v="2" />
@@ -325,6 +341,96 @@
         </option>
       </method>
     </configuration>
+    <configuration name="Announcement Service" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 9.0.97" ALTERNATIVE_JRE_ENABLED="false">
+      <option name="BROWSER_ID" value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
+      <option name="UPDATING_POLICY" value="restart-server" />
+      <deployment>
+        <artifact name="announcement-service:war exploded">
+          <settings>
+            <option name="CONTEXT_PATH" value="" />
+          </settings>
+        </artifact>
+      </deployment>
+      <server-settings>
+        <option name="BASE_DIRECTORY_NAME" value="2272dfd0-4110-4a0e-afbc-a4765e217d23" />
+        <option name="HTTP_PORT" value="8091" />
+        <option name="JNDI_PORT" value="1110" />
+      </server-settings>
+      <predefined_log_file enabled="true" id="Tomcat" />
+      <predefined_log_file enabled="true" id="Tomcat Catalina" />
+      <predefined_log_file id="Tomcat Manager" />
+      <predefined_log_file id="Tomcat Host Manager" />
+      <predefined_log_file id="Tomcat Localhost Access" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="59697" />
+      </RunnerSettings>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Cover">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Debug">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Profile">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Run">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <method v="2">
+        <option name="Make" enabled="true" />
+        <option name="BuildArtifacts" enabled="true">
+          <artifact name="announcement-service:war exploded" />
+        </option>
+      </method>
+    </configuration>
     <configuration name="Auth Service" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 9.0.97" ALTERNATIVE_JRE_ENABLED="false">
       <option name="BROWSER_ID" value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
       <option name="UPDATING_POLICY" value="restart-server" />
@@ -412,6 +518,96 @@
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
           <artifact name="auth-service:war exploded" />
+        </option>
+      </method>
+    </configuration>
+    <configuration name="Calendar Service" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 9.0.97" ALTERNATIVE_JRE_ENABLED="false">
+      <option name="BROWSER_ID" value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
+      <option name="UPDATING_POLICY" value="restart-server" />
+      <deployment>
+        <artifact name="calendar-service:war exploded">
+          <settings>
+            <option name="CONTEXT_PATH" value="/calendar_service_war_exploded" />
+          </settings>
+        </artifact>
+      </deployment>
+      <server-settings>
+        <option name="BASE_DIRECTORY_NAME" value="98360e16-b0be-4fb3-a826-6f116641af33" />
+        <option name="HTTP_PORT" value="8090" />
+        <option name="JNDI_PORT" value="1109" />
+      </server-settings>
+      <predefined_log_file enabled="true" id="Tomcat" />
+      <predefined_log_file enabled="true" id="Tomcat Catalina" />
+      <predefined_log_file id="Tomcat Manager" />
+      <predefined_log_file id="Tomcat Host Manager" />
+      <predefined_log_file id="Tomcat Localhost Access" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="59684" />
+      </RunnerSettings>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Cover">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Debug">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Profile">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Run">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <method v="2">
+        <option name="Make" enabled="true" />
+        <option name="BuildArtifacts" enabled="true">
+          <artifact name="calendar-service:war exploded" />
         </option>
       </method>
     </configuration>
@@ -691,7 +887,7 @@
       <deployment>
         <artifact name="hostel-service:war exploded">
           <settings>
-            <option name="CONTEXT_PATH" value="/hostel_service_war_exploded" />
+            <option name="CONTEXT_PATH" value="" />
           </settings>
         </artifact>
       </deployment>
@@ -772,6 +968,96 @@
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
           <artifact name="hostel-service:war exploded" />
+        </option>
+      </method>
+    </configuration>
+    <configuration name="Scholarship Service" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 9.0.97" ALTERNATIVE_JRE_ENABLED="false">
+      <option name="BROWSER_ID" value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
+      <option name="UPDATING_POLICY" value="restart-server" />
+      <deployment>
+        <artifact name="scholarship-service:war exploded">
+          <settings>
+            <option name="CONTEXT_PATH" value="" />
+          </settings>
+        </artifact>
+      </deployment>
+      <server-settings>
+        <option name="BASE_DIRECTORY_NAME" value="03915974-adf4-408e-846a-b81e31e637d0" />
+        <option name="HTTP_PORT" value="8089" />
+        <option name="JNDI_PORT" value="1108" />
+      </server-settings>
+      <predefined_log_file enabled="true" id="Tomcat" />
+      <predefined_log_file enabled="true" id="Tomcat Catalina" />
+      <predefined_log_file id="Tomcat Manager" />
+      <predefined_log_file id="Tomcat Host Manager" />
+      <predefined_log_file id="Tomcat Localhost Access" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="59667" />
+      </RunnerSettings>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Cover">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Debug">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Profile">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Run">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <method v="2">
+        <option name="Make" enabled="true" />
+        <option name="BuildArtifacts" enabled="true">
+          <artifact name="scholarship-service:war exploded" />
         </option>
       </method>
     </configuration>
@@ -866,7 +1152,7 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Database Script.admin_schema.sql" />
+      <item itemvalue="Database Script.hostel_schema.sql" />
       <item itemvalue="Database Script.auth_schema.sql" />
       <item itemvalue="Database Script.course_schema.sql" />
       <item itemvalue="Database Script.ddbms_schema.sql" />
@@ -879,14 +1165,17 @@
       <item itemvalue="Tomcat Server.Administration Service" />
       <item itemvalue="Tomcat Server.DDBMS" />
       <item itemvalue="Tomcat Server.Hostel Service" />
+      <item itemvalue="Tomcat Server.Scholarship Service" />
+      <item itemvalue="Tomcat Server.Calendar Service" />
+      <item itemvalue="Tomcat Server.Announcement Service" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Database Script.hostel_schema.sql" />
         <item itemvalue="Database Script.ddbms_schema.sql" />
         <item itemvalue="Database Script.course_schema.sql" />
         <item itemvalue="Database Script.exam_schema.sql" />
         <item itemvalue="Database Script.auth_schema.sql" />
-        <item itemvalue="Database Script.admin_schema.sql" />
       </list>
     </recent_temporary>
   </component>
@@ -947,6 +1236,7 @@
       <workItem from="1745553283147" duration="21000" />
       <workItem from="1745741301840" duration="70000" />
       <workItem from="1745741382696" duration="2184000" />
+      <workItem from="1745770567651" duration="1109000" />
     </task>
     <servers />
   </component>
