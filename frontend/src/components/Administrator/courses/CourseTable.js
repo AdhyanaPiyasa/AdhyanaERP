@@ -2,15 +2,17 @@
 const CourseTable = ({ courses, onRowClick, onAddClick }) => {
   const [searchQuery, setSearchQuery] = MiniReact.useState("");
   const [searchField, setSearchField] = MiniReact.useState("all");
+  const [isSearching, setIsSearching] = MiniReact.useState(false);
+  const [searchResults, setSearchResults] = MiniReact.useState(null);
+  const [searchError, setSearchError] = MiniReact.useState(null);
 
   // Search field options
   const searchFieldOptions = [
     { value: "all", label: "All Fields" },
-    { value: "id", label: "ID" },
-    { value: "code", label: "Course Code" },
+    { value: "courseId", label: "Course Code" },
     { value: "name", label: "Course Name" },
     { value: "year", label: "Year" },
-    { value: "rating", label: "Rating" },
+    { value: "avgRating", label: "Rating" },
   ];
 
   // Generate rating circles component
@@ -27,7 +29,8 @@ const CourseTable = ({ courses, onRowClick, onAddClick }) => {
           let color = "#e0e0e0"; // Default empty color
           if (i < rating) {
             // Set color based on rating value
-            color = rating < 3 ? "#f44336" : rating < 4 ? "#ff9800" : "#4caf50";
+            color =
+              rating <= 3 ? "#f44336" : rating <= 4 ? "#ff9800" : "#4caf50";
           }
 
           return {
@@ -46,57 +49,187 @@ const CourseTable = ({ courses, onRowClick, onAddClick }) => {
     };
   }
 
+  // Function to perform API search
+  const performApiSearch = async () => {
+    if (!searchQuery.trim()) {
+      setSearchResults(null);
+      return;
+    }
+
+    // Prevent multiple concurrent searches
+    if (isSearching) return;
+
+    setIsSearching(true);
+    setSearchError(null);
+
+    try {
+      const token = localStorage.getItem("token");
+      let url = "";
+
+      // Log input values for debugging
+      console.log("Search field:", searchField);
+      console.log("Search query:", searchQuery);
+
+      // Format URL based on search field
+      if (searchField === "courseId") {
+        // Use the exact format requested: /courseCore/courseId/eng1002
+        url = `http://localhost:8081/api/courses/courseCore/courseId/${encodeURIComponent(
+          searchQuery
+        )}`;
+      } else if (searchField !== "all") {
+        url = `http://localhost:8081/api/courses/courseCore/${searchField}/${encodeURIComponent(
+          searchQuery
+        )}`;
+      } else {
+        // Default search - maybe search all fields or just return all courses
+        url = "http://localhost:8081/api/courses/courseCore/";
+      }
+
+      console.log("Searching with URL:", url);
+      console.log("Auth token exists:", !!token);
+
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      // Only add Authorization header if token exists
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      // Force a new fetch without caching to avoid stale responses
+      const response = await fetch(url, {
+        method: "GET",
+        headers: headers,
+        cache: "no-store", // Prevent caching of requests
+      });
+
+      console.log("Search response status:", response.status);
+
+      if (!response.ok) {
+        // Log more details about the error
+        console.error(
+          "Search request failed:",
+          response.status,
+          response.statusText
+        );
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSearchResults(Array.isArray(data.data) ? data.data : [data.data]);
+      } else {
+        throw new Error(data.message || "Search failed");
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      setSearchError(error.message);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Handle search submission (e.g., when clicking the search button)
+  const handleSearchSubmit = () => {
+    // Prevent multiple concurrent searches
+    if (isSearching) return;
+
+    // Reset previous results before starting a new search
+    setSearchResults(null);
+    setSearchError(null);
+    performApiSearch();
+  };
+
+  // Handle keydown to prevent Enter key from triggering search
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevent any form submission
+      handleSearchSubmit(); // But still perform the search
+      return false;
+    }
+  };
+
   // Create modified data for the table
-  const tableData = courses.map((course) => ({
-    course: course, // Store the whole course object
-    ID: course.id,
-    Code: course.code,
-    Title: course.name,
-    Year: course.year,
-    Rating: renderRatingCircles(course.rating),
-  }));
+  const prepareTableData = (coursesList) => {
+    return coursesList.map((course) => ({
+      course: course, // Store the whole course object
+      Code: course.courseId || course.code,
+      Title: course.name,
+      Year: course.year,
+      Rating: renderRatingCircles(course.avgRating || course.rating || 0),
+    }));
+  };
 
-  // Filter courses based on search query and selected field
-  const filteredTableData =
-    searchQuery.trim() === ""
-      ? tableData
-      : tableData.filter((item) => {
-          const query = searchQuery.toLowerCase();
-          const course = item.course;
+  // Get the appropriate data source
+  const tableData = prepareTableData(courses);
 
-          if (searchField === "all") {
-            return (
-              course.id.toString().includes(query) ||
-              course.code.toString().includes(query) ||
-              course.name.toLowerCase().includes(query) ||
-              course.year.toString().includes(query) ||
-              course.rating.toString().includes(query)
-            );
-          }
+  // Filter courses based on search query and selected field when not using API search
+  const filteredTableData = searchResults
+    ? prepareTableData(searchResults)
+    : searchQuery.trim() === ""
+    ? tableData
+    : tableData.filter((item) => {
+        const query = searchQuery.toLowerCase();
+        const course = item.course;
 
-          // Handle specific field search
-          if (
-            searchField === "id" ||
-            searchField === "code" ||
-            searchField === "rating" ||
-            searchField === "year"
-          ) {
-            return course[searchField].toString().includes(query);
-          }
+        if (searchField === "all") {
+          const code = course.courseId || course.code || "";
+          const name = course.name || "";
+          const year = course.year?.toString() || "";
+          const rating = course.avgRating || course.rating || 0;
 
-          return course[searchField].toLowerCase().includes(query);
-        });
+          return (
+            code.toString().toLowerCase().includes(query) ||
+            name.toLowerCase().includes(query) ||
+            year.includes(query) ||
+            Math.ceil(rating).toString().includes(query) // Use ceiling for rating
+          );
+        }
+
+        // Handle specific field search
+        if (searchField === "courseId" || searchField === "code") {
+          const code = course.courseId || course.code || "";
+          return code.toString().toLowerCase().includes(query);
+        }
+
+        if (searchField === "year") {
+          return course.year?.toString().includes(query);
+        }
+
+        if (searchField === "avgRating" || searchField === "rating") {
+          const rating = course.avgRating || course.rating || 0;
+          // Use ceiling value for rating search
+          return Math.ceil(rating).toString().includes(query);
+        }
+
+        // Default to name search
+        return (course.name || "").toLowerCase().includes(query);
+      });
 
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
+    const newValue = e.target.value;
+    setSearchQuery(newValue);
+
+    // Reset search results when input is cleared manually
+    if (newValue === "") {
+      setSearchResults(null);
+      setSearchError(null);
+    }
   };
 
   const handleSearchFieldChange = (e) => {
     setSearchField(e.target.value);
+    setSearchResults(null); // Reset results when changing search field
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
+    setSearchResults(null);
+    setSearchError(null);
+    // No need to perform a new search as we're clearing it
   };
 
   const styles = {
@@ -122,25 +255,6 @@ const CourseTable = ({ courses, onRowClick, onAddClick }) => {
       position: "relative",
       flex: 1,
     },
-    clearButton: {
-      position: "absolute",
-      right: "10px",
-      top: "30%",
-      transform: "translateY(-50%)",
-      background: "none",
-      border: "none",
-      cursor: "pointer",
-      color: "#FF0000",
-      fontSize: "16px",
-      fontWeight: "bold",
-      padding: "0",
-      zIndex: 10,
-      width: "20px",
-      height: "20px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    },
     tableContent: {
       marginTop: theme.spacing.md,
     },
@@ -165,6 +279,11 @@ const CourseTable = ({ courses, onRowClick, onAddClick }) => {
     td: {
       padding: "12px",
       borderBottom: "1px solid #e0e0e0",
+    },
+    errorMessage: {
+      color: "#c62828",
+      padding: theme.spacing.sm,
+      marginBottom: theme.spacing.md,
     },
   };
 
@@ -194,11 +313,14 @@ const CourseTable = ({ courses, onRowClick, onAddClick }) => {
                         style: styles.searchFieldSelect,
                       },
                     },
-                    // Search input with clear button
+                    // Search input with integrated icons
                     {
                       type: "div",
                       props: {
-                        style: styles.searchInputWrapper,
+                        style: {
+                          position: "relative",
+                          flex: 1,
+                        },
                         children: [
                           {
                             type: TextField,
@@ -206,18 +328,72 @@ const CourseTable = ({ courses, onRowClick, onAddClick }) => {
                               placeholder: "Search courses...",
                               value: searchQuery,
                               onChange: handleSearchChange,
-                              style: { width: "100%" },
+                              onKeyDown: handleKeyDown,
+                              style: {
+                                width: "100%",
+                              },
                             },
                           },
-                          searchQuery && {
-                            type: "button",
+                          // Both icons inside the search field
+                          {
+                            type: "div",
                             props: {
-                              style: styles.clearButton,
-                              onClick: handleClearSearch,
-                              children: ["×"],
+                              style: {
+                                position: "absolute",
+                                right: "10px",
+                                top: "50%",
+                                transform: "translateY(-80%)",
+                                display: "flex",
+                                alignItems: "center",
+                                zIndex: 2,
+                              },
+                              children: [
+                                // Clear button (X) - only visible when there's a search query
+                                searchQuery && {
+                                  type: "button",
+                                  props: {
+                                    style: {
+                                      background: "none",
+                                      border: "none",
+                                      cursor: "pointer",
+                                      color: "#FF0000",
+                                      fontSize: "16px",
+                                      fontWeight: "bold",
+                                      padding: "3px 5px",
+                                      marginRight: "2px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                    },
+                                    onClick: handleClearSearch,
+                                    type: "button", // Prevent form submission
+                                    children: ["×"],
+                                  },
+                                },
+                                // Magnifying glass icon
+                                {
+                                  type: "button",
+                                  props: {
+                                    style: {
+                                      background: "none",
+                                      border: "none",
+                                      cursor: "pointer",
+                                      color: "#555",
+                                      fontSize: "16px",
+                                      padding: "3px 5px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                    },
+                                    onClick: handleSearchSubmit, // This remains the same
+                                    type: "button", // Prevent form submission
+                                    children: ["🔍"],
+                                  },
+                                },
+                              ].filter(Boolean),
                             },
                           },
-                        ].filter(Boolean),
+                        ],
                       },
                     },
                   ],
@@ -235,88 +411,111 @@ const CourseTable = ({ courses, onRowClick, onAddClick }) => {
           },
         },
 
+        // Error message
+        searchError && {
+          type: "div",
+          props: {
+            style: styles.errorMessage,
+            children: [`Error: ${searchError}`],
+          },
+        },
+
         // Course Table
         {
           type: "div",
           props: {
             style: styles.tableContent,
             children: [
-              {
-                type: "table",
-                props: {
-                  style: styles.table,
-                  children: [
-                    // Table header
-                    {
-                      type: "thead",
-                      props: {
-                        children: [
-                          {
-                            type: "tr",
-                            props: {
-                              children: [
-                                "ID",
-                                "Code",
-                                "Title",
-                                "Year",
-                                "Rating",
-                              ].map((header) => ({
-                                type: "th",
-                                props: {
-                                  style: styles.th,
-                                  children: [header],
-                                },
-                              })),
-                            },
-                          },
-                        ],
+              // Loading indicator when searching
+              isSearching
+                ? {
+                    type: "div",
+                    props: {
+                      style: {
+                        padding: theme.spacing.md,
+                        textAlign: "center",
+                        color: theme.colors.primary,
                       },
+                      children: ["Searching..."],
                     },
-                    // Table body
-                    {
-                      type: "tbody",
-                      props: {
-                        children: filteredTableData.map((row, index) => ({
-                          type: "tr",
+                  }
+                : {
+                    type: "table",
+                    props: {
+                      style: styles.table,
+                      children: [
+                        // Table header
+                        {
+                          type: "thead",
                           props: {
-                            style: styles.tr(index),
-                            onClick: () => {
-                              if (row.course) {
-                                onRowClick(row.course);
-                              }
-                            },
                             children: [
-                              "ID",
-                              "Code",
-                              "Title",
-                              "Year",
-                              "Rating",
-                            ].map((header) => ({
-                              type: "td",
+                              {
+                                type: "tr",
+                                props: {
+                                  children: [
+                                    "Code",
+                                    "Title",
+                                    "Year",
+                                    "Rating",
+                                  ].map((header) => ({
+                                    type: "th",
+                                    props: {
+                                      style: styles.th,
+                                      children: [header],
+                                    },
+                                  })),
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        // Table body
+                        {
+                          type: "tbody",
+                          props: {
+                            children: filteredTableData.map((row, index) => ({
+                              type: "tr",
                               props: {
-                                style: styles.td,
-                                children: [row[header]],
+                                style: styles.tr(index),
+                                onClick: () => {
+                                  if (row.course) {
+                                    onRowClick(row.course);
+                                  }
+                                },
+                                children: [
+                                  "Code",
+                                  "Title",
+                                  "Year",
+                                  "Rating",
+                                ].map((header) => ({
+                                  type: "td",
+                                  props: {
+                                    style: styles.td,
+                                    children: [row[header]],
+                                  },
+                                })),
                               },
                             })),
                           },
-                        })),
-                      },
+                        },
+                      ],
                     },
-                  ],
-                },
-              },
-              // Show message when no courses found
-              filteredTableData.length === 0 && {
-                type: "div",
-                props: {
-                  style: {
-                    textAlign: "center",
-                    padding: theme.spacing.lg,
-                    color: theme.colors.textSecondary,
                   },
-                  children: ["No courses found matching your search criteria."],
+              // Show message when no courses found
+              !isSearching &&
+                filteredTableData.length === 0 && {
+                  type: "div",
+                  props: {
+                    style: {
+                      textAlign: "center",
+                      padding: theme.spacing.lg,
+                      color: theme.colors.textSecondary,
+                    },
+                    children: [
+                      "No courses found matching your search criteria.",
+                    ],
+                  },
                 },
-              },
             ].filter(Boolean),
           },
         },
@@ -326,8 +525,3 @@ const CourseTable = ({ courses, onRowClick, onAddClick }) => {
 };
 
 window.CourseTable = CourseTable;
-
-components / Admin / courses / CourseTable.js;
-components / Admin / courses / CourseTable.js;
-
-components / Admin / courses / CourseTable.js;
