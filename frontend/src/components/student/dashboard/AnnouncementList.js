@@ -14,13 +14,6 @@ const ImprovedAnnouncementList = () => {
             timestamp: '2024-03-09T10:15:00',
             status: 'read',
             source: 'Examination Department'
-        },
-        {
-            title: 'Campus Maintenance Notice',
-            description: 'The west wing of the main building will be closed for maintenance from March 15-17. Please use alternative routes.',
-            timestamp: '2024-03-08T09:45:00',
-            status: 'read',
-            source: 'Facilities Management'
         }
     ]);
 

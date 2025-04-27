@@ -10,13 +10,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../../.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/EnrollmentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/EnrollmentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/UserProfileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/UserProfileService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/layout/AdministratorHeader.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/layout/AdministratorHeader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/profile/AdministratorProfile.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/profile/AdministratorProfile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/parent/layout/parentHeader.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/parent/layout/parentHeader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/parent/profile/parentProfile.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/parent/profile/parentProfile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/reviewer/applications/ApplicationList.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/reviewer/applications/ApplicationList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/student/courses/CourseCard.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/student/dashboard/AnnouncementList.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/student/dashboard/AnnouncementList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/student/dashboard/AttendanceChart.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/student/dashboard/AttendanceChart.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/student/dashboard/Dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/student/dashboard/Dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/student/layout/StudentHeader.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/student/layout/StudentHeader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/student/other/OtherPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/student/other/OtherPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/student/other/attendance/AttendanceReport.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/student/other/attendance/AttendanceTracker.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/student/other/grades/GradeBook.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/student/other/grades/GradeBook.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/student/profile/StudentCourseProfile.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/student/profile/StudentProfile.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/student/profile/StudentProfile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/teacher/layout/TeacherHeader.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/teacher/layout/TeacherHeader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/teacher/profile/TeacherCourseProfile.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/teacher/profile/TeacherProfile.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/teacher/profile/TeacherProfile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/utils/navigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/utils/navigation.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +94,7 @@
     "Tomcat Server.Exam Service.executor": "Run",
     "Tomcat Server.Faculty Service.executor": "Run",
     "Tomcat Server.Student Service.executor": "Run",
-    "git-widget-placeholder": "administration-service",
+    "git-widget-placeholder": "student",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP/auth-service/src/main/resources",
     "node.js.detected.package.eslint": "true",

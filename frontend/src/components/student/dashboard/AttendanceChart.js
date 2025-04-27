@@ -106,7 +106,7 @@ const AttendanceChart = () => {
                                 type: BarChart,
                                 props: {
                                     data: colorizedData,
-                                    width: 750,
+                                    width: 500,
                                     height: 300,
                                     title: ""  // We already have a title in the card header
                                 }

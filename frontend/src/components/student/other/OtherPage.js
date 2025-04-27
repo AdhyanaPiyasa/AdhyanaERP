@@ -14,12 +14,6 @@ const OtherPage = () => {
             icon: '🎓' // Graduation cap for scholarship
         },
         {
-            id: 'attendance',
-            title: 'Attendance',
-            path: 'other/attendance',
-            icon: '📋' // Clipboard for attendance
-        },
-        {
             id: 'grades',
             title: 'Grade Book',
             path: 'other/grades',

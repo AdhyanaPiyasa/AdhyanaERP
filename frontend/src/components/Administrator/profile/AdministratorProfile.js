@@ -12,42 +12,72 @@ const AdministratorProfile = () => {
     };
 
     const styles = {
+        container: {
+            padding: theme.spacing.lg,
+            maxWidth: '800px',
+            margin: '0 auto'
+        },
+        profileCard: {
+            borderRadius: theme.borderRadius.lg,
+            overflow: 'hidden',
+            boxShadow: theme.shadows.md
+        },
         profileHeader: {
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            gap: theme.spacing.md,
-            marginBottom: theme.spacing.lg,
-            padding: theme.spacing.md
+            padding: theme.spacing.lg,
+            borderBottom: `1px solid ${theme.colors.border}`,
+            backgroundColor: theme.colors.background
+        },
+        profileInfo: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: theme.spacing.md
         },
         avatar: {
-            width: '72px',
-            height: '72px',
-            borderRadius: '50%'
+            width: '80px',
+            height: '80px',
+            borderRadius: '50%',
+            border: `2px solid ${theme.colors.primary}`,
+            objectFit: 'cover'
+        },
+        nameSection: {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: theme.spacing.xs
+        },
+        name: {
+            fontSize: theme.typography.h2.fontSize,
+            fontWeight: 'bold',
+            color: theme.colors.textPrimary
+        },
+        role: {
+            fontSize: theme.typography.body2.fontSize,
+            color: theme.colors.textSecondary
         },
         infoContainer: {
-            display: 'grid',
-            gap: theme.spacing.md,
             padding: theme.spacing.lg
+        },
+        infoGrid: {
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gap: theme.spacing.md
         },
         infoRow: {
             display: 'flex',
-            padding: `${theme.spacing.sm} 0`,
-            borderBottom: `1px solid ${theme.colors.border}`
+            padding: theme.spacing.md,
+            borderBottom: `1px solid ${theme.colors.border}`,
+            alignItems: 'center'
         },
         label: {
-            width: '50%',
-            color: theme.colors.textSecondary,
-            fontWeight: '800'
+            width: '40%',
+            fontWeight: 'bold',
+            color: theme.colors.textSecondary
         },
         value: {
-            width: '50%',
+            width: '60%',
             color: theme.colors.textPrimary
-        },
-        actionsContainer: {
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: theme.spacing.md,
-            marginTop: theme.spacing.xl
         }
     };
 
@@ -64,29 +94,81 @@ const AdministratorProfile = () => {
     return {
         type: 'div',
         props: {
-            style: {
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: theme.spacing.lg
-            },
+            style: styles.container,
             children: [
+                {
+                    type: 'h1',
+                    props: {
+                        style: {
+                            fontSize: '24 px',
+                            fontWeight: 'bold',
+                            marginBottom: theme.spacing.lg,
+                        },
+                        children: ['Administrator Profile']
+                    }
+                },
+                // Profile Information Card
                 {
                     type: Card,
                     props: {
+                        style: styles.profileCard,
                         children: [
+                            // Profile Header with Avatar and Edit Button
                             {
                                 type: 'div',
                                 props: {
                                     style: styles.profileHeader,
                                     children: [
+                                        // Avatar and Name
                                         {
-                                            type: 'img',
+                                            type: 'div',
                                             props: {
-                                                src: '/api/placeholder/72/72',
-                                                style: styles.avatar,
-                                                alt: 'Profile'
+                                                style: styles.profileInfo,
+                                                children: [
+                                                    {
+                                                        type: 'div',
+                                                        props: {
+                                                            style: {
+                                                                width: '80px',
+                                                                height: '80px',
+                                                                borderRadius: '50%',
+                                                                backgroundColor: theme.colors.primary + '20',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontSize: '32px',
+                                                                color: theme.colors.primary,
+                                                                border: `2px solid ${theme.colors.primary}`
+                                                            },
+                                                            children: [profileData.name ? profileData.name.charAt(0).toUpperCase() : 'A']
+                                                        }
+                                                    },
+                                                    {
+                                                        type: 'div',
+                                                        props: {
+                                                            style: styles.nameSection,
+                                                            children: [
+                                                                {
+                                                                    type: 'div',
+                                                                    props: {
+                                                                        style: styles.name,
+                                                                        children: [profileData.name]
+                                                                    }
+                                                                },
+                                                                {
+                                                                    type: 'div',
+                                                                    props: {
+                                                                        style: styles.role,
+                                                                        children: [profileData.role]
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
                                             }
                                         },
+                                        // Edit Profile Button
                                         {
                                             type: Button,
                                             props: {
@@ -98,38 +180,47 @@ const AdministratorProfile = () => {
                                     ]
                                 }
                             },
+                            // Profile Details
                             {
                                 type: 'div',
                                 props: {
                                     style: styles.infoContainer,
-                                    children: profileDetails.map(item => ({
-                                        type: 'div',
-                                        props: {
-                                            style: styles.infoRow,
-                                            children: [
-                                                {
+                                    children: [
+                                        {
+                                            type: 'div',
+                                            props: {
+                                                style: styles.infoGrid,
+                                                children: profileDetails.map(item => ({
                                                     type: 'div',
                                                     props: {
-                                                        style: styles.label,
-                                                        children: [item.label]
+                                                        style: styles.infoRow,
+                                                        children: [
+                                                            {
+                                                                type: 'div',
+                                                                props: {
+                                                                    style: styles.label,
+                                                                    children: [item.label]
+                                                                }
+                                                            },
+                                                            {
+                                                                type: 'div',
+                                                                props: {
+                                                                    style: styles.value,
+                                                                    children: [item.value]
+                                                                }
+                                                            }
+                                                        ]
                                                     }
-                                                },
-                                                {
-                                                    type: 'div',
-                                                    props: {
-                                                        style: styles.value,
-                                                        children: [item.value]
-                                                    }
-                                                }
-                                            ]
+                                                }))
+                                            }
                                         }
-                                    }))
+                                    ]
                                 }
                             }
                         ]
                     }
                 },
-       
+                // Edit Profile Modal
                 showEditModal && {
                     type: Modal,
                     props: {
@@ -151,7 +242,7 @@ const AdministratorProfile = () => {
                         ]
                     }
                 }
-            ].filter(Boolean)
+            ]
         }
     };
 };

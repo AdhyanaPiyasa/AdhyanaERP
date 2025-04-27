@@ -23,11 +23,11 @@ const AdministratorHeader = () => {
             gap: '12px'
         },
         logo: {
-            width: '24px',
-            height: '24px'
+            width: '60px',
+            height: '60px'
         },
         brandName: {
-            fontSize: '18px',
+            fontSize: '22px',
             fontWeight: 'bold',
             color: '#0066CC'
         },
@@ -69,20 +69,15 @@ const AdministratorHeader = () => {
             backgroundColor: '#0066CC',
             borderRadius: '2px 2px 0 0'
         },
-        profileButton: {
-            backgroundColor: '#0066CC',
-            color: 'white',
-            padding: '6px 16px',
-            borderRadius: '4px',
-            fontSize: '14px',
-            fontWeight: '500',
-            cursor: 'pointer',
-            border: 'none',
+        icon: {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '25px',
+            width: '25px',
+            height: '25px',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px'
+            justifyContent: 'center'
         },
-
         dropdown: {
             position: 'absolute',
             top: '100%',
@@ -122,15 +117,19 @@ const AdministratorHeader = () => {
             backgroundColor: 'transparent',
             borderTop: '1px solid #eee'
         },
-        icon: {
-            fontFamily: 'Arial, sans-serif',
-            fontSize: '25px',
-            width: '25px',
-            height: '25px',
+        profileButton: {
+            backgroundColor: '#0066CC',
+            color: 'white',
+            padding: '6px 16px',
+            borderRadius: '4px',
+            fontSize: '14px',
+            fontWeight: '500',
+            cursor: 'pointer',
+            border: 'none',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
-        }
+            gap: '8px'
+        },
     };
 
 
@@ -173,9 +172,9 @@ const AdministratorHeader = () => {
                             {
                                 type: 'img',
                                 props: {
-                                    src: '/logo.png',
-                                    style: styles.logo,
-                                    alt: 'Adhyana Logo'
+                                    src: 'src/assets/logo.png',
+                                    alt: 'ADHYANA Logo',
+                                    style: styles.logo
                                 }
                             },
                             {
@@ -254,7 +253,9 @@ const AdministratorHeader = () => {
                                                         type: 'button',
                                                         props: {
                                                             style: styles.dropdownItem,
-                                                            onClick: () => {
+                                                            onClick: (e) => {
+                                                                e.stopPropagation(); // Prevent event bubbling
+                                                                console.log("Clicking View Profile");
                                                                 navigation.navigate('profile');
                                                                 setShowProfileMenu(false);
                                                             },

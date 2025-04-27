@@ -21,15 +21,15 @@ const App = () => {
         const params = navigation.getParams();
 
         // Common routes for all roles
-        if (route === 'profile') {
-            // Correctly format the component name based on role
-            const componentName = role.charAt(0).toUpperCase() + 
-                                role.slice(1) + 'Profile';
-            return {
-                type: window[componentName], // Use window to access globally registered component
-                props: params
-            };
-        }
+        // if (route === 'profile') {
+        //     // Correctly format the component name based on role
+        //     const componentName = role.charAt(0).toUpperCase() + 
+        //                         role.slice(1) + 'Profile';
+        //     return {
+        //         type: window[componentName], // Use window to access globally registered component
+        //         props: params
+        //     };
+        // }
 
         // Role-specific routing
         switch (role) {
@@ -53,18 +53,18 @@ const App = () => {
         switch (route) {
             case 'dashboard':
                 return { type: Dashboard };
+            case 'profile':
+                return { type: StudentProfile };
             case 'courses':
                 return { type: CourseList };
             case (route.match(/^courses\/\w+$/) || {}).input:
                 return { type: CourseDetail, props: params };
             case 'events':
                 return { type: Calendar };
-            case 'communication':
-                return { type: EmailList };
+            case 'announcements':
+                return { type: AnnouncementView };
             case 'other':
                 return { type: OtherPage };
-            case 'other/finance':
-                return { type: Finance };
             case 'other/exams/StudentExamDashboard':
                 return { type: StudentExamDashboard };    
                 
@@ -72,8 +72,6 @@ const App = () => {
                 return { type: ScholarshipList };
             case 'other/hostel':
                 return { type: HostelInfo };
-            case 'other/attendance':
-                return { type: AttendanceTracker };
             case 'other/grades':
                 return { type: GradeBook };
             default:
@@ -84,6 +82,8 @@ const App = () => {
         switch (route) {
             case 'dashboard':
                 return { type: TeacherDashboard };
+            case 'profile':
+                return { type: TeacherProfile };
             case 'courses':
                 return { type: TeacherCourseList };
             case (route.match(/^courses\/\w+$/) || {}).input:
@@ -104,6 +104,8 @@ const App = () => {
         switch (route) {
             case 'dashboard':
                 return { type: ParentDashboard };
+            case 'profile':
+                return { type: ParentProfile };
             case 'studentProfile':
                 return { type: PStudentProfile };
             case 'events':
@@ -126,6 +128,8 @@ const App = () => {
         switch (route) {
             case 'dashboard':
                 return { type: AdministratorDashboard };
+            case 'profile':
+                return { type: AdministratorProfile };
             case 'students':
                 return { type: StudentMain};
             case 'students/StudentDegree':
