@@ -4,10 +4,6 @@ package com.adhyana.hostel.models;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.List;
-import java.sql.Timestamp;
-import java.sql.Date;
-
 public class ApiResponse<T> {
     private boolean success;
     private String message;
