@@ -1,10 +1,22 @@
 package com.adhyana.hostel.models;
+
+// Import Gson
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.List;
+import java.sql.Timestamp;
+import java.sql.Date;
 
 public class ApiResponse<T> {
     private boolean success;
     private String message;
     private T data;
+
+    // Gson instance for JSON serialization/deserialization
+    private transient static final Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd HH:mm:ss") // Handle Timestamp
+            .create();
 
     public ApiResponse(boolean success, String message, T data) {
         this.success = success;
@@ -14,16 +26,19 @@ public class ApiResponse<T> {
 
     /**
      * Converts this ApiResponse object to its JSON representation using Gson.
-     *
-     * @param gson A Gson instance (ideally pre-configured if needed).
-     * @return The JSON string representation of this object.
+     * @return JSON string.
      */
-    public String toJson(Gson gson) {
-        // Gson handles serialization of nested objects (data) automatically
+    public String toJson() {
+        // Gson handles the serialization of this object, including nested data (List, Hostel, etc.)
         return gson.toJson(this);
     }
 
-    // --- Getters --- (Keep these)
+    // Static helper method to convert any object to JSON (useful elsewhere)
+    public static String toJson(Object object) {
+        return gson.toJson(object);
+    }
+
+    // Getters (remain the same)
     public boolean isSuccess() { return success; }
     public String getMessage() { return message; }
     public T getData() { return data; }
