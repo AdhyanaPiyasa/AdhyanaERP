@@ -13,8 +13,8 @@
         <module name="api-gateway" />
         <module name="student-service" />
         <module name="ddbms-service" />
-        <module name="exam-service" />
         <module name="hostel-service" />
+        <module name="exam-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
