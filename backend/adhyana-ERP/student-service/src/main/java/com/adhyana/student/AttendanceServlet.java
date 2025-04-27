@@ -2,6 +2,7 @@ package com.adhyana.student;
 
 import com.adhyana.student.models.*;
 import com.adhyana.student.services.AttendanceService;
+import com.adhyana.student.models.CourseEnrollment;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,26 +42,10 @@ public class AttendanceServlet extends HttpServlet {
                 // Get student's attendance summary
                 int studentIndex = Integer.parseInt(subPath.substring("/summary/".length()));
                 handleGetAttendanceSummary(response, studentIndex);
-            } else if (subPath.startsWith("/detail/")) {
-                // Get student's detailed attendance for a course
-                String[] parts = subPath.substring("/detail/".length()).split("/");
-                if (parts.length != 2) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path format");
-                    return;
-                }
-                int studentIndex = Integer.parseInt(parts[0]);
-                String courseCode = parts[1];
-                handleGetStudentCourseAttendance(response, studentIndex, courseCode);
-            } else if (subPath.startsWith("/mark/")) {
-                // Get list of students with their attendance status for a session
-                String[] parts = subPath.substring("/mark/".length()).split("/");
-                if (parts.length != 2) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path format");
-                    return;
-                }
-                String courseCode = parts[0];
-                LocalDate date = LocalDate.parse(parts[1]);
-                handleGetStudentAttendanceForSession(response, courseCode, date);
+            } else if (subPath.startsWith("/enrolled-students/")) {
+                // Get students enrolled in a specific course
+                String courseCode = subPath.substring("/enrolled-students/".length());
+                handleGetStudentsEnrolledInCourse(response, courseCode);
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid path");
             }
@@ -86,6 +71,9 @@ public class AttendanceServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Handles request to get attendance percentage for a specific course on a date
+     */
     private void handleGetCourseSessionAttendance(HttpServletResponse response, String courseCode, LocalDate date)
             throws Exception {
         CourseSession session = attendanceService.getCourseSessionAttendance(courseCode, date);
@@ -94,6 +82,9 @@ public class AttendanceServlet extends HttpServlet {
         sendJsonResponse(response, apiResponse);
     }
 
+    /**
+     * Handles request to get attendance history for a course
+     */
     private void handleGetCourseSessionHistory(HttpServletResponse response, String courseCode) throws Exception {
         List<CourseSession> sessions = attendanceService.getCourseSessionHistory(courseCode);
         ApiResponse<List<CourseSession>> apiResponse =
@@ -101,6 +92,9 @@ public class AttendanceServlet extends HttpServlet {
         sendJsonResponse(response, apiResponse);
     }
 
+    /**
+     * Handles request to get attendance summary for a student
+     */
     private void handleGetAttendanceSummary(HttpServletResponse response, int studentIndex) throws Exception {
         List<AttendanceSummary> summary = attendanceService.getStudentAttendanceSummary(studentIndex);
         ApiResponse<List<AttendanceSummary>> apiResponse =
@@ -108,20 +102,19 @@ public class AttendanceServlet extends HttpServlet {
         sendJsonResponse(response, apiResponse);
     }
 
-    private void handleGetStudentCourseAttendance(HttpServletResponse response, int studentIndex, String courseCode) throws Exception {
-        List<Attendance> attendanceList = attendanceService.getStudentCourseAttendance(studentIndex, courseCode);
-        ApiResponse<List<Attendance>> apiResponse =
-                new ApiResponse<>(true, "Student course attendance retrieved successfully", attendanceList);
+    /**
+     * Handles request to get students enrolled in a course
+     */
+    private void handleGetStudentsEnrolledInCourse(HttpServletResponse response, String courseCode) throws Exception {
+        List<CourseEnrollment> enrolledStudents = attendanceService.getStudentsEnrolledInCourse(courseCode);
+        ApiResponse<List<CourseEnrollment>> apiResponse =
+                new ApiResponse<>(true, "Students enrolled in course retrieved successfully", enrolledStudents);
         sendJsonResponse(response, apiResponse);
     }
 
-    private void handleGetStudentAttendanceForSession(HttpServletResponse response, String courseCode, LocalDate date) throws Exception {
-        List<Attendance> attendanceList = attendanceService.getStudentAttendanceForSession(courseCode, date);
-        ApiResponse<List<Attendance>> apiResponse =
-                new ApiResponse<>(true, "Session attendance list retrieved successfully", attendanceList);
-        sendJsonResponse(response, apiResponse);
-    }
-
+    /**
+     * Handles request to submit attendance for multiple students
+     */
     private void handleSubmitAttendance(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // Parse the attendance data from the request
         AttendanceSubmissionData submissionData = parseAttendanceSubmission(request);

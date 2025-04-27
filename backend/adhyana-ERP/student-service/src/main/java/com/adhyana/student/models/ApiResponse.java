@@ -1,8 +1,9 @@
 package com.adhyana.student.models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 
 public class ApiResponse<T> {
     private boolean success;
@@ -26,6 +27,8 @@ public class ApiResponse<T> {
             json.append(",\"data\":");
             if (data instanceof Student) {
                 json.append(studentToJson((Student) data));
+            } else if (data instanceof EnrolledStudent) {
+                json.append(enrolledStudentToJson((EnrolledStudent) data));
             } else if (data instanceof Attendance) {
                 json.append(attendanceToJson((Attendance) data));
             } else if (data instanceof CourseSession) {
@@ -42,6 +45,8 @@ public class ApiResponse<T> {
                 json.append(applicationResponseToJson((StudentApplication.ApplicationResponse) data));
             } else if (data instanceof java.util.List) {
                 json.append(listToJson((java.util.List<?>) data));
+            }else if (data instanceof CourseEnrollment) {
+                json.append(courseEnrollmentToJson((CourseEnrollment) data));
             } else if (data instanceof java.util.Map) {
                 json.append(listToJson((java.util.List<?>) data));
             } else {
@@ -56,6 +61,58 @@ public class ApiResponse<T> {
     }
 
     // Convert objects to JSON strings
+
+    // Updated method for the new Student model
+    private String studentToJson(Student student) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        String createdAt = student.getCreatedAt() != null ? "\"" + student.getCreatedAt().format(formatter) + "\"" : "null";
+        String updatedAt = student.getUpdatedAt() != null ? "\"" + student.getUpdatedAt().format(formatter) + "\"" : "null";
+
+        return String.format(
+                "{\"studentIndex\":%d,\"registrationNumber\":\"%s\",\"name\":\"%s\",\"email\":\"%s\"," +
+                        "\"batchId\":%s,\"createdAt\":%s,\"updatedAt\":%s}",
+                student.getStudentIndex(),
+                student.getRegistrationNumber(),
+                student.getName(),
+                student.getEmail(),
+                student.getBatchId() != null ? "\"" + student.getBatchId() + "\"" : "null",
+                createdAt,
+                updatedAt
+        );
+    }
+
+    // New method for EnrolledStudent model
+    private String enrolledStudentToJson(EnrolledStudent student) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        String createdAt = student.getCreatedAt() != null ? "\"" + student.getCreatedAt().format(formatter) + "\"" : "null";
+        String updatedAt = student.getUpdatedAt() != null ? "\"" + student.getUpdatedAt().format(formatter) + "\"" : "null";
+
+        return String.format(
+                "{\"studentIndex\":%d,\"registrationNumber\":\"%s\",\"batchId\":%s,\"name\":\"%s\"," +
+                        "\"nationalId\":\"%s\",\"email\":\"%s\",\"phone\":\"%s\",\"gender\":\"%s\"," +
+                        "\"dateOfBirth\":\"%s\",\"address\":\"%s\",\"guardianName\":\"%s\"," +
+                        "\"guardianNationalId\":\"%s\",\"guardianRelation\":\"%s\",\"guardianContactNumber\":\"%s\"," +
+                        "\"guardianEmail\":%s,\"hostelRequired\":%s,\"createdAt\":%s,\"updatedAt\":%s}",
+                student.getStudentIndex(),
+                student.getRegistrationNumber(),
+                student.getBatchId() != null ? "\"" + student.getBatchId() + "\"" : "null",
+                student.getName(),
+                student.getNationalId(),
+                student.getEmail(),
+                student.getPhone(),
+                student.getGender(),
+                student.getDateOfBirth().toString(),
+                student.getAddress(),
+                student.getGuardianName(),
+                student.getGuardianNationalId(),
+                student.getGuardianRelation(),
+                student.getGuardianContactNumber(),
+                student.getGuardianEmail() != null ? "\"" + student.getGuardianEmail() + "\"" : "null",
+                student.getHostelRequired() != null ? "\"" + student.getHostelRequired() + "\"" : "null",
+                createdAt,
+                updatedAt
+        );
+    }
 
     // New method to handle Attendance objects
     private String attendanceToJson(Attendance attendance) {
@@ -78,43 +135,11 @@ public class ApiResponse<T> {
         );
     }
 
-    // Existing method for StudentToJson
-    private String studentToJson(Student student) {
+    // Add this new method for CourseEnrollment JSON conversion
+    private String courseEnrollmentToJson(CourseEnrollment enrollment) {
         return String.format(
-                "{\"id\":%d,\"name\":\"%s\",\"email\":\"%s\",\"degreeID\":\"%s\",\"degreeProgram\":\"%s\"," +
-                        "\"indexNumber\":\"%s\",\"registrationNumber\":\"%s\",\"mobileNumber\":\"%s\"," +
-                        "\"birthDate\":\"%s\",\"state\":\"%s\"}",
-                student.getId(), student.getName(), student.getEmail(),student.getDegreeID(),
-                student.getDegreeProgram(), student.getIndexNumber(),
-                student.getRegistrationNumber(), student.getMobileNumber(),
-                student.getBirthDate(), student.getState()
-        );
-    }
-
-    // Existing method for StudentApplicationToJson
-    private String studentApplicationToJson(StudentApplication application) {
-        return String.format(
-                "{\"student_application_id\":%d,\"name\":\"%s\",\"nationalId\":\"%s\",\"email\":\"%s\",\"phone\":\"%s\"," +
-                        "\"gender\":\"%s\",\"dateOfBirth\":\"%s\",\"address\":\"%s\",\"appliedProgram\":\"%s\"," +
-                        "\"applicationDate\":\"%s\",\"mathematics\":\"%s\",\"science\":\"%s\",\"english\":\"%s\"," +
-                        "\"computerStudies\":\"%s\",\"guardianName\":\"%s\",\"guardianNationalId\":\"%s\"," +
-                        "\"guardianRelation\":\"%s\",\"guardianContactNumber\":\"%s\",\"guardianEmail\":\"%s\"," +
-                        "\"hostelRequired\":\"%s\",\"status\":\"%s\"}",
-                application.getId(), application.getName(), application.getNationalId(), application.getEmail(),
-                application.getPhone(), application.getGender(), application.getDateOfBirth(), application.getAddress(),
-                application.getAppliedProgram(), application.getApplicationDate(), application.getMathematics(),
-                application.getScience(), application.getEnglish(), application.getComputerStudies(),
-                application.getGuardianName(), application.getGuardianNationalId(), application.getGuardianRelation(),
-                application.getGuardianContactNumber(), application.getGuardianEmail(), application.getHostelRequired(),
-                application.getStatus()
-        );
-    }
-
-    // Existing method for ApplicationResponseToJson
-    private String applicationResponseToJson(StudentApplication.ApplicationResponse response) {
-        return String.format(
-                "{\"applicantId\":\"%s\",\"name\":\"%s\",\"status\":\"%s\"}",
-                response.getApplicantId(), response.getName(), response.getStatus()
+                "{\"studentIndex\":%d,\"studentName\":\"%s\"}",
+                enrollment.getStudentIndex(), enrollment.getStudentName()
         );
     }
 
@@ -152,36 +177,32 @@ public class ApiResponse<T> {
         );
     }
 
-//    // New method to handle Map objects
-//    private String mapToJson(Map<?, ?> map) {
-//        StringBuilder json = new StringBuilder();
-//        json.append("{");
-//
-//        int i = 0;
-//        for (Map.Entry<?, ?> entry : map.entrySet()) {
-//            json.append("\"").append(entry.getKey()).append("\":");
-//
-//            if (entry.getValue() instanceof String) {
-//                json.append("\"").append(entry.getValue()).append("\"");
-//            } else if (entry.getValue() instanceof Number) {
-//                json.append(entry.getValue());
-//            } else if (entry.getValue() instanceof Boolean) {
-//                json.append(entry.getValue());
-//            } else if (entry.getValue() instanceof LocalDate) {
-//                json.append("\"").append(entry.getValue()).append("\"");
-//            } else {
-//                json.append("null");
-//            }
-//
-//            if (i < map.size() - 1) {
-//                json.append(",");
-//            }
-//            i++;
-//        }
-//
-//        json.append("}");
-//        return json.toString();
-//    }
+    // Existing method for StudentApplicationToJson
+    private String studentApplicationToJson(StudentApplication application) {
+        return String.format(
+                "{\"student_application_id\":%d,\"name\":\"%s\",\"nationalId\":\"%s\",\"email\":\"%s\",\"phone\":\"%s\"," +
+                        "\"gender\":\"%s\",\"dateOfBirth\":\"%s\",\"address\":\"%s\",\"appliedProgram\":\"%s\"," +
+                        "\"applicationDate\":\"%s\",\"mathematics\":\"%s\",\"science\":\"%s\",\"english\":\"%s\"," +
+                        "\"computerStudies\":\"%s\",\"guardianName\":\"%s\",\"guardianNationalId\":\"%s\"," +
+                        "\"guardianRelation\":\"%s\",\"guardianContactNumber\":\"%s\",\"guardianEmail\":\"%s\"," +
+                        "\"hostelRequired\":\"%s\",\"status\":\"%s\"}",
+                application.getId(), application.getName(), application.getNationalId(), application.getEmail(),
+                application.getPhone(), application.getGender(), application.getDateOfBirth(), application.getAddress(),
+                application.getAppliedProgram(), application.getApplicationDate(), application.getMathematics(),
+                application.getScience(), application.getEnglish(), application.getComputerStudies(),
+                application.getGuardianName(), application.getGuardianNationalId(), application.getGuardianRelation(),
+                application.getGuardianContactNumber(), application.getGuardianEmail(), application.getHostelRequired(),
+                application.getStatus()
+        );
+    }
+
+    // Existing method for ApplicationResponseToJson
+    private String applicationResponseToJson(StudentApplication.ApplicationResponse response) {
+        return String.format(
+                "{\"applicantId\":\"%s\",\"name\":\"%s\",\"status\":\"%s\"}",
+                response.getApplicantId(), response.getName(), response.getStatus()
+        );
+    }
 
     // Updated method to handle all object types
     private String listToJson(java.util.List<?> list) {
@@ -190,6 +211,8 @@ public class ApiResponse<T> {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i) instanceof Student) {
                 json.append(studentToJson((Student) list.get(i)));
+            } else if (list.get(i) instanceof EnrolledStudent) {
+                json.append(enrolledStudentToJson((EnrolledStudent) list.get(i)));
             } else if (list.get(i) instanceof Attendance) {
                 json.append(attendanceToJson((Attendance) list.get(i)));
             } else if (list.get(i) instanceof CourseSession) {
@@ -202,7 +225,9 @@ public class ApiResponse<T> {
                 json.append(scholarshipApplicationToJson((ScholarshipApplication) list.get(i)));
             } else if (list.get(i) instanceof StudentApplication) {
                 json.append(studentApplicationToJson((StudentApplication) list.get(i)));
-            } else if (list.get(i) instanceof StudentApplication.ApplicationResponse) {
+            } else if (list.get(i) instanceof CourseEnrollment) {
+                json.append(courseEnrollmentToJson((CourseEnrollment) list.get(i)));
+            }else if (list.get(i) instanceof StudentApplication.ApplicationResponse) {
                 json.append(applicationResponseToJson((StudentApplication.ApplicationResponse) list.get(i)));
             }
 
