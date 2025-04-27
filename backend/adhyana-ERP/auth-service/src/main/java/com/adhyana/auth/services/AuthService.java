@@ -13,9 +13,6 @@ public class AuthService {
     public User authenticate(String username, String rawPassword) throws Exception {
         // Hash the input password
         String hashedPassword = HashUtil.hashPassword(rawPassword);
-        System.out.println("Input username: " + username);
-        System.out.println("Raw password: " + rawPassword);
-        System.out.println("Hashed password: " + hashedPassword);
 
         String query = "SELECT user_id, username, password, role, user_external_id FROM users WHERE username = ?";
 
@@ -27,7 +24,6 @@ public class AuthService {
 
             if (rs.next()) {
                 String dbPassword = rs.getString("password");
-                System.out.println("DB password: " + dbPassword);
 
                 if (hashedPassword.equals(dbPassword)) {
                     return new User(
@@ -39,7 +35,6 @@ public class AuthService {
                     );
                 }
             }
-            System.out.println("Authentication failed");
         }
         return null;
     }
