@@ -4,8 +4,6 @@ target/
 !**/src/test/**/target/
 
 ### IntelliJ IDEA ###
-.idea/workspace.xml
-.idea/dataSources.xml
 .idea/dataSources/
 .idea/sqldialects.xml
 .idea/uiDesigner.xml
@@ -16,16 +14,6 @@ target/
 *.iws
 *.iml
 *.ipr
-
-# IntelliJ IDEA files
-backend/adhyana-ERP/.idea/workspace.xml
-backend/adhyana-ERP/.idea/dataSources.xml
-backend/adhyana-ERP/.idea/dataSources/
-backend/adhyana-ERP/.idea/sqldialects.xml
-backend/adhyana-ERP/.idea/uiDesigner.xml
-backend/adhyana-ERP/.idea/encodings.xml
-backend/adhyana-ERP/.idea/vcs.xml
-backend/adhyana-ERP/.idea/misc.xml
 
 
 ### VS Code ###
