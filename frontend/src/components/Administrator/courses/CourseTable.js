@@ -326,3 +326,8 @@ const CourseTable = ({ courses, onRowClick, onAddClick }) => {
 };
 
 window.CourseTable = CourseTable;
+
+components / Admin / courses / CourseTable.js;
+components / Admin / courses / CourseTable.js;
+
+components / Admin / courses / CourseTable.js;

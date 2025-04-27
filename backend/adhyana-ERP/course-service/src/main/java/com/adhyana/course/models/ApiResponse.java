@@ -27,6 +27,10 @@ public class ApiResponse<T> {
                 json.append(announcementToJson((Announcement) data));
             } else if (data instanceof Feedback) {
                 json.append(feedbackToJson((Feedback) data));
+            } else if (data instanceof Semester) {
+                json.append(semesterToJson((Semester) data));
+            } else if (data instanceof StudentSemesterCourse) {
+                json.append(studentSemesterCourseToJson((StudentSemesterCourse) data));
             } else if (data instanceof List<?>) {
                 json.append(listToJson((List<?>) data));
             }
@@ -36,36 +40,77 @@ public class ApiResponse<T> {
         return json.toString();
     }
 
-    private String courseToJson(Course course) {
-        // Include avgRating in the JSON output
+    private String announcementToJson(Announcement a) {
         return String.format(
-                "{\"id\":%d,\"code\":%d,\"name\":\"%s\",\"year\":%d," +
-                        "\"semester\":%d,\"credits\":%d,\"duration\":%d,\"avgRating\":%s}",
-                course.getId(), course.getCode(), course.getName(), course.getYear(),
-                course.getSemester(), course.getCredits(), course.getDuration(),
+                "{\"id\":%d,\"courseId\":\"%s\",\"semesterId\":%s,\"title\":\"%s\",\"content\":\"%s\"," +
+                        "\"postedBy\":%s,\"author\":\"%s\",\"createdAt\":\"%s\",\"updatedAt\":\"%s\"}",
+                a.getId(),
+                a.getCourseId(),
+                a.getSemesterId() == null ? "null" : "\"" + a.getSemesterId() + "\"",
+                a.getTitle(),
+                a.getContent(),
+                a.getPostedBy() == null ? "null" : a.getPostedBy(),
+                a.getPostedBy() == null ? "" : a.getPostedBy().toString(), // Include author for backward compatibility
+                a.getCreatedAt().toString(),
+                a.getUpdatedAt() != null ? a.getUpdatedAt().toString() : a.getCreatedAt().toString()
+        );
+    }
+
+    private String courseToJson(Course course) {
+        // Updated to match the new Course model fields
+        return String.format(
+                "{\"courseId\":\"%s\",\"name\":\"%s\",\"year\":%d," +
+                        "\"credits\":%d,\"duration\":%d,\"avgRating\":%s}",
+                course.getCourseId(), course.getName(), course.getYear(),
+                course.getCredits(), course.getDuration(),
                 course.getAvgRating() == null ? "null" : course.getAvgRating()
         );
     }
 
-    private String announcementToJson(Announcement a) {
+    private String semesterToJson(Semester s) {
         return String.format(
-                "{\"id\":%d,\"courseId\":%d,\"title\":\"%s\",\"content\":\"%s\"," +
-                        "\"author\":\"%s\",\"createdAt\":\"%s\"}",
-                a.getId(), a.getcourseId(), a.getTitle(), a.getContent(),
-                a.getAuthor(), a.getCreatedAt().toString()
+                "{\"semesterId\":\"%s\",\"batchId\":\"%s\",\"academicYear\":%d,\"semesterNum\":%d," +
+                        "\"startDate\":\"%s\",\"endDate\":\"%s\",\"status\":\"%s\"," +
+                        "\"createdAt\":%s,\"updatedAt\":%s}",
+                s.getSemesterId(),
+                s.getBatchId(),
+                s.getAcademicYear(),
+                s.getSemesterNum(),
+                s.getStartDate().toString(),
+                s.getEndDate().toString(),
+                s.getStatus(),
+                s.getCreatedAt() == null ? "null" : "\"" + s.getCreatedAt().toString() + "\"",
+                s.getUpdatedAt() == null ? "null" : "\"" + s.getUpdatedAt().toString() + "\""
         );
     }
 
     private String feedbackToJson(Feedback f) {
         return String.format(
-                "{\"id\":%d,\"courseId\":%d,\"studentId\":%s,\"teacher\":\"%s\"," +
-                        "\"ratingContent\":%d,\"ratingInstructor\":%d,\"ratingLms\":%d," +
+                "{\"feedbackId\":%d,\"courseId\":\"%s\",\"semesterId\":%s,\"studentIndex\":%s," +
+                        "\"ratingContent\":%d,\"ratingInstructor\":%d,\"ratingMaterials\":%d,\"ratingLms\":%d," +
                         "\"comment\":\"%s\",\"isAnonymous\":%b,\"createdAt\":\"%s\",\"updatedAt\":\"%s\"}",
-                f.getId(), f.getCourseId(),
-                f.getStudentId() == null ? "null" : f.getStudentId().toString(),
-                f.getTeacher(), f.getRatingContent(), f.getRatingInstructor(), f.getRatingLms(),
-                f.getComment(), f.isAnonymous(),
-                f.getCreatedAt().toString(), f.getUpdatedAt().toString()
+                f.getFeedbackId(),
+                f.getCourseId(),
+                f.getSemesterId() == null ? "null" : "\"" + f.getSemesterId() + "\"",
+                f.getStudentIndex() == null ? "null" : f.getStudentIndex().toString(),
+                f.getRatingContent(),
+                f.getRatingInstructor(),
+                f.getRatingMaterials(),
+                f.getRatingLms(),
+                f.getComment(),
+                f.isAnonymous(),
+                f.getCreatedAt().toString(),
+                f.getUpdatedAt().toString()
+        );
+    }
+
+    private String studentSemesterCourseToJson(StudentSemesterCourse ssc) {
+        return String.format(
+                "{\"studentIndex\":%d,\"semesterId\":\"%s\",\"courseId\":\"%s\",\"enrollmentDate\":%s}",
+                ssc.getStudentIndex(),
+                ssc.getSemesterId(),
+                ssc.getCourseId(),
+                ssc.getEnrollmentDate() != null ? "\"" + ssc.getEnrollmentDate().toString() + "\"" : "null"
         );
     }
 
@@ -82,6 +127,10 @@ public class ApiResponse<T> {
                 json.append(announcementToJson((Announcement) item));
             } else if (item instanceof Feedback) {
                 json.append(feedbackToJson((Feedback) item));
+            } else if (item instanceof Semester) {
+                json.append(semesterToJson((Semester) item));
+            } else if (item instanceof StudentSemesterCourse) {
+                json.append(studentSemesterCourseToJson((StudentSemesterCourse) item));
             }
 
             if (i < list.size() - 1) {

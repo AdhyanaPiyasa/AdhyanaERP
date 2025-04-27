@@ -1,16 +1,15 @@
-
-// course-service/src/main/java/com/adhyana/course/models/CourseFeedback.java
 package com.adhyana.course.models;
 
 import java.sql.Timestamp;
 
 public class Feedback {
-    private int id;
-    private int courseId;
-    private Integer studentId; // Use Integer to allow null (for anonymous)
-    private String teacher;  //Optional, depends on your use case
+    private int feedbackId;
+    private String courseId;
+    private String semesterId;
+    private Integer studentIndex;
     private int ratingContent;
     private int ratingInstructor;
+    private int ratingMaterials;
     private int ratingLms;
     private String comment;
     private boolean isAnonymous;
@@ -18,16 +17,17 @@ public class Feedback {
     private Timestamp updatedAt;
 
     // Constructor
-    public Feedback(int id, int courseId, Integer studentId,String teacher,
-                          int ratingContent, int ratingInstructor, int ratingLms,
-                          String comment, boolean isAnonymous,
-                          Timestamp createdAt, Timestamp updatedAt) {
-        this.id = id;
+    public Feedback(int feedbackId, String courseId, String semesterId, Integer studentIndex,
+                    int ratingContent, int ratingInstructor, int ratingMaterials, int ratingLms,
+                    String comment, boolean isAnonymous,
+                    Timestamp createdAt, Timestamp updatedAt) {
+        this.feedbackId = feedbackId;
         this.courseId = courseId;
-        this.studentId = studentId;
-        this.teacher = teacher;
+        this.semesterId = semesterId;
+        this.studentIndex = studentIndex;
         this.ratingContent = ratingContent;
         this.ratingInstructor = ratingInstructor;
+        this.ratingMaterials = ratingMaterials;
         this.ratingLms = ratingLms;
         this.comment = comment;
         this.isAnonymous = isAnonymous;
@@ -36,23 +36,26 @@ public class Feedback {
     }
 
     // Getters and Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getFeedbackId() { return feedbackId; }
+    public void setFeedbackId(int feedbackId) { this.feedbackId = feedbackId; }
 
-    public int getCourseId() { return courseId; }
-    public void setCourseId(int courseId) { this.courseId = courseId; }
+    public String getCourseId() { return courseId; }
+    public void setCourseId(String courseId) { this.courseId = courseId; }
 
-    public Integer getStudentId() { return studentId; }
-    public void setStudentId(Integer studentId) { this.studentId = studentId; }
+    public String getSemesterId() { return semesterId; }
+    public void setSemesterId(String semesterId) { this.semesterId = semesterId; }
 
-     public String getTeacher() { return teacher; }
-     public void setTeacher(String teacher) { this.teacher = teacher; }
+    public Integer getStudentIndex() { return studentIndex; }
+    public void setStudentIndex(Integer studentIndex) { this.studentIndex = studentIndex; }
 
     public int getRatingContent() { return ratingContent; }
     public void setRatingContent(int ratingContent) { this.ratingContent = ratingContent; }
 
     public int getRatingInstructor() { return ratingInstructor; }
     public void setRatingInstructor(int ratingInstructor) { this.ratingInstructor = ratingInstructor; }
+
+    public int getRatingMaterials() { return ratingMaterials; }
+    public void setRatingMaterials(int ratingMaterials) { this.ratingMaterials = ratingMaterials; }
 
     public int getRatingLms() { return ratingLms; }
     public void setRatingLms(int ratingLms) { this.ratingLms = ratingLms; }
@@ -68,4 +71,8 @@ public class Feedback {
 
     public Timestamp getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
+
+    // Backward compatibility methods if needed
+    public int getId() { return feedbackId; }
+    public void setId(int id) { this.feedbackId = id; }
 }

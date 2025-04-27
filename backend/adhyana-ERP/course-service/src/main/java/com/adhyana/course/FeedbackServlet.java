@@ -23,14 +23,27 @@ public class FeedbackServlet extends HttpServlet {
             String pathInfo = request.getPathInfo();
 
             if (pathInfo == null || pathInfo.equals("/")) {
-                // Get all feedback records
-                List<Feedback> feedbacks = feedbackService.getAllFeedbacks();
+                // Check for query parameters for filtering
+                String courseId = request.getParameter("courseId");
+                String semesterId = request.getParameter("semesterId");
+
+                List<Feedback> feedbacks;
+
+                if (courseId != null) {
+                    feedbacks = feedbackService.getFeedbacksByCourse(courseId);
+                } else if (semesterId != null) {
+                    feedbacks = feedbackService.getFeedbacksBySemester(semesterId);
+                } else {
+                    // Get all feedback records
+                    feedbacks = feedbackService.getAllFeedbacks();
+                }
+
                 ApiResponse<List<Feedback>> apiResponse = new ApiResponse<>(true, "Feedbacks retrieved successfully", feedbacks);
                 sendJsonResponse(response, apiResponse);
             } else {
                 // Try to parse ID from path and fetch that feedback
-                int id = Integer.parseInt(pathInfo.substring(1));
-                Feedback feedback = feedbackService.getFeedbackById(id);
+                int feedbackId = Integer.parseInt(pathInfo.substring(1));
+                Feedback feedback = feedbackService.getFeedbackById(feedbackId);
 
                 if (feedback != null) {
                     ApiResponse<Feedback> apiResponse = new ApiResponse<>(true, "Feedback retrieved successfully", feedback);
@@ -66,9 +79,9 @@ public class FeedbackServlet extends HttpServlet {
                 return;
             }
 
-            int id = Integer.parseInt(pathInfo.substring(1));
+            int feedbackId = Integer.parseInt(pathInfo.substring(1));
             Feedback feedback = parseFeedbackFromRequest(request);
-            feedbackService.updateFeedback(id, feedback);
+            feedbackService.updateFeedback(feedbackId, feedback);
 
             ApiResponse<Void> apiResponse = new ApiResponse<>(true, "Feedback updated successfully", null);
             sendJsonResponse(response, apiResponse);
@@ -86,8 +99,8 @@ public class FeedbackServlet extends HttpServlet {
                 return;
             }
 
-            int id = Integer.parseInt(pathInfo.substring(1));
-            feedbackService.deleteFeedback(id);
+            int feedbackId = Integer.parseInt(pathInfo.substring(1));
+            feedbackService.deleteFeedback(feedbackId);
 
             ApiResponse<Void> apiResponse = new ApiResponse<>(true, "Feedback deleted successfully", null);
             sendJsonResponse(response, apiResponse);
@@ -100,18 +113,42 @@ public class FeedbackServlet extends HttpServlet {
         String json = readRequestBody(request);
         Map<String, String> data = parseJsonToMap(json);
 
-        int courseId = Integer.parseInt(data.get("courseId"));
-        Integer studentId = data.containsKey("studentId") && !data.get("studentId").equalsIgnoreCase("null")
-                ? Integer.parseInt(data.get("studentId")) : null;
-        String teacher = data.getOrDefault("teacher", null);
-        int ratingContent = Integer.parseInt(data.get("ratingContent"));
-        int ratingInstructor = Integer.parseInt(data.get("ratingInstructor"));
-        int ratingLms = Integer.parseInt(data.get("ratingLms"));
-        String comment = data.get("comment");
-        boolean isAnonymous = Boolean.parseBoolean(data.get("isAnonymous"));
+        // Parse data with proper handling of null values
+        String courseId = data.get("courseId");
+        String semesterId = data.getOrDefault("semesterId", null);
+
+        Integer studentIndex = null;
+        if (data.containsKey("studentIndex") && !data.get("studentIndex").equalsIgnoreCase("null")) {
+            try {
+                studentIndex = Integer.parseInt(data.get("studentIndex"));
+            } catch (NumberFormatException e) {
+                // Handle invalid student index format
+            }
+        }
+
+        int ratingContent = Integer.parseInt(data.getOrDefault("ratingContent", "0"));
+        int ratingInstructor = Integer.parseInt(data.getOrDefault("ratingInstructor", "0"));
+        int ratingMaterials = Integer.parseInt(data.getOrDefault("ratingMaterials", "0"));
+        int ratingLms = Integer.parseInt(data.getOrDefault("ratingLms", "0"));
+        String comment = data.getOrDefault("comment", "");
+        boolean isAnonymous = Boolean.parseBoolean(data.getOrDefault("isAnonymous", "false"));
+
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
-        return new Feedback(0, courseId, studentId, teacher, ratingContent, ratingInstructor, ratingLms, comment, isAnonymous, now, now);
+        return new Feedback(
+                0, // feedbackId will be generated by the database
+                courseId,
+                semesterId,
+                studentIndex,
+                ratingContent,
+                ratingInstructor,
+                ratingMaterials,
+                ratingLms,
+                comment,
+                isAnonymous,
+                now,
+                now
+        );
     }
 
     private String readRequestBody(HttpServletRequest request) throws IOException {
@@ -127,13 +164,26 @@ public class FeedbackServlet extends HttpServlet {
 
     private Map<String, String> parseJsonToMap(String json) {
         Map<String, String> map = new HashMap<>();
+        if (json == null || json.isEmpty()) {
+            return map;
+        }
+
+        // Simple JSON parsing
         json = json.replaceAll("[{}\"]", "");
         String[] pairs = json.split(",");
 
         for (String pair : pairs) {
-            String[] keyValue = pair.split(":");
+            String[] keyValue = pair.split(":", 2); // Split on first colon only
             if (keyValue.length == 2) {
-                map.put(keyValue[0].trim(), keyValue[1].trim());
+                String key = keyValue[0].trim();
+                String value = keyValue[1].trim();
+
+                // Handle null values
+                if (value.equalsIgnoreCase("null")) {
+                    value = null;
+                }
+
+                map.put(key, value);
             }
         }
 
@@ -147,6 +197,8 @@ public class FeedbackServlet extends HttpServlet {
     }
 
     private void handleError(HttpServletResponse response, Exception e) throws IOException {
+        System.err.println("Error processing feedback request: " + e.getMessage());
+        e.printStackTrace();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         ApiResponse<Void> apiResponse = new ApiResponse<>(false, "Error: " + e.getMessage(), null);
         sendJsonResponse(response, apiResponse);

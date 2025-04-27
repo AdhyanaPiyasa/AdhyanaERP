@@ -263,3 +263,8 @@ const CourseFocusPanel = ({ course, onEdit, onDelete }) => {
 };
 
 window.CourseFocusPanel = CourseFocusPanel;
+
+components / Admin / courses / CourseFocusPanel.js;
+components / Admin / courses / CourseFocusPanel.js;
+
+components/Admin/courses/CourseFocusPanel.js

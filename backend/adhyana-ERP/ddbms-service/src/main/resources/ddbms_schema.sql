@@ -1,14 +1,41 @@
 -- =============================================
--- ADHYANA GRAND SCHEMA
--- Purpose: Combined schema for distributed DBMS
+-- ADHYANA DDBMS SCHEMA
+-- Purpose: Central schema and metadata for DDBMS service
 -- =============================================
 
 CREATE DATABASE IF NOT EXISTS adhyana_ddbms;
 USE adhyana_ddbms;
 
--- ================ CENTRAL/ADMIN TABLES ================
+-- ================ DDBMS METADATA TABLES ================
 
--- Staff Table (Primary Source)
+-- Table to store service information (endpoints for propagation)
+CREATE TABLE IF NOT EXISTS services (
+                                        service_id INT PRIMARY KEY AUTO_INCREMENT,
+                                        service_name VARCHAR(50) NOT NULL UNIQUE,
+                                        endpoint_url VARCHAR(255) NOT NULL,
+    -- api_key VARCHAR(100) NULL, -- API key for sending requests *to* the service if needed
+                                        active BOOLEAN DEFAULT TRUE,
+                                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Table to store table mappings (which services need updates for which tables)
+CREATE TABLE IF NOT EXISTS table_mappings (
+                                              mapping_id INT PRIMARY KEY AUTO_INCREMENT,
+                                              table_name VARCHAR(100) NOT NULL,
+                                              service_id INT NOT NULL, -- service that needs updates for this table
+    -- is_primary BOOLEAN DEFAULT FALSE, -- Indicates if this service is the primary owner (optional metadata)
+                                              FOREIGN KEY (service_id) REFERENCES services(service_id) ON DELETE CASCADE,
+                                              INDEX idx_table_name (table_name), -- Index for faster lookup
+                                              UNIQUE KEY unique_table_service (table_name, service_id)
+);
+
+-- ================ MERGED SCHEMA FROM ALL SERVICES ================
+-- Execute the schema creation scripts from ALL other services here
+-- to create the tables within the adhyana_ddbms database.
+-- Example placeholders:
+
+-- == FROM adhyana_admin ==
 CREATE TABLE IF NOT EXISTS staff (
                                      staff_id INT PRIMARY KEY AUTO_INCREMENT,
                                      name VARCHAR(100) NOT NULL,
@@ -22,7 +49,6 @@ CREATE TABLE IF NOT EXISTS staff (
                                      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Courses Table (Primary Source)
 CREATE TABLE IF NOT EXISTS courses (
                                        course_id VARCHAR(10) PRIMARY KEY,
                                        name VARCHAR(100) NOT NULL,
@@ -34,7 +60,6 @@ CREATE TABLE IF NOT EXISTS courses (
                                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Batches Table (Primary Source)
 CREATE TABLE IF NOT EXISTS batches (
                                        batch_id VARCHAR(10) PRIMARY KEY,
                                        batch_name VARCHAR(50) NOT NULL UNIQUE,
@@ -46,7 +71,6 @@ CREATE TABLE IF NOT EXISTS batches (
                                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Batch Courses (Junction Table - Primary Source)
 CREATE TABLE IF NOT EXISTS batch_courses (
                                              batch_id VARCHAR(10) NOT NULL,
                                              course_id VARCHAR(10) NOT NULL,
@@ -55,19 +79,19 @@ CREATE TABLE IF NOT EXISTS batch_courses (
                                              PRIMARY KEY (batch_id, course_id)
 );
 
--- Students (Primary Source)
 CREATE TABLE IF NOT EXISTS students (
                                         student_index INT PRIMARY KEY,
                                         registration_number VARCHAR(20) NOT NULL UNIQUE,
                                         name VARCHAR(100) NOT NULL,
                                         email VARCHAR(100) NOT NULL UNIQUE,
                                         batch_id VARCHAR(10) NULL,
+                                        gender ENUM('Male', 'Female', 'Other'), -- Removed NOT NULL constraint if it comes from application
+                                        hostel_required BOOLEAN DEFAULT FALSE,
                                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                         FOREIGN KEY (batch_id) REFERENCES batches(batch_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
--- Student Applications (Primary Source)
 CREATE TABLE IF NOT EXISTS student_applications (
                                                     student_application_id INT PRIMARY KEY AUTO_INCREMENT,
                                                     name VARCHAR(100) NOT NULL,
@@ -94,7 +118,6 @@ CREATE TABLE IF NOT EXISTS student_applications (
                                                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Hostel Applications (Primary Source)
 CREATE TABLE IF NOT EXISTS hostel_applications (
                                                    hostel_application_id INT PRIMARY KEY AUTO_INCREMENT,
                                                    student_index INT NOT NULL,
@@ -102,12 +125,9 @@ CREATE TABLE IF NOT EXISTS hostel_applications (
                                                    status VARCHAR(20) NOT NULL DEFAULT 'Pending',
                                                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                                   FOREIGN KEY (student_index) REFERENCES students(index_number) ON DELETE CASCADE
+                                                   FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE CASCADE
 );
 
--- ================ ADMIN SPECIFIC TABLES ================
-
--- Payroll
 CREATE TABLE IF NOT EXISTS payroll (
                                        payroll_id INT PRIMARY KEY AUTO_INCREMENT,
                                        staff_id INT NOT NULL,
@@ -125,7 +145,6 @@ CREATE TABLE IF NOT EXISTS payroll (
                                        UNIQUE KEY uk_staff_month (staff_id, salary_month)
 );
 
--- Announcements (General/System-wide)
 CREATE TABLE IF NOT EXISTS announcements (
                                              announcement_id INT PRIMARY KEY AUTO_INCREMENT,
                                              title VARCHAR(200) NOT NULL,
@@ -143,7 +162,6 @@ CREATE TABLE IF NOT EXISTS announcements (
                                              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Academic Calendar
 CREATE TABLE IF NOT EXISTS academic_calendar (
                                                  event_id INT PRIMARY KEY AUTO_INCREMENT,
                                                  event_title VARCHAR(200) NOT NULL,
@@ -157,13 +175,12 @@ CREATE TABLE IF NOT EXISTS academic_calendar (
                                                  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- ================ STUDENT SPECIFIC TABLES ================
-
--- Attendance
+-- == FROM adhyana_student ==
+-- Note: students, courses, applications are already defined above from adhyana_admin
 CREATE TABLE IF NOT EXISTS attendance (
                                           attendance_id INT PRIMARY KEY AUTO_INCREMENT,
                                           student_index INT NOT NULL,
-                                          course_id VARCHAR(20) NOT NULL,
+                                          course_id VARCHAR(10) NOT NULL, -- Match type in courses table
                                           date DATE NOT NULL,
                                           present BOOLEAN DEFAULT FALSE,
                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -173,7 +190,6 @@ CREATE TABLE IF NOT EXISTS attendance (
                                           UNIQUE KEY (student_index, course_id, date)
 );
 
--- Scholarships Master List
 CREATE TABLE IF NOT EXISTS scholarships (
                                             scholarship_id INT PRIMARY KEY AUTO_INCREMENT,
                                             name VARCHAR(100) NOT NULL UNIQUE,
@@ -185,26 +201,25 @@ CREATE TABLE IF NOT EXISTS scholarships (
                                             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Scholarship Applications
 CREATE TABLE IF NOT EXISTS scholarship_applications (
                                                         scholarship_application_id INT PRIMARY KEY AUTO_INCREMENT,
-                                                        student_index INT NOT NULL, -- Changed from VARCHAR, Removed UNIQUE
+                                                        student_index INT NOT NULL,
                                                         scholarship_id INT NOT NULL,
-                                                        student_batch VARCHAR(20) NULL, -- Denormalized for convenience, but can get from student_index
-                                                        student_degree VARCHAR(50) NULL, -- Denormalized
-                                                        student_gpa DOUBLE NOT NULL, -- GPA at time of application
+                                                        student_batch VARCHAR(20) NULL,
+                                                        student_degree VARCHAR(50) NULL,
+                                                        student_gpa DOUBLE NOT NULL,
                                                         status ENUM('Pending','Approved','Rejected') NOT NULL ,
                                                         comments TEXT,
                                                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                                        FOREIGN KEY (scholarship_id) REFERENCES scholarships(scholarship_id) ON DELETE CASCADE, -- If scholarship deleted, apps are void
+                                                        FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE CASCADE,
+                                                        FOREIGN KEY (scholarship_id) REFERENCES scholarships(scholarship_id) ON DELETE CASCADE
 );
 
--- ================ COURSE SPECIFIC TABLES ================
-
--- Semesters (Defines offering of a course in a specific period)
+-- == FROM adhyana_course ==
+-- Note: courses, students, staff, batches already defined
 CREATE TABLE IF NOT EXISTS semesters (
-                                         semester_id VARCHAR(20) PRIMARY KEY,
+                                         semester_id VARCHAR(20) PRIMARY KEY, -- Increased length
                                          batch_id VARCHAR(10) NOT NULL,
                                          course_id VARCHAR(10) NOT NULL,
                                          staff_id INT NULL,
@@ -220,7 +235,6 @@ CREATE TABLE IF NOT EXISTS semesters (
                                          FOREIGN KEY (staff_id) REFERENCES staff(staff_id) ON DELETE SET NULL
 );
 
--- Feedback
 CREATE TABLE IF NOT EXISTS feedbacks (
                                          feedback_id INT PRIMARY KEY AUTO_INCREMENT,
                                          course_id VARCHAR(10) NOT NULL,
@@ -236,10 +250,9 @@ CREATE TABLE IF NOT EXISTS feedbacks (
                                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                          FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE,
                                          FOREIGN KEY (semester_id) REFERENCES semesters(semester_id) ON DELETE SET NULL,
-                                         FOREIGN KEY (student_index) REFERENCES students(index_number) ON DELETE SET NULL
+                                         FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE SET NULL
 );
 
--- Course Announcements
 CREATE TABLE IF NOT EXISTS course_announcements (
                                                     course_announcement_id INT PRIMARY KEY AUTO_INCREMENT,
                                                     course_id VARCHAR(10) NOT NULL,
@@ -254,9 +267,8 @@ CREATE TABLE IF NOT EXISTS course_announcements (
                                                     FOREIGN KEY (posted_by) REFERENCES staff(staff_id) ON DELETE SET NULL
 );
 
--- ================ EXAM SPECIFIC TABLES ================
-
--- Exams (Formal Scheduled Exams)
+-- == FROM adhyana_exam ==
+-- Note: courses, students, semesters already defined
 CREATE TABLE IF NOT EXISTS exams (
                                      exam_id INT PRIMARY KEY AUTO_INCREMENT,
                                      title VARCHAR(100) NOT NULL,
@@ -271,7 +283,6 @@ CREATE TABLE IF NOT EXISTS exams (
                                      FOREIGN KEY (semester_id) REFERENCES semesters(semester_id) ON DELETE CASCADE
 );
 
--- Assignments
 CREATE TABLE IF NOT EXISTS assignments (
                                            assignment_id INT PRIMARY KEY AUTO_INCREMENT,
                                            title VARCHAR(100) NOT NULL,
@@ -290,7 +301,6 @@ CREATE TABLE IF NOT EXISTS assignments (
                                            FOREIGN KEY (posted_by) REFERENCES staff(staff_id) ON DELETE SET NULL
 );
 
--- Grades
 CREATE TABLE IF NOT EXISTS grades (
                                       grade_id INT PRIMARY KEY AUTO_INCREMENT,
                                       student_index INT NOT NULL,
@@ -304,13 +314,13 @@ CREATE TABLE IF NOT EXISTS grades (
                                       graded_by INT NULL,
                                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                      FOREIGN KEY (student_index) REFERENCES students(index_number) ON DELETE CASCADE,
+                                      FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE CASCADE,
                                       FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE,
                                       FOREIGN KEY (semester_id) REFERENCES semesters(semester_id) ON DELETE CASCADE,
+                                      FOREIGN KEY (graded_by) REFERENCES staff(staff_id) ON DELETE SET NULL,
                                       UNIQUE KEY uk_student_component (student_index, component_id, component_type)
 );
 
--- Reports
 CREATE TABLE IF NOT EXISTS generated_reports (
                                                  report_id INT PRIMARY KEY AUTO_INCREMENT,
                                                  report_type VARCHAR(50) NOT NULL,
@@ -321,201 +331,52 @@ CREATE TABLE IF NOT EXISTS generated_reports (
                                                  FOREIGN KEY (generated_by) REFERENCES staff(staff_id) ON DELETE SET NULL
 );
 
--- ================ FUNCTIONS AND TRIGGERS ================
+-- == FROM adhyana_auth ==
+CREATE TABLE IF NOT EXISTS users (
+                                     user_id INT PRIMARY KEY AUTO_INCREMENT,
+                                     username VARCHAR(50) NOT NULL UNIQUE,
+                                     password VARCHAR(100) NOT NULL, -- Store hashed passwords
+                                     role VARCHAR(20) NOT NULL,
+                                     user_external_id VARCHAR(50), -- Link to staff_id or student_index
+                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
--- Function to calculate average rating
-DELIMITER //
-CREATE FUNCTION IF NOT EXISTS calculate_course_avg_rating(p_course_id VARCHAR(10))
-    RETURNS DECIMAL(3,2)
-    READS SQL DATA
-    DETERMINISTIC
-BEGIN
-    DECLARE avg_rating DECIMAL(3,2);
+-- ================ INITIAL DDBMS METADATA ================
 
-    SELECT AVG( (rating_content + rating_instructor + rating_materials + rating_lms) / 4.0 )
-    INTO avg_rating
-    FROM feedbacks
-    WHERE course_id = p_course_id;
+-- Insert service information (Adjust URLs and API keys as needed)
+-- The endpoint_url here should be the URL *within* each service that listens for sync updates.
+INSERT INTO services (service_name, endpoint_url, active) VALUES
+                                                              ('student-service', 'http://localhost:8083/api/sync', TRUE),
+                                                              ('course-service', 'http://localhost:8084/api/sync', TRUE),
+                                                              ('exam-service', 'http://localhost:8085/api/sync', TRUE),
+                                                              ('administration-service', 'http://localhost:8086/api/sync', TRUE),
+                                                              ('auth-service', 'http://localhost:8082/api/sync', TRUE)
+ON DUPLICATE KEY UPDATE endpoint_url=VALUES(endpoint_url), active=VALUES(active);
 
-    RETURN COALESCE(avg_rating, 0.00);
-END //
-DELIMITER ;
+-- Define table mappings (Which service needs updates for which table?)
+-- Example: Student updates need to go to Course and Exam services
+DELETE FROM table_mappings; -- Clear existing mappings before inserting
 
--- Trigger after feedback insert
-DELIMITER //
-CREATE TRIGGER IF NOT EXISTS after_feedback_insert
-    AFTER INSERT ON feedbacks
-    FOR EACH ROW
-BEGIN
-    UPDATE courses
-    SET avg_rating = calculate_course_avg_rating(NEW.course_id)
-    WHERE course_id = NEW.course_id;
-END //
-DELIMITER ;
+-- Student table updates go to:
+INSERT INTO table_mappings (table_name, service_id) VALUES ('students', (SELECT service_id FROM services WHERE service_name='course-service'));
+INSERT INTO table_mappings (table_name, service_id) VALUES ('students', (SELECT service_id FROM services WHERE service_name='exam-service'));
+INSERT INTO table_mappings (table_name, service_id) VALUES ('students', (SELECT service_id FROM services WHERE service_name='administration-service')); -- Admin needs student info too
+INSERT INTO table_mappings (table_name, service_id) VALUES ('students', (SELECT service_id FROM services WHERE service_name='auth-service')); -- Auth might need student info
 
--- Trigger after feedback update
-DELIMITER //
-CREATE TRIGGER IF NOT EXISTS after_feedback_update
-    AFTER UPDATE ON feedbacks
-    FOR EACH ROW
-BEGIN
-    -- Update old course if course_id changed
-    IF OLD.course_id <> NEW.course_id THEN
-        UPDATE courses
-        SET avg_rating = calculate_course_avg_rating(OLD.course_id)
-        WHERE course_id = OLD.course_id;
-    END IF;
-    -- Update new/current course
-    UPDATE courses
-    SET avg_rating = calculate_course_avg_rating(NEW.course_id)
-    WHERE course_id = NEW.course_id;
-END //
-DELIMITER ;
+-- Course table updates go to:
+INSERT INTO table_mappings (table_name, service_id) VALUES ('courses', (SELECT service_id FROM services WHERE service_name='student-service'));
+INSERT INTO table_mappings (table_name, service_id) VALUES ('courses', (SELECT service_id FROM services WHERE service_name='exam-service'));
+INSERT INTO table_mappings (table_name, service_id) VALUES ('courses', (SELECT service_id FROM services WHERE service_name='administration-service')); -- Admin needs course info
 
--- Trigger after feedback delete
-DELIMITER //
-CREATE TRIGGER IF NOT EXISTS after_feedback_delete
-    AFTER DELETE ON feedbacks
-    FOR EACH ROW
-BEGIN
-    UPDATE courses
-    SET avg_rating = calculate_course_avg_rating(OLD.course_id)
-    WHERE course_id = OLD.course_id;
-END //
-DELIMITER ;
+-- Add other necessary mappings based on your requirements
+-- Example: Staff updates might need to go to Course Service if staff are lecturers
+INSERT INTO table_mappings (table_name, service_id) VALUES ('staff', (SELECT service_id FROM services WHERE service_name='course-service'));
+INSERT INTO table_mappings (table_name, service_id) VALUES ('staff', (SELECT service_id FROM services WHERE service_name='exam-service')); -- If staff are examiners/graders
 
--- ================ SAMPLE DATA INSERTION ================
+-- Example: Exam/Assignment updates might go to student service (e.g., for student dashboards)
+INSERT INTO table_mappings (table_name, service_id) VALUES ('exams', (SELECT service_id FROM services WHERE service_name='student-service'));
+INSERT INTO table_mappings (table_name, service_id) VALUES ('assignments', (SELECT service_id FROM services WHERE service_name='student-service'));
+INSERT INTO table_mappings (table_name, service_id) VALUES ('grades', (SELECT service_id FROM services WHERE service_name='student-service'));
 
--- Insert into staff table
-INSERT INTO staff (staff_id, name, email, phone, department, position, hire_date, status) VALUES
-                                                                                              (1, 'Aruna Perera', 'aruna.p@adhyana.lk', '0771234567', 'Administration', 'Admin Officer', '2022-08-15', 'ACTIVE'),
-                                                                                              (2, 'Bimal Silva', 'bimal.s@adhyana.lk', '0719876543', 'Academics', 'Lecturer', '2021-05-20', 'ACTIVE'),
-                                                                                              (3, 'Chandra Fernando', 'chandra.f@adhyana.lk', '0765554321', 'Academics', 'Senior Lecturer', '2019-11-01', 'ACTIVE'),
-                                                                                              (4, 'Dilhani Gamage', 'dilhani.g@adhyana.lk', '0701122334', 'Finance', 'Accountant', '2023-01-10', 'ACTIVE'),
-                                                                                              (5, 'Eshan Jayawardena', 'eshan.j@adhyana.lk', '0758877665', 'IT Support', 'IT Technician', '2023-06-01', 'ACTIVE'),
-                                                                                              (6, 'Fathima Rizwan', 'fathima.r@adhyana.lk', '0723344556', 'Academics', 'Assistant Lecturer', '2024-02-15', 'ACTIVE'),
-                                                                                              (7, 'Gamini Herath', 'gamini.h@adhyana.lk', '0784455667', 'Administration', 'Registrar', '2018-03-01', 'INACTIVE');
-
--- Insert sample courses
-INSERT INTO courses (course_id, name, year, credits, duration, avg_rating) VALUES
-                                                                               ('CS1101', 'Introduction to Programming', 1, 3, 45, NULL),
-                                                                               ('CS2101', 'Data Structures', 1, 4, 60, NULL),
-                                                                               ('ENG1001', 'Calculus I', 1, 3, 45, NULL),
-                                                                               ('PHY1001', 'Physics I', 1, 4, 60, NULL),
-                                                                               ('ENG1002', 'English Composition', 1, 3, 45, NULL),
-                                                                               ('BM2001', 'Business Management Fundamentals', 2, 3, 45, NULL),
-                                                                               ('IT3001', 'Database Systems', 2, 4, 60, NULL);
-
--- Insert sample batches
-INSERT INTO batches (batch_id, batch_name, start_date, end_date, capacity, status) VALUES
-                                                                                       ('CS24F', 'CS-2024-Fall', '2024-09-15', '2028-08-31', 50, 'ACTIVE'),
-                                                                                       ('BM23S', 'BM-2023-Spring', '2023-02-01', '2027-01-31', 40, 'ACTIVE'),
-                                                                                       ('ENG23F', 'ENG-2023-Fall', '2023-09-01', '2027-08-31', 60, 'COMPLETED'),
-                                                                                       ('IT24X', 'IT-2024-Summer-Cancelled', '2024-06-01', '2024-08-31', 30, 'CANCELLED');
-
--- Link courses to batches
-INSERT INTO batch_courses (batch_id, course_id) VALUES
-                                                    ('CS24F', 'CS1101'), ('CS24F', 'CS2101'), ('CS24F', 'ENG1001'), ('CS24F', 'PHY1001'), ('CS24F', 'ENG1002'),
-                                                    ('BM23S', 'BM2001'), ('BM23S', 'ENG1002'),
-                                                    ('ENG23F', 'ENG1001'), ('ENG23F', 'PHY1001'), ('ENG23F', 'CS1101');
-
--- Insert sample student data
-INSERT INTO students (index_number, registration_number, name, email, batch_id) VALUES
-                                                                                    (20240001, '2024CS001','Janith Perera' ,'janith.p@student.adhyana.lk', 'CS24F'),
-                                                                                    (20240002, '2024CS002','Aisha Khan' ,'aisha.k@student.adhyana.lk', 'CS24F'),
-                                                                                    (20230010, '2023BM010','Ravi Sharma' ,'ravi.s@student.adhyana.lk', 'BM23S');
-
--- Insert sample student applications
-INSERT INTO student_applications (name, national_id, email, phone, gender, date_of_birth, address, applied_program, application_date, mathematics, science, english, computer_studies, guardian_name, guardian_national_id, guardian_relation, guardian_contact_number, guardian_email, hostel_required, status) VALUES
-                                                                                                                                                                                                                                                                                                                     ('Raj Kumar', '9876543210V', 'raj.kumar@email.com', '0771234567', 'Male', '2005-06-15', '123 Main St, Colombo', 'Computer Science', '2024-03-20', 'A', 'B', 'A', 'A', 'Sanjay Kumar', '7654321098V', 'Father', '0777654321', 'sanjay.kumar@email.com', Yes, 'Accepted'),
-                                                                                                                                                                                                                                                                                                                     ('Amara Silva', '9865432109V', 'amara.silva@email.com', '0761234567', 'Female', '2006-03-22', '456 Park Ave, Kandy', 'Information Systems', '2024-03-19', 'A', 'A', 'B', 'A', 'Nimal Silva', '7543210987V', 'Father', '0767654321', 'nimal.silva@email.com', No, 'Pending');
-
--- Insert into payroll table
-INSERT INTO payroll (staff_id, salary_month, basic_salary, allowances, deductions, payment_status, payment_date) VALUES
-                                                                                                                     (1, '2025-03-01', 60000.00, 5000.00, 2500.00, 'PAID', '2025-03-31'),
-                                                                                                                     (2, '2025-03-01', 85000.00, 7000.00, 4000.00, 'PAID', '2025-03-31'),
-                                                                                                                     (3, '2025-03-01', 120000.00, 10000.00, 6000.00, 'PAID', '2025-03-31'),
-                                                                                                                     (4, '2025-03-01', 70000.00, 4000.00, 3000.00, 'PAID', '2025-03-31'),
-                                                                                                                     (5, '2025-03-01', 55000.00, 3000.00, 2000.00, 'PAID', '2025-03-31'),
-                                                                                                                     (6, '2025-03-01', 75000.00, 5000.00, 3500.00, 'PAID', '2025-03-31');
-
--- Insert into general announcements
-INSERT INTO announcements (title, content, category, posted_by, target_audience, valid_from, valid_until, status) VALUES
-                                                                                                                      ('Mid-Semester Break Dates', 'The mid-semester break for all active batches will be from 2025-05-19 to 2025-05-23. Classes resume on 2025-05-26.', 'ACADEMIC', 1, 'ALL', '2025-04-25 09:00:00', '2025-05-26 00:00:00', 'PUBLISHED'),
-                                                                                                                      ('Upcoming Workshop on AI Ethics', 'An online workshop on "Ethical Considerations in AI" will be held on 2025-06-05. Registration details forthcoming.', 'EVENTS', 3, 'ALL', '2025-04-26 10:00:00', '2025-06-06 00:00:00', 'PUBLISHED'),
-                                                                                                                      ('Portal Maintenance Schedule', 'Please note that the student/staff portal will undergo maintenance on 2025-04-28 from 11 PM to 1 AM (2025-04-29).', 'ADMINISTRATIVE', 5, 'ALL', '2025-04-26 11:00:00', '2025-04-29 01:00:00', 'DRAFT');
-
--- Insert into academic_calendar
-INSERT INTO academic_calendar (event_title, description, start_date, end_date, event_type, created_by) VALUES
-                                                                                                           ('Labour Day', 'Public Holiday. Institute Closed.', '2025-05-01', NULL, 'HOLIDAY', 1),
-                                                                                                           ('Mid-Semester Exam Period (Tentative)', 'Mid-semester examinations for Year 1/Semester 2.', '2025-06-16', '2025-06-20', 'EXAM_PERIOD', 3),
-                                                                                                           ('Vesak Full Moon Poya Day', 'Public Holiday. Institute Closed.', '2025-05-14', NULL, 'HOLIDAY', 1),
-                                                                                                           ('Admission Deadline - Fall 2025 Intake', 'Last date to submit applications for the Fall 2025 intake.', '2025-07-31', NULL, 'DEADLINE', 1),
-                                                                                                           ('Faculty Development Workshop', 'Workshop on modern assessment techniques.', '2025-05-28', NULL, 'EVENT', 3);
-
--- Insert sample attendance data
-INSERT INTO attendance (student_index, course_id, date, present) VALUES
-                                                                             (20240001, 'CS1101', '2025-04-15', true),
-                                                                             (20240001, 'CS1101', '2025-04-17', true),
-                                                                             (20240002, 'CS1101', '2025-04-15', false),
-                                                                             (20240001, 'ENG1001', '2025-04-16', true);
-
--- Insert sample scholarships
-INSERT INTO scholarships (scholarship_id, name, description, min_gpa, amount, application_deadline) VALUES
-                                                                                                        (1, 'Merit Scholarship', 'Scholarship for students with excellent academic performance in Year 1', 3.7, 50000.00, '2025-08-31'),
-                                                                                                        (2, 'Academic Excellence Scholarship', 'For students maintaining outstanding academic performance (overall)', 3.8, 80000.00, '2025-08-31'),
-                                                                                                        (3, 'Financial Need Bursary', 'For students requiring financial assistance (proof required)', 3.0, 30000.00, '2025-07-15'),
-                                                                                                        (4, 'Leadership Award', 'For students demonstrating significant leadership qualities', 3.5, 40000.00, '2025-08-15');
-
--- Insert sample scholarship application data
-INSERT INTO scholarship_applications (student_index, scholarship_id, student_batch, student_degree, student_gpa, status, comments) VALUES
-                                                                                                                                       (20240001, 1, 'CS24F', 'Computer Science', 3.85, 'Pending', 'Attaching Year 1 results transcript.'),
-                                                                                                                                       (20240002, 3, 'CS24F', 'Computer Science', 3.60, 'Pending', 'Submitting financial need documentation separately.');
-
--- Insert sample semesters
-INSERT INTO semesters (semester_id, batch_id, course_id, staff_id, academic_year, semester_num, start_date, end_date, status) VALUES
-                                                                                                                                  ('CS24F-CS1101-S1', 'CS24F', 'CS1101', 2, 2024, 1, '2024-09-15', '2025-01-31', 'COMPLETED'),
-                                                                                                                                  ('CS24F-ENG1001-S1', 'CS24F', 'ENG1001', 3, 2024, 1, '2024-09-15', '2025-01-31', 'COMPLETED'),
-                                                                                                                                  ('CS24F-CS2101-S2', 'CS24F', 'CS2101', 2, 2025, 2, '2025-02-10', '2025-06-20', 'ONGOING'),
-                                                                                                                                  ('CS24F-PHY1001-S2', 'CS24F', 'PHY1001', 3, 2025, 2, '2025-02-10', '2025-06-20', 'ONGOING');
-
--- Insert sample course announcements
-INSERT INTO course_announcements (course_id, semester_id, title, content, posted_by) VALUES
-                                                                                         ('CS2101', 'CS24F-CS2101-S2', 'Assignment 2 Posted', 'Assignment 2 (Linked Lists) has been posted on the LMS. Due date: 2025-05-15.', 2),
-                                                                                         ('PHY1001', 'CS24F-PHY1001-S2', 'Lab Session Change', 'This week\'s lab session (April 29th) is rescheduled to Friday, May 2nd, same time.', 3),
-                                                                                         ('CS1101', 'CS24F-CS1101-S1', 'Final Grades Released', 'Final grades for CS1101 (Fall 2024) are now available on the portal.', 2);
-
--- Insert sample data into feedbacks table
-INSERT INTO feedbacks (course_id, semester_id, student_index, rating_content, rating_instructor, rating_materials, rating_lms, comment, is_anonymous) VALUES
-                                                                                                                                                          ('CS1101', 'CS24F-CS1101-S1', 20240001, 4, 5, 4, 3, 'Great intro course! Instructor was very clear. LMS quizzes were helpful.', FALSE),
-                                                                                                                                                          ('CS1101', 'CS24F-CS1101-S1', 20240002, 5, 5, 5, 4, 'Excellent teaching and very engaging content. Highly recommended!', FALSE),
-                                                                                                                                                          ('ENG1001', 'CS24F-ENG1001-S1', 20240001, 4, 3, 4, 4, 'Calculus was challenging but well-structured. Sometimes the pace was a bit fast.', FALSE),
-                                                                                                                                                          ('CS1101', 'CS24F-CS1101-S1', NULL, 2, 3, 3, 2, 'Needs more practical coding examples related to theory.', TRUE);
-
--- Insert sample exams
-INSERT INTO exams (title, semester_id, exam_date, start_time, end_time, location, type) VALUES
-                                                                                            ('Midterm Exam', 'CS24F-CS2101-S2', '2025-04-10', '09:00:00', '11:00:00', 'Hall C', 'Midterm'),
-                                                                                            ('Final Exam', 'CS24F-CS1101-S1', '2025-01-20', '14:00:00', '17:00:00', 'Hall A', 'Final');
-
--- Insert sample assignments
-INSERT INTO assignments (title, course_id, semester_id, type, due_date, due_time, max_marks, posted_by) VALUES
-                                                                                                            ('Assignment 1: Arrays', 'CS1101', 'CS24F-CS1101-S1', 'Homework', '2024-10-15', '23:59:00', 100, 2),
-                                                                                                            ('Project Proposal', 'CS2101', 'CS24F-CS2101-S2', 'Project', '2025-04-30', '17:00:00', 25, 2),
-                                                                                                            ('Quiz 3: Derivatives', 'ENG1001', 'CS24F-ENG1001-S1', 'Quiz', '2024-11-20', '10:00:00', 20, 3);
-
--- Insert sample grades
-INSERT INTO grades (student_index, course_id, semester_id, component_id, component_type, marks_obtained, grade, graded_by) VALUES
-                                                                                                                               (20240001, 'CS1101', 'CS24F-CS1101-S1', 1, 'ASSIGNMENT', 85.00, 'A', 2),
-                                                                                                                               (20240002, 'CS1101', 'CS24F-CS1101-S1', 1, 'ASSIGNMENT', 92.50, 'A+', 2),
-                                                                                                                               (20240001, 'CS1101', 'CS24F-CS1101-S1', 2, 'EXAM', 78.00, 'A-', 2),
-                                                                                                                               (20240001, 'CS2101', 'CS24F-CS2101-S2', 1, 'EXAM', NULL, NULL, NULL);
-
--- Insert sample generated report metadata
-INSERT INTO generated_reports (report_type, generated_for_type, generated_for_id, generated_by) VALUES
-                                                                                                    ('SemesterResult', 'STUDENT', '20240001', 1),
-                                                                                                    ('ExamAttendance', 'SEMESTER', 'CS24F-CS2101-S2', 1);
-
--- Initialize existing courses with their average ratings
-UPDATE courses c
-SET c.avg_rating = calculate_course_avg_rating(c.course_id)
-WHERE c.course_id IN (SELECT DISTINCT course_id FROM feedbacks);
+-- Make sure all services that *keep a copy* of a table are listed in table_mappings for that table.
