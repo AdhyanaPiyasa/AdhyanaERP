@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS scholarship_applications (
                                                         comments TEXT,
                                                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                                        FOREIGN KEY (scholarship_id) REFERENCES scholarships(scholarship_id) ON DELETE CASCADE, -- If scholarship deleted, apps are void
+                                                        FOREIGN KEY (scholarship_id) REFERENCES scholarships(scholarship_id) ON DELETE CASCADE
 );
 
 -- Sample Data Insertion (Student Schema) --

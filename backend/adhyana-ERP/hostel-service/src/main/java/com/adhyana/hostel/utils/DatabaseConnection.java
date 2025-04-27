@@ -1,4 +1,4 @@
-package com.adhyana.ddbms.utils;
+package com.adhyana.hostel.utils;
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -17,27 +17,25 @@ public class DatabaseConnection {
 
     static {
         try {
-            LOGGER.info("Loading DDBMS database configuration...");
+            LOGGER.info("Loading Hostel DB configuration...");
             Properties prop = new Properties();
-            // Ensure the path matches how resources are loaded in your environment
             try (InputStream input = DatabaseConnection.class.getClassLoader().getResourceAsStream("application.properties")) {
                 if (input == null) {
-                    LOGGER.severe("Unable to find application.properties in classpath");
+                    LOGGER.severe("Unable to find application.properties");
                     throw new RuntimeException("Unable to find application.properties");
                 }
                 prop.load(input);
-                DB_URL = prop.getProperty("db.url"); // Ensure property name matches
+                DB_URL = prop.getProperty("db.url");
                 DB_USER = prop.getProperty("db.user");
                 DB_PASSWORD = prop.getProperty("db.password");
 
                 if (DB_URL == null || DB_USER == null || DB_PASSWORD == null) {
-                    LOGGER.severe("Database credentials (db.url, db.user, db.password) not fully configured in application.properties");
-                    throw new RuntimeException("Database credentials not fully configured in application.properties");
+                    LOGGER.severe("Hostel DB credentials not fully configured.");
+                    throw new RuntimeException("Hostel DB credentials not fully configured.");
                 }
-                LOGGER.info("Database URL loaded: " + DB_URL);
+                LOGGER.info("Hostel DB URL loaded: " + DB_URL);
             }
 
-            // Load database driver
             LOGGER.info("Loading MySQL JDBC driver...");
             Class.forName("com.mysql.cj.jdbc.Driver");
             driverLoaded = true;
@@ -47,21 +45,21 @@ public class DatabaseConnection {
             LOGGER.log(Level.SEVERE, "Failed to load MySQL driver", e);
             throw new RuntimeException("Failed to load MySQL driver", e);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to load database configuration", e);
-            throw new RuntimeException("Failed to load database configuration", e);
+            LOGGER.log(Level.SEVERE, "Failed to load hostel DB configuration", e);
+            throw new RuntimeException("Failed to load hostel DB configuration", e);
         }
     }
 
-    public static Connection getConnection() throws Exception {
+    public static Connection getConnection() throws SQLException {
         if (!driverLoaded) {
             throw new SQLException("JDBC Driver not loaded.");
         }
-        LOGGER.fine("Attempting to establish database connection to " + DB_URL);
+        LOGGER.fine("Attempting to establish hostel DB connection to " + DB_URL);
         Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
         if (connection != null && !connection.isClosed()) {
-            LOGGER.fine("Database connection established successfully.");
+            LOGGER.fine("Hostel DB connection established.");
         } else {
-            LOGGER.warning("Failed to establish database connection.");
+            LOGGER.warning("Failed to establish hostel DB connection.");
         }
         return connection;
     }

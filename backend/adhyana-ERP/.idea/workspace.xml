@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="administration-service:war exploded" />
+      <artifact name="course-service:war exploded" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -10,11 +10,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/hostel-service/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hostel-service/src/main/java/com/adhyana/hostel/HostelServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hostel-service/src/main/java/com/adhyana/hostel/models/ApiResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hostel-service/src/main/java/com/adhyana/hostel/models/Hostel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hostel-service/src/main/java/com/adhyana/hostel/models/HostelApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hostel-service/src/main/java/com/adhyana/hostel/models/HostelAssignment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hostel-service/src/main/java/com/adhyana/hostel/services/HostelApplicationService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hostel-service/src/main/java/com/adhyana/hostel/services/HostelService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hostel-service/src/main/java/com/adhyana/hostel/utils/DatabaseConnection.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hostel-service/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hostel-service/src/main/resources/hostel_schema.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hostel-service/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/49f1bd22-26c2-4195-b1fc-ad75bf85e7c8.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/AdminServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/AdminServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/PayrollService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/PayrollService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/staff/Payroll.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/staff/Payroll.js" afterDir="false" />
-
+      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/filters/SyncServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/filters/SyncServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/StaffService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/StaffService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/utils/DDBMSClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/utils/DDBMSClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administration-service/src/main/webapp/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ddbms-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/DDBMSServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/DDBMSServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/utils/DatabaseConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/java/com/adhyana/ddbms/utils/DatabaseConnection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ddbms-service/src/main/resources/ddbms_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/ddbms-service/src/main/resources/ddbms_schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/staff/AddStaff.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/staff/AddStaff.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +72,9 @@
   &quot;associatedIndex&quot;: 8
 }</component>
   <component name="ProjectId" id="2pTmpgEHerHqPzuhkFURvpmhy3H" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -70,10 +96,9 @@
     "Tomcat Server.Exam Service.executor": "Run",
     "Tomcat Server.Faculty Service.executor": "Run",
     "Tomcat Server.Student Service.executor": "Run",
-    "git-widget-placeholder": "Course-Service",
+    "git-widget-placeholder": "administration-service",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/User/OneDrive/Desktop/kruthi/year 2/group_project/Dev2",
-
+    "last_opened_file_path": "C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP/hostel-service/src/main/resources",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -82,7 +107,7 @@
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.importing",
     "sql.rename.search.for.storage.occurrences": "true",
     "vue.rearranger.settings.migration": "true"
   },
@@ -97,11 +122,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\viduranga\Documents\GitHub\AdhyanaERP\backend\adhyana-ERP\hostel-service\src\main\resources" />
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP" />
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\course-service\src\main" />
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\exam-service\src\main" />
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\course-service\src\main\resources" />
-      <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\exam-service\src\main\resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\faculty-service\src\main" />
@@ -115,7 +140,7 @@
       <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
-  <component name="RunManager" selected="Tomcat Server.Administration Service">
+  <component name="RunManager" selected="Tomcat Server.Hostel Service">
     <configuration name="admin_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/administration-service/src/main/resources/admin_schema.sql" />
       <script-mode>FILE</script-mode>
@@ -509,7 +534,7 @@
       <option name="BROWSER_ID" value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
-        <artifact name="ddmbs-service:war exploded">
+        <artifact name="ddbms-service:war exploded">
           <settings>
             <option name="CONTEXT_PATH" value="" />
           </settings>
@@ -591,7 +616,7 @@
       <method v="2">
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
-          <artifact name="ddmbs-service:war exploded" />
+          <artifact name="ddbms-service:war exploded" />
         </option>
       </method>
     </configuration>
@@ -683,6 +708,87 @@
         <option name="BuildArtifacts" enabled="true">
           <artifact name="exam-service:war exploded" />
         </option>
+      </method>
+    </configuration>
+    <configuration name="Hostel Service" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 9.0.97" ALTERNATIVE_JRE_ENABLED="false">
+      <option name="BROWSER_ID" value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
+      <option name="UPDATING_POLICY" value="restart-server" />
+      <deployment />
+      <server-settings>
+        <option name="BASE_DIRECTORY_NAME" value="b65ba9fd-71ad-46d2-bd74-ff5e7c68ed37" />
+        <option name="HTTP_PORT" value="8087" />
+        <option name="JNDI_PORT" value="1106" />
+      </server-settings>
+      <predefined_log_file enabled="true" id="Tomcat" />
+      <predefined_log_file enabled="true" id="Tomcat Catalina" />
+      <predefined_log_file id="Tomcat Manager" />
+      <predefined_log_file id="Tomcat Host Manager" />
+      <predefined_log_file id="Tomcat Localhost Access" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="51509" />
+      </RunnerSettings>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Cover">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Debug">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Profile">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Run">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <method v="2">
+        <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration name="Student Service" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 9.0.97" ALTERNATIVE_JRE_ENABLED="false">
@@ -785,16 +891,17 @@
       <item itemvalue="Tomcat Server.Auth Service" />
       <item itemvalue="Tomcat Server.Student Service" />
       <item itemvalue="Tomcat Server.Course Service" />
+      <item itemvalue="Tomcat Server.Hostel Service" />
       <item itemvalue="Tomcat Server.Exam Service" />
       <item itemvalue="Tomcat Server.Administration Service" />
       <item itemvalue="Tomcat Server.DDBMS" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Database Script.admin_schema.sql" />
-        <item itemvalue="Database Script.student_schema.sql" />
         <item itemvalue="Database Script.ddbms_schema.sql" />
+        <item itemvalue="Database Script.student_schema.sql" />
         <item itemvalue="Database Script.course_schema.sql" />
+        <item itemvalue="Database Script.admin_schema.sql" />
         <item itemvalue="Database Script.exam_schema.sql" />
       </list>
     </recent_temporary>
@@ -854,6 +961,7 @@
       <workItem from="1745530258457" duration="452000" />
       <workItem from="1745530725004" duration="7000" />
       <workItem from="1745553283147" duration="21000" />
+      <workItem from="1745728726237" duration="5547000" />
     </task>
     <servers />
   </component>

@@ -1,191 +1,107 @@
-package com.adhyana.administration.utils; // Change as appropriate for each service
+package com.adhyana.administration.utils; // Assuming this is in the admin service utils
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Client for communicating with the DDBMS service.
- * This class should be included in each microservice to handle synchronization.
+ * Client for notifying the DDBMS service about local data changes.
+ * Sends the executed SQL query string.
  */
 public class DDBMSClient {
     private static final Logger LOGGER = Logger.getLogger(DDBMSClient.class.getName());
 
-    // Configuration - these should be adjusted for each service
-    private static final String DDBMS_ENDPOINT = "http://localhost:8087/api/sync";
-    private static final String SERVICE_NAME = "administration-service"; // Change for each service
-    private static final String API_KEY = "administration-service-api-key"; // Change for each service
+    // URL of the DDBMS service's replication endpoint
+    // This should point to where the DDBMS service's DDBMSServlet is mapped.
+    private static final String DDBMS_REPLICATE_ENDPOINT = "http://localhost:8087/api/replicate"; // Adjust port if needed
 
     /**
-     * Sends an update notification to the DDBMS when a record is created, updated, or deleted
+     * Sends the executed SQL query to the DDBMS for replication.
      *
-     * @param tableName The name of the table that was modified
-     * @param recordId The ID of the record that was modified
-     * @param operationType The type of operation (INSERT, UPDATE, DELETE)
-     * @param data The data associated with the record (for INSERT/UPDATE)
-     * @return true if the notification was successful, false otherwise
+     * @param query The exact SQL query string that was executed locally.
+     * @param tableName The name of the table affected by the query.
+     * @return true if the notification was sent successfully (doesn't guarantee processing), false otherwise.
      */
-    public static boolean notifyDDBMS(String tableName, int recordId, String operationType, Map<String, Object> data) {
-        LOGGER.info("Notifying DDBMS of " + operationType + " operation on table " + tableName + ", record ID: " + recordId);
-
-        try {
-            // Create JSON request body
-            StringBuilder jsonBody = new StringBuilder();
-            jsonBody.append("{");
-            jsonBody.append("\"serviceName\":\"").append(SERVICE_NAME).append("\",");
-            jsonBody.append("\"apiKey\":\"").append(API_KEY).append("\",");
-            jsonBody.append("\"tableName\":\"").append(tableName).append("\",");
-            jsonBody.append("\"recordId\":").append(recordId).append(",");
-            jsonBody.append("\"operationType\":\"").append(operationType).append("\"");
-
-            // Add data for INSERT/UPDATE operations
-            if (data != null && !data.isEmpty() && ("INSERT".equals(operationType) || "UPDATE".equals(operationType))) {
-                jsonBody.append(",\"data\":{");
-
-                boolean first = true;
-                for (Map.Entry<String, Object> entry : data.entrySet()) {
-                    if (!first) {
-                        jsonBody.append(",");
-                    }
-
-                    jsonBody.append("\"").append(entry.getKey()).append("\":");
-
-                    Object value = entry.getValue();
-                    if (value == null) {
-                        jsonBody.append("null");
-                    } else if (value instanceof String) {
-                        jsonBody.append("\"").append(escapeJsonString((String) value)).append("\"");
-                    } else if (value instanceof Number || value instanceof Boolean) {
-                        jsonBody.append(value);
-                    } else {
-                        // For other types, convert to string
-                        jsonBody.append("\"").append(escapeJsonString(value.toString())).append("\"");
-                    }
-
-                    first = false;
-                }
-
-                jsonBody.append("}");
-            } else {
-                jsonBody.append(",\"data\":null");
-            }
-
-            jsonBody.append("}");
-
-            // Send request to DDBMS
-            return sendRequest(DDBMS_ENDPOINT, jsonBody.toString());
-
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error notifying DDBMS", e);
+    public static boolean notifyDDBMS(String query, String tableName) {
+        if (query == null || query.trim().isEmpty() || tableName == null || tableName.trim().isEmpty()) {
+            LOGGER.warning("Cannot notify DDBMS: Query or table name is empty.");
             return false;
         }
-    }
 
-    /**
-     * Sends a synchronization request to the DDBMS
-     *
-     * @param endpoint The DDBMS endpoint
-     * @param jsonBody The JSON request body
-     * @return true if the request was successful, false otherwise
-     */
-    private static boolean sendRequest(String endpoint, String jsonBody) throws IOException {
-        LOGGER.fine("Sending request to DDBMS: " + jsonBody);
+        LOGGER.info("Notifying DDBMS about change in table: " + tableName);
+        LOGGER.fine("Query being sent: " + query);
 
         HttpURLConnection connection = null;
-
         try {
-            // Create connection
-            URL url = new URL(endpoint);
+            // 1. Construct JSON Payload: {"query":"...", "table":"..."}
+            String jsonPayload = "{\"query\":\"" + escapeJsonString(query) + "\", \"table\":\"" + escapeJsonString(tableName) + "\"}";
+            LOGGER.finer("Constructed JSON payload: " + jsonPayload);
+
+            // 2. Create Connection
+            URL url = new URL(DDBMS_REPLICATE_ENDPOINT);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Content-Type", "application/json; utf-8");
+            connection.setRequestProperty("Accept", "application/json");
             connection.setDoOutput(true);
-            connection.setConnectTimeout(5000);
-            connection.setReadTimeout(5000);
+            connection.setConnectTimeout(5000); // 5 seconds
+            connection.setReadTimeout(10000); // 10 seconds
 
-            // Send request
+            // 3. Send Request Body
             try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = jsonBody.getBytes("utf-8");
+                byte[] input = jsonPayload.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
 
-            // Get response
+            // 4. Get Response Code (Important to trigger the request)
             int responseCode = connection.getResponseCode();
-            LOGGER.fine("DDBMS response code: " + responseCode);
+            LOGGER.info("DDBMS notification response code: " + responseCode);
 
-            // Read response
-            StringBuilder response = new StringBuilder();
-            try (BufferedReader br = new BufferedReader(
-                    new InputStreamReader(
-                            responseCode >= 200 && responseCode < 300
-                                    ? connection.getInputStream()
-                                    : connection.getErrorStream(), "utf-8"))) {
-                String responseLine;
-                while ((responseLine = br.readLine()) != null) {
-                    response.append(responseLine.trim());
+            // 5. Read Response (Optional but good for debugging)
+            InputStream is = (responseCode >= 200 && responseCode < 300) ? connection.getInputStream() : connection.getErrorStream();
+            if (is != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                    StringBuilder response = new StringBuilder();
+                    String responseLine;
+                    while ((responseLine = br.readLine()) != null) {
+                        response.append(responseLine.trim());
+                    }
+                    LOGGER.fine("DDBMS notification response body: " + response.toString());
                 }
+            } else {
+                LOGGER.warning("No response body stream available from DDBMS notification.");
             }
 
-            LOGGER.fine("DDBMS response: " + response.toString());
 
+            // Consider success if response code is 2xx
             return responseCode >= 200 && responseCode < 300;
 
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Error notifying DDBMS endpoint: " + DDBMS_REPLICATE_ENDPOINT, e);
+            return false;
         } finally {
             if (connection != null) {
                 connection.disconnect();
+                LOGGER.finer("Disconnected from DDBMS endpoint.");
             }
         }
     }
 
     /**
-     * Escapes special characters in a JSON string
+     * Escapes special characters for embedding a string within a JSON string value.
      *
-     * @param input The string to escape
-     * @return The escaped string
+     * @param input The string to escape.
+     * @return The JSON-escaped string.
      */
     private static String escapeJsonString(String input) {
         if (input == null) {
             return "";
         }
-
-        StringBuilder result = new StringBuilder();
-
-        for (int i = 0; i < input.length(); i++) {
-            char ch = input.charAt(i);
-
-            switch (ch) {
-                case '\\':
-                    result.append("\\\\");
-                    break;
-                case '"':
-                    result.append("\\\"");
-                    break;
-                case '\b':
-                    result.append("\\b");
-                    break;
-                case '\f':
-                    result.append("\\f");
-                    break;
-                case '\n':
-                    result.append("\\n");
-                    break;
-                case '\r':
-                    result.append("\\r");
-                    break;
-                case '\t':
-                    result.append("\\t");
-                    break;
-                default:
-                    result.append(ch);
-            }
-        }
-
-        return result.toString();
+        // Basic escaping for quotes and backslashes
+        return input.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 }
+    
