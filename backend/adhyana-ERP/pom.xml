@@ -18,7 +18,6 @@
         <module>administration-service</module>
         <module>ddbms-service</module>
         <module>hostel-service</module>
-        <module>announcement-service</module>
     </modules>
 
     <properties>
