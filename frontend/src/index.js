@@ -57,8 +57,8 @@
 //     const token = 'dev-token';
 //     const userRole = 'admin';
 
-
 //     if (token && userRole) {
+
 //         // Verify token first
 //         try {
 //             const isValid = await authService.verifyToken();
