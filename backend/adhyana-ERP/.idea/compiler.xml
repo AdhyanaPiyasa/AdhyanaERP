@@ -8,11 +8,14 @@
         <outputRelativeToContentRoot value="true" />
         <module name="course-service" />
         <module name="ddmbs-service" />
+        <module name="announcement-service" />
         <module name="auth-service" />
         <module name="administration-service" />
         <module name="api-gateway" />
         <module name="student-service" />
+        <module name="calendar-service" />
         <module name="ddbms-service" />
+        <module name="scholarship-service" />
         <module name="hostel-service" />
         <module name="exam-service" />
       </profile>
