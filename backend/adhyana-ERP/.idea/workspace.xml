@@ -10,7 +10,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/AddCourse.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/AddCourse.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/AdministratorCourseList.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/AdministratorCourseList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/CourseFocusPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/CourseFocusPanel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/CourseTable.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/CourseTable.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/EditCourse.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/EditCourse.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/coursesDeleteConfirmation.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/coursesDeleteConfirmation.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,47 +55,47 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Database Script.admin_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.auth_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.course_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.ddbms_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.exam_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.student_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;Tomcat Server.API Gateway.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Administration Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Auth Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Course Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.DDBMS.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Exam Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Faculty Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Student Service.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;administration-service&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
-    &quot;sql.rename.search.for.storage.occurrences&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Database Script.admin_schema.sql.executor": "Run",
+    "Database Script.auth_schema.sql.executor": "Run",
+    "Database Script.course_schema.sql.executor": "Run",
+    "Database Script.ddbms_schema.sql.executor": "Run",
+    "Database Script.exam_schema.sql.executor": "Run",
+    "Database Script.student_schema.sql.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "Tomcat Server.API Gateway.executor": "Run",
+    "Tomcat Server.Administration Service.executor": "Run",
+    "Tomcat Server.Auth Service.executor": "Run",
+    "Tomcat Server.Course Service.executor": "Run",
+    "Tomcat Server.DDBMS.executor": "Run",
+    "Tomcat Server.Exam Service.executor": "Run",
+    "Tomcat Server.Faculty Service.executor": "Run",
+    "Tomcat Server.Student Service.executor": "Run",
+    "git-widget-placeholder": "Course-Service",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "sql.rename.search.for.storage.occurrences": "true",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
     ],
-    &quot;RunConfigurationTargetLRU&quot;: [
-      &quot;49f1bd22-26c2-4195-b1fc-ad75bf85e7c8&quot;
+    "RunConfigurationTargetLRU": [
+      "49f1bd22-26c2-4195-b1fc-ad75bf85e7c8"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP" />

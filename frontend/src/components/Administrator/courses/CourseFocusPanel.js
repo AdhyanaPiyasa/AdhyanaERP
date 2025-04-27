@@ -150,11 +150,9 @@ const CourseFocusPanel = ({ course, onEdit, onDelete }) => {
   }
 
   const courseFields = [
-    { label: "ID", value: course.id },
     { label: "Code", value: course.code },
     { label: "Name", value: course.name },
     { label: "Year", value: course.year },
-    { label: "Semester", value: course.semester },
     { label: "Credits", value: course.credits },
     { label: "Duration", value: course.duration },
     { label: "Created At", value: course.created_at },
@@ -267,4 +265,4 @@ window.CourseFocusPanel = CourseFocusPanel;
 components / Admin / courses / CourseFocusPanel.js;
 components / Admin / courses / CourseFocusPanel.js;
 
-components/Admin/courses/CourseFocusPanel.js
+components / Admin / courses / CourseFocusPanel.js;

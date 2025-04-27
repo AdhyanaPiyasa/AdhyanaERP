@@ -73,16 +73,16 @@ const CourseTable = ({ courses, onRowClick, onAddClick }) => {
       // Format URL based on search field
       if (searchField === "courseId") {
         // Use the exact format requested: /courseCore/courseId/eng1002
-        url = `http://localhost:8081/api/courses/courseCore/courseId/${encodeURIComponent(
+        url = `http://localhost:8081/api/api/courses/courseCore/courseId/${encodeURIComponent(
           searchQuery
         )}`;
       } else if (searchField !== "all") {
-        url = `http://localhost:8081/api/courses/courseCore/${searchField}/${encodeURIComponent(
+        url = `http://localhost:8081/api/api/courses/courseCore/${searchField}/${encodeURIComponent(
           searchQuery
         )}`;
       } else {
         // Default search - maybe search all fields or just return all courses
-        url = "http://localhost:8081/api/courses/courseCore/";
+        url = "http://localhost:8081/api/api/courses/courseCore/";
       }
 
       console.log("Searching with URL:", url);
