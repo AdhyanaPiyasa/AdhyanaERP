@@ -54,6 +54,53 @@ CREATE TABLE IF NOT EXISTS courses (
                                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS student_semester_courses (
+                                                        student_index INT NOT NULL,
+                                                        semester_id VARCHAR(5) NOT NULL,
+                                                        course_id VARCHAR(10) NOT NULL,
+                                                        enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                                        PRIMARY KEY (student_index, semester_id, course_id),
+                                                        FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE CASCADE,
+                                                        FOREIGN KEY (semester_id) REFERENCES semesters(semester_id) ON DELETE CASCADE,
+                                                        FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE
+);
+
+-- Insert data into student_semester_courses table
+INSERT INTO student_semester_courses (student_index, semester_id, course_id) VALUES
+                                                                                 (20240001, 'y24s1', 'CS1101'),
+                                                                                 (20240001, 'y24s2', 'ENG1001'),
+                                                                                 (20240002, 'y25s1', 'CS2101'),
+                                                                                 (20230010, 'y24s1', 'CS1101'),
+                                                                                 (20240002, 'y24s1', 'CS1101');
+
+CREATE TABLE IF NOT EXISTS semesters (
+                                         semester_id VARCHAR(5) PRIMARY KEY,
+                                         batch_id VARCHAR(10) NOT NULL,
+                                         academic_year SMALLINT NOT NULL,
+                                         semester_num TINYINT NOT NULL CHECK (semester_num BETWEEN 1 AND 2),
+                                         start_date DATE NOT NULL,
+                                         end_date DATE NOT NULL,
+                                         status ENUM('PLANNED', 'ONGOING', 'COMPLETED', 'CANCELLED') NOT NULL DEFAULT 'PLANNED',
+                                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                         FOREIGN KEY (batch_id) REFERENCES batches(batch_id) ON DELETE CASCADE
+);
+
+-- Shared Table: Batches (Reference Only - Data Managed by Admin)
+CREATE TABLE IF NOT EXISTS batches (
+                                       batch_id VARCHAR(10) PRIMARY KEY,
+                                       batch_name VARCHAR(50) NOT NULL UNIQUE,
+                                       start_date DATE,
+                                       end_date DATE,
+                                       status ENUM('PLANNED', 'ACTIVE', 'COMPLETED', 'CANCELLED') DEFAULT 'PLANNED',
+                                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO batches (batch_id, batch_name, start_date, end_date) VALUES
+                                                                     ('CS24F', 'CS-2024-Fall', '2024-09-15', '2028-08-31'),
+                                                                     ('BM23S', 'BM-2023-Spring', '2023-02-01', '2027-01-31')
+
 -- Shared Table: Student Applications (Reference Only - Data Managed by Admin)
 CREATE TABLE IF NOT EXISTS student_applications (
                                                     student_application_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -175,3 +222,5 @@ INSERT INTO scholarships (scholarship_id, name, description, min_gpa, amount, ap
 INSERT INTO scholarship_applications (student_index, scholarship_id, student_batch, student_degree, student_gpa, status, comments) VALUES
                                                                                                                                        (20240001, 1, 'CS24F', 'Computer Science', 3.85, 'Pending', 'Attaching Year 1 results transcript.'), -- Use existing student
                                                                                                                                        (20240002, 3, 'CS24F', 'Computer Science', 3.60, 'Pending', 'Submitting financial need documentation separately.'); -- Use existing student
+
+

@@ -14,11 +14,11 @@ public class StudentApplicationService {
      * Creates a new student application in the database
      */
     public StudentApplication.ApplicationResponse createApplication(StudentApplication application) throws Exception {
-        String query = "INSERT INTO student_applications (name, national_id, email, phone, gender, date_of_birth, " +
+        String query = "INSERT INTO student_applications (student_application_id,name, national_id, email, phone, gender, date_of_birth, " +
                 "address, applied_program, application_date, mathematics, science, english, computer_studies, " +
                 "guardian_name, guardian_national_id, guardian_relation, guardian_contact_number, guardian_email, " +
                 "hostel_required, status) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (20,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -53,7 +53,7 @@ public class StudentApplicationService {
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int id = generatedKeys.getInt(1);
-                    application.setId(id);
+                    application.setId(id);;
 
                     // Generate application ID with prefix "APP" followed by the generated ID with leading zeros
                     String applicantId = String.format("APP%06d", id);

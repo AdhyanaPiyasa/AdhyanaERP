@@ -13,7 +13,7 @@ const AcceptApplication = ({ application, onClose }) => {
             const token = localStorage.getItem('token');
 
             // API call to update application status
-            const response = await fetch(`http://localhost:8081/api/api/students/newapplications/status/${application.id}`, {
+            const response = await fetch(`http://localhost:8081/api/api/students/newapplications/status/${application.student_application_id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
