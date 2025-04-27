@@ -1,263 +1,38 @@
-// // components/Admin/courses/AddCourse.js
-// const AddCourse = ({ onClose }) => {
-//   const [formData, setFormData] = MiniReact.useState({
-//     courseCode: "",
-//     courseName: "",
-//     year: "",
-//     semester: "",
-//     credits: "",
-//     duration: "",
-//   });
-
-//   const [errors, setErrors] = MiniReact.useState({
-//     year: "",
-//     semester: "",
-//     credits: "",
-//     duration: "",
-//   });
-
-//   const validateYear = (value) => {
-//     if (value && !["1", "2", "3", "4"].includes(value)) {
-//       return "Year must be 1, 2, 3, or 4";
-//     }
-//     return "";
-//   };
-
-//   const validateSemester = (value) => {
-//     if (value && !["1", "2"].includes(value)) {
-//       return "Semester must be 1 or 2";
-//     }
-//     return "";
-//   };
-
-//   const validateNonNegativeInteger = (value, fieldName) => {
-//     if (value) {
-//       const parsedValue = parseInt(value, 10);
-//       if (
-//         isNaN(parsedValue) ||
-//         parsedValue < 0 ||
-//         parsedValue.toString() !== value
-//       ) {
-//         return `${fieldName} must be a non-negative integer`;
-//       }
-//     }
-//     return "";
-//   };
-
-//   const handleChange = (field, value) => {
-//     let errorMessage = "";
-
-//     // Validate based on field type
-//     if (field === "year") {
-//       errorMessage = validateYear(value);
-//     } else if (field === "semester") {
-//       errorMessage = validateSemester(value);
-//     } else if (field === "credits" || field === "duration") {
-//       errorMessage = validateNonNegativeInteger(
-//         value,
-//         field.charAt(0).toUpperCase() + field.slice(1)
-//       );
-//     }
-
-//     // Update errors state
-//     setErrors({
-//       ...errors,
-//       [field]: errorMessage,
-//     });
-
-//     // Update form data
-//     setFormData({
-//       ...formData,
-//       [field]: value,
-//     });
-//   };
-
-//   const handleSubmit = () => {
-//     // Validate all fields before submission
-//     const yearError = validateYear(formData.year);
-//     const semesterError = validateSemester(formData.semester);
-//     const creditsError = validateNonNegativeInteger(
-//       formData.credits,
-//       "Credits"
-//     );
-//     const durationError = validateNonNegativeInteger(
-//       formData.duration,
-//       "Duration"
-//     );
-
-//     const newErrors = {
-//       year: yearError,
-//       semester: semesterError,
-//       credits: creditsError,
-//       duration: durationError,
-//     };
-
-//     setErrors(newErrors);
-
-//     // Check if there are any errors
-//     const hasErrors = Object.values(newErrors).some((error) => error !== "");
-
-//     if (!hasErrors) {
-//       // Handle form submission if no errors
-//       console.log("Form submitted:", formData);
-//       onClose();
-//     }
-//   };
-
-//   return {
-//     type: Modal,
-//     props: {
-//       isOpen: true,
-//       onClose: onClose,
-//       title: "Add New Course",
-//       children: [
-//         {
-//           type: "form",
-//           props: {
-//             children: [
-//               {
-//                 type: TextField,
-//                 props: {
-//                   label: "Course code",
-//                   value: formData.courseCode,
-//                   onChange: (e) =>
-//                     setFormData({ ...formData, courseCode: e.target.value }),
-//                 },
-//               },
-//               {
-//                 type: TextField,
-//                 props: {
-//                   label: "Course Name",
-//                   value: formData.courseName,
-//                   onChange: (e) =>
-//                     setFormData({ ...formData, courseName: e.target.value }),
-//                 },
-//               },
-//               {
-//                 type: TextField,
-//                 props: {
-//                   label: "Year",
-//                   value: formData.year,
-//                   onChange: (e) => handleChange("year", e.target.value),
-//                   error: errors.year,
-//                   helperText: errors.year || "Enter a value from 1 to 4",
-//                 },
-//               },
-//               {
-//                 type: TextField,
-//                 props: {
-//                   label: "Semester",
-//                   value: formData.semester,
-//                   onChange: (e) => handleChange("semester", e.target.value),
-//                   error: errors.semester,
-//                   helperText: errors.semester || "Enter either 1 or 2",
-//                 },
-//               },
-//               {
-//                 type: TextField,
-//                 props: {
-//                   label: "Credits",
-//                   value: formData.credits,
-//                   onChange: (e) => handleChange("credits", e.target.value),
-//                   error: errors.credits,
-//                   helperText: errors.credits || "Enter a non-negative integer",
-//                 },
-//               },
-//               {
-//                 type: TextField,
-//                 props: {
-//                   label: "Duration",
-//                   value: formData.duration,
-//                   onChange: (e) => handleChange("duration", e.target.value),
-//                   error: errors.duration,
-//                   helperText: errors.duration || "Enter a non-negative integer",
-//                 },
-//               },
-//               {
-//                 type: "div",
-//                 props: {
-//                   style: {
-//                     display: "flex",
-//                     justifyContent: "flex-end",
-//                     gap: theme.spacing.md,
-//                     marginTop: theme.spacing.xl,
-//                   },
-//                   children: [
-//                     {
-//                       type: Button,
-//                       props: {
-//                         variant: "secondary",
-//                         onClick: onClose,
-//                         children: "Cancel",
-//                       },
-//                     },
-//                     {
-//                       type: Button,
-//                       props: {
-//                         onClick: handleSubmit,
-//                         children: "Create Course",
-//                       },
-//                     },
-//                   ],
-//                 },
-//               },
-//             ],
-//           },
-//         },
-//       ],
-//     },
-//   };
-// };
-
-// window.AddCourse = AddCourse;
-
-// components / Admin / courses / AddCourse.js;
-
 // components/Admin/courses/AddCourse.js
 const AddCourse = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = MiniReact.useState({
-    courseId: "",
+    courseCode: "",
     name: "",
     year: "",
     credits: "",
     duration: "",
   });
 
-  const [errors, setErrors] = MiniReact.useState({
-    courseId: "",
-    name: "",
-    year: "",
-    credits: "",
-    duration: "",
-  });
+  const [errors, setErrors] = MiniReact.useState({});
+  const [loading, setLoading] = MiniReact.useState(false); // Changed isSubmitting to loading
 
-  const [isSubmitting, setIsSubmitting] = MiniReact.useState(false);
-  const [submitError, setSubmitError] = MiniReact.useState(null);
+  // Helper function for page refresh
+  const refreshPage = () => {
+    window.location.reload();
+  };
 
   const validateYear = (value) => {
-    if (!value) return "Year is required";
-    if (!["1", "2", "3", "4"].includes(value)) {
+    if (value && !["1", "2", "3", "4"].includes(value)) {
       return "Year must be 1, 2, 3, or 4";
     }
     return "";
   };
 
   const validateNonNegativeInteger = (value, fieldName) => {
-    if (!value) return `${fieldName} is required`;
-    const parsedValue = parseInt(value, 10);
-    if (
-      isNaN(parsedValue) ||
-      parsedValue < 0 ||
-      parsedValue.toString() !== value
-    ) {
-      return `${fieldName} must be a non-negative integer`;
-    }
-    return "";
-  };
-
-  const validateRequired = (value, fieldName) => {
-    if (!value || value.trim() === "") {
-      return `${fieldName} is required`;
+    if (value) {
+      const parsedValue = parseInt(value, 10);
+      if (
+        isNaN(parsedValue) ||
+        parsedValue < 0 ||
+        parsedValue.toString() !== value
+      ) {
+        return `${fieldName} must be a non-negative integer`;
+      }
     }
     return "";
   };
@@ -266,11 +41,7 @@ const AddCourse = ({ onClose, onSuccess }) => {
     let errorMessage = "";
 
     // Validate based on field type
-    if (field === "courseId") {
-      errorMessage = validateRequired(value, "Course ID");
-    } else if (field === "name") {
-      errorMessage = validateRequired(value, "Course Name");
-    } else if (field === "year") {
+    if (field === "year") {
       errorMessage = validateYear(value);
     } else if (field === "credits" || field === "duration") {
       errorMessage = validateNonNegativeInteger(
@@ -294,8 +65,6 @@ const AddCourse = ({ onClose, onSuccess }) => {
 
   const handleSubmit = async () => {
     // Validate all fields before submission
-    const courseIdError = validateRequired(formData.courseId, "Course ID");
-    const nameError = validateRequired(formData.name, "Course Name");
     const yearError = validateYear(formData.year);
     const creditsError = validateNonNegativeInteger(
       formData.credits,
@@ -307,8 +76,6 @@ const AddCourse = ({ onClose, onSuccess }) => {
     );
 
     const newErrors = {
-      courseId: courseIdError,
-      name: nameError,
       year: yearError,
       credits: creditsError,
       duration: durationError,
@@ -320,56 +87,84 @@ const AddCourse = ({ onClose, onSuccess }) => {
     const hasErrors = Object.values(newErrors).some((error) => error !== "");
 
     if (!hasErrors) {
-      // Submit the form data to create new course
-      setIsSubmitting(true);
-      setSubmitError(null);
-
+      setLoading(true); // set loading to true
       try {
-        const token = localStorage.getItem("token");
+        // Prepare data for the API
+        const courseData = {
+          courseId: formData.courseCode, // Send as courseId
+          name: formData.name,
+          year: parseInt(formData.year, 10),
+          credits: parseInt(formData.credits, 10),
+          duration: parseInt(formData.duration, 10),
+        };
 
+        console.log("Submitting course data:", courseData); //debugging
+
+        const token = localStorage.getItem("token"); //get token
         const response = await fetch(
-          "http://localhost:8081/api/courses/courseCore/",
+          "http://localhost:8081/api/api/courses/courseCore/", // corrected endpoint
           {
             method: "POST",
             headers: {
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // Include the token
             },
-            body: JSON.stringify({
-              courseId: formData.courseId,
-              name: formData.name,
-              year: parseInt(formData.year, 10),
-              credits: parseInt(formData.credits, 10),
-              duration: parseInt(formData.duration, 10),
-            }),
+            body: JSON.stringify(courseData),
           }
         );
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(
-            errorData.message || `HTTP error! Status: ${response.status}`
-          );
+          throw new Error(errorData.message || "Could not create course");
         }
 
-        const data = await response.json();
-
-        if (data.success) {
-          // Call onSuccess callback with the new course data
-          if (onSuccess) {
-            onSuccess(data.data);
-          }
-          onClose();
-        } else {
-          throw new Error(data.message || "Failed to create course");
-        }
+        const result = await response.json();
+        setLoading(false); // set loading to false
+        onSuccess(result.data);
+        onClose();
+        setTimeout(refreshPage, 300); // added refresh
       } catch (error) {
-        console.error("Error creating course:", error);
-        setSubmitError(error.message);
-      } finally {
-        setIsSubmitting(false);
+        setLoading(false); // set loading to false on error
+        setErrors({ ...errors, form: error.message || "An error occurred" });
+        console.error("Error creating course:", error); //log
       }
     }
+  };
+
+  const handleClose = () => {
+    onClose();
+    setTimeout(refreshPage, 300);
+  };
+
+  const theme = {
+    spacing: {
+      xs: "4px",
+      sm: "8px",
+      md: "16px",
+      lg: "24px",
+      xl: "32px",
+    },
+    shape: {
+      borderRadius: {
+        sm: "4px",
+        md: "8px",
+        lg: "12px",
+      },
+    },
+    colors: {
+      primary: "#007bff",
+      secondary: "#6c757d",
+      error: "#dc3545",
+      background: "#f8f9fa",
+      textSecondary: "#6c757d",
+      border: "#dee2e6",
+    },
+    typography: {
+      h2: {
+        fontSize: "24px",
+      },
+      // ... other typography styles
+    },
   };
 
   return {
@@ -383,29 +178,12 @@ const AddCourse = ({ onClose, onSuccess }) => {
           type: "form",
           props: {
             children: [
-              // Error message if there was a submission error
-              submitError && {
-                type: "div",
-                props: {
-                  style: {
-                    padding: theme.spacing.sm,
-                    marginBottom: theme.spacing.md,
-                    backgroundColor: "#ffebee",
-                    color: "#c62828",
-                    borderRadius: theme.spacing.sm,
-                  },
-                  children: [submitError],
-                },
-              },
               {
                 type: TextField,
                 props: {
-                  label: "Course ID",
-                  value: formData.courseId,
-                  onChange: (e) => handleChange("courseId", e.target.value),
-                  error: Boolean(errors.courseId),
-                  helperText:
-                    errors.courseId || "Enter a unique course ID (e.g., CS101)",
+                  label: "Course Code",
+                  value: formData.courseCode,
+                  onChange: (e) => handleChange("courseCode", e.target.value),
                 },
               },
               {
@@ -414,8 +192,6 @@ const AddCourse = ({ onClose, onSuccess }) => {
                   label: "Course Name",
                   value: formData.name,
                   onChange: (e) => handleChange("name", e.target.value),
-                  error: Boolean(errors.name),
-                  helperText: errors.name || "Enter the full course name",
                 },
               },
               {
@@ -424,7 +200,7 @@ const AddCourse = ({ onClose, onSuccess }) => {
                   label: "Year",
                   value: formData.year,
                   onChange: (e) => handleChange("year", e.target.value),
-                  error: Boolean(errors.year),
+                  error: errors.year,
                   helperText: errors.year || "Enter a value from 1 to 4",
                 },
               },
@@ -434,7 +210,7 @@ const AddCourse = ({ onClose, onSuccess }) => {
                   label: "Credits",
                   value: formData.credits,
                   onChange: (e) => handleChange("credits", e.target.value),
-                  error: Boolean(errors.credits),
+                  error: errors.credits,
                   helperText: errors.credits || "Enter a non-negative integer",
                 },
               },
@@ -444,7 +220,7 @@ const AddCourse = ({ onClose, onSuccess }) => {
                   label: "Duration",
                   value: formData.duration,
                   onChange: (e) => handleChange("duration", e.target.value),
-                  error: Boolean(errors.duration),
+                  error: errors.duration,
                   helperText: errors.duration || "Enter a non-negative integer",
                 },
               },
@@ -462,8 +238,8 @@ const AddCourse = ({ onClose, onSuccess }) => {
                       type: Button,
                       props: {
                         variant: "secondary",
-                        onClick: onClose,
-                        disabled: isSubmitting,
+                        onClick: handleClose,
+                        disabled: loading,
                         children: "Cancel",
                       },
                     },
@@ -471,16 +247,14 @@ const AddCourse = ({ onClose, onSuccess }) => {
                       type: Button,
                       props: {
                         onClick: handleSubmit,
-                        disabled: isSubmitting,
-                        children: isSubmitting
-                          ? "Creating..."
-                          : "Create Course",
+                        disabled: loading,
+                        children: loading ? "Creating..." : "Create Course",
                       },
                     },
                   ],
                 },
               },
-            ].filter(Boolean),
+            ],
           },
         },
       ],
