@@ -1,3 +1,4 @@
+// components/student/grades/GradeBook.js
 const GradeBook = () => {
     const [grades] = MiniReact.useState({
         currentGrades: [
@@ -46,45 +47,50 @@ const GradeBook = () => {
         type: Card,
         props: {
             children: [
+                // Header
                 {
                     type: 'h1',
                     props: {
                         children: ['Grade Book']
                     }
                 },
+                
+                // GPA and Credits Summary
                 {
                     type: 'div',
                     props: {
-                        style: {
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(2, 1fr)',
-                            gap: theme.spacing.lg
+                        style: { 
+                            display: 'flex',
+                            marginBottom: '20px'
                         },
                         children: [
+                            // GPA Card
                             {
                                 type: Card,
                                 props: {
+                                    style: { marginRight: '20px', flex: 1 },
                                     children: [
                                         'Current GPA',
                                         {
                                             type: 'h2',
                                             props: {
-                                                style: { color: theme.colors.primary },
                                                 children: [grades.gpa.toFixed(2)]
                                             }
                                         }
                                     ]
                                 }
                             },
+                            
+                            // Credits Card
                             {
                                 type: Card,
                                 props: {
+                                    style: { flex: 1 },
                                     children: [
                                         'Total Credits',
                                         {
                                             type: 'h2',
                                             props: {
-                                                style: { color: theme.colors.primary },
                                                 children: [grades.totalCredits]
                                             }
                                         }
@@ -94,8 +100,10 @@ const GradeBook = () => {
                         ]
                     }
                 },
+                
+                // Grades Table
                 {
-                    type: Card,
+                    type: 'div',
                     props: {
                         children: [
                             {
@@ -109,16 +117,10 @@ const GradeBook = () => {
                                 props: {
                                     headers: ['Course', 'Grade', 'Credits', 'Teacher\'s Feedback'],
                                     data: grades.currentGrades.map(grade => ({
-                                        Course: grade.course,
-                                        Grade: {
-                                            type: 'div',
-                                            props: {
-                                                style: { color: theme.colors.primary },
-                                                children: [grade.grade]
-                                            }
-                                        },
-                                        Credits: grade.credits,
-                                        "Teacher's Feedback": grade.feedback
+                                        'Course': grade.course,
+                                        'Grade': grade.grade,
+                                        'Credits': grade.credits,
+                                        'Teacher\'s Feedback': grade.feedback
                                     }))
                                 }
                             }

@@ -91,8 +91,8 @@ const ApplicationsList = () => {
         return status; // Use as-is if no mapping found
     };
 
-const filteredApplications = applications.filter(app => {
-    const appStatus = getFilteredStatus(app.status);
+const filteredApplications = applications.filter(application => {
+    const appStatus = getFilteredStatus(application.status);
     return filterStatus === 'all' || appStatus === filterStatus;
 });
     const getStatusStyle = (status) => {
@@ -201,22 +201,22 @@ const filteredApplications = applications.filter(app => {
                                 type: Table,
                                 props: {
                                     headers: ['Application ID', 'Name', 'Program', 'Submitted Date', 'Status', 'Actions'],
-                                    data: filteredApplications.map(app => ({
-                                        'Application ID': app.id,
-                                        'Name': app.name,
-                                        'Program': app.appliedProgram,
-                                        'Submitted Date': app.applicationDate,
+                                    data: filteredApplications.map(application => ({
+                                        'Application ID': application.id,
+                                        'Name': application.name,
+                                        'Program': application.appliedProgram,
+                                        'Submitted Date': application.applicationDate,
                                         'Status': {
                                             type: 'span',
                                             props: {
-                                                style: getStatusStyle(app.status),
-                                                children: [app.status.charAt(0).toUpperCase() + app.status.slice(1)]
+                                                style: getStatusStyle(application.status),
+                                                children: [application.status.charAt(0).toUpperCase() + application.status.slice(1)]
                                             }
                                         },
                                         'Actions': {
                                             type: Button,
                                             props: {
-                                                onClick: () => handleViewApplication(app),
+                                                onClick: () => handleViewApplication(application),
                                                 variant: 'secondary',
                                                 size: 'small',
                                                 children: 'View'
@@ -237,7 +237,7 @@ const filteredApplications = applications.filter(app => {
                         onClose: () => setShowViewModal(false),
                         onAccept: () => handleAccept(selectedApplication),
                         onReject: () => handleReject(selectedApplication)
-                    }
+                    },
                 }
             ]
         }
