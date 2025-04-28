@@ -174,6 +174,8 @@ const App = () => {
         return { type: AannouncementList };
       case "other/hostel":
         return { type: AdminHostelInfo };
+        case 'other/hostel/applications':  // New route for applications
+        return { type: HostelApplicationsList };
       case "other/scholarship":
         return { type: ScholarshipMain };
       case "other/scholarship/applications":

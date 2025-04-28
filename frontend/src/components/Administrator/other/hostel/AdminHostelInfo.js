@@ -3,7 +3,7 @@ const AdminHostelInfo = () => {
     const [hostelBlocks, setHostelBlocks] = MiniReact.useState([]);
     const [loading, setLoading] = MiniReact.useState(true);
     const [error, setError] = MiniReact.useState(null);
-    const [editingBlockId, setEditingBlockId] = MiniReact.useState(null); // Store ID instead of full object
+    const [editingBlockId, setEditingBlockId] = MiniReact.useState(null);
 
     // --- API Helper ---
     const apiFetch = async (url, options = {}) => {
@@ -126,25 +126,73 @@ const AdminHostelInfo = () => {
         }
     };
 
-    // --- Styles (keep existing styles) ---
-    const styles = { /* ... existing styles ... */
+    // --- Handle View Applications ---
+    const handleViewApplications = () => {
+        // Navigate to the hostel applications page using the navigation utility
+        navigation.navigate('other/hostel/applications');
+    };
+
+    // --- Styles ---
+    const styles = {
          container: { padding: theme.spacing.lg },
-         blockGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: theme.spacing.lg },
-         blockName: { fontSize: theme.typography.h2.fontSize, fontWeight: 'bold', marginBottom: theme.spacing.md, textAlign: 'center' },
-         infoRow: { display: 'flex', justifyContent: 'space-between', marginBottom: theme.spacing.sm },
+         header: { 
+             display: 'flex', 
+             justifyContent: 'space-between', 
+             alignItems: 'center', 
+             marginBottom: theme.spacing.lg 
+         },
+         blockGrid: { 
+             display: 'grid', 
+             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
+             gap: theme.spacing.lg 
+         },
+         blockName: { 
+             fontSize: theme.typography.h2.fontSize, 
+             fontWeight: 'bold', 
+             marginBottom: theme.spacing.md, 
+             textAlign: 'center' 
+         },
+         infoRow: { 
+             display: 'flex', 
+             justifyContent: 'space-between', 
+             marginBottom: theme.spacing.sm 
+         },
          infoLabel: { /* Optional: style for label */ },
          infoValue: { fontWeight: 'bold' },
-         facilitiesTitle: { fontSize: theme.typography.h3.fontSize, fontWeight: 'bold', marginTop: theme.spacing.lg, marginBottom: theme.spacing.sm },
-         buttonContainer: { display: 'flex', justifyContent: 'space-between', marginTop: theme.spacing.md } // For Edit/Delete buttons
+         facilitiesTitle: { 
+             fontSize: theme.typography.h3.fontSize, 
+             fontWeight: 'bold', 
+             marginTop: theme.spacing.lg, 
+             marginBottom: theme.spacing.sm 
+         },
+         buttonContainer: { 
+             display: 'flex', 
+             justifyContent: 'space-between', 
+             marginTop: theme.spacing.md 
+         } // For Edit/Delete buttons
     };
 
     // --- Render Functions ---
-    const renderFacilityRow = (label, value) => ({ /* ... existing renderFacilityRow ... */
-         type: 'div', props: { style: styles.infoRow, children: [ { type: 'span', props: { children: [label] } }, { type: 'span', props: { style: styles.infoValue, children: [value ? 'Yes' : 'No'] } } ] }
+    const renderFacilityRow = (label, value) => ({
+         type: 'div', 
+         props: { 
+             style: styles.infoRow, 
+             children: [ 
+                 { type: 'span', props: { children: [label] } }, 
+                 { type: 'span', props: { style: styles.infoValue, children: [value ? 'Yes' : 'No'] } } 
+             ] 
+         }
     });
 
-    const renderInfoRow = (label, value) => ({ /* ... existing renderInfoRow ... */
-        type: 'div', props: { style: styles.infoRow, children: [ { type: 'span', props: { style: styles.infoLabel, children: [`${label} :`] } }, { type: 'span', props: { style: styles.infoValue, children: [value] } } ] }
+    const renderInfoRow = (label, value) => ({
+        type: 'div', 
+        props: { 
+            style: styles.infoRow, 
+            children: [ 
+                { type: 'span', props: { style: styles.infoLabel, children: [`${label} :`] } }, 
+                { type: 'span', props: { style: styles.infoValue, children: [value] } } 
+            ] 
+        }
     });
 
     const renderBlockCard = (block) => ({
@@ -165,7 +213,6 @@ const AdminHostelInfo = () => {
                 renderFacilityRow('Kitchen', block.kitchen), // Use kitchen
                 renderFacilityRow('Laundry', block.laundry), // Use laundry
                 renderFacilityRow('Study Area', block.studyArea), // Use studyArea
-                // Removed AC and Rooms as they are not in backend model
                 {
                     type: 'div',
                     props: {
@@ -198,19 +245,34 @@ const AdminHostelInfo = () => {
     return {
         type: Card,
         props: {
-            style: styles.container,
             children: [
-                { type: 'h1', props: { children: ['Hostel Management'] } },
                 {
                     type: 'div',
                     props: {
-                        style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: theme.spacing.lg },
+                        style: styles.header,
+                        children: [
+                            { type: 'h1', props: { children: ['Hostel Management'] } },
+                            {
+                                type: Button,
+                                props: {
+                                    variant: 'primary',
+                                    onClick: handleViewApplications,
+                                    children: 'View Hostel Applications'
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    type: 'div',
+                    props: {
+                        style: { marginBottom: theme.spacing.lg },
                         children: [
                             { type: 'h2', props: { children: ['Hostel Details'] } },
                         ]
                     }
                 },
-                loading && { type: 'p', props: { children: ['Loading hostels...'] } },
+                loading && { type: 'div', props: { children: [{ type: LoadingSpinner, props: {} }] } },
                 error && { type: 'p', props: { style: { color: 'red' }, children: [`Error: ${error}`] } },
                 !loading && !error && {
                     type: 'div',
