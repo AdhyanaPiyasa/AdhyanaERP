@@ -54,11 +54,9 @@ const TeacherCourseDetail = () => {
 
   const menuItems = [
     { id: "attendance", title: "Attendance" },
-    { id: "grades", title: "Grades" },
     { id: "materials", title: "Study Materials" },
     { id: "announcements", title: "Announcements" },
-    { id: "assignments", title: "Assignments" },
-    { id: "students", title: "Student Information" },
+    { id: "assignments", title: "Assignments" }
   ];
 
   // Set active tab based on URL if available
@@ -298,8 +296,6 @@ const TeacherCourseDetail = () => {
         };
       case "assignments":
         return { type: AttendanceManager, props: { courseId } };
-      case "students":
-        return { type: StudentList, props: { courseId } };
       default:
         return { type: AttendanceManager, props: { courseId } };
     }

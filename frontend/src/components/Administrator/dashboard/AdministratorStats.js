@@ -1,10 +1,10 @@
 // components/Admin/dashboard/Stats.js
 const AdministratorStats = ({ layout = '1x4' }) => {
     const stats = [
-        { label: 'Total Students', value: '1,200', icon: '👨‍🎓' }, // Student icon
-        { label: 'Upcoming Exams', value: '45', icon: '📝' },      // Exam/Note icon
-        { label: 'Upcoming Events', value: '3', icon: '📅' },      // Calendar icon
-        { label: 'Hostel Students', value: '400', icon: '🏠' }     // House icon
+        { label: 'Total Students', value: '160', icon: '👨‍🎓' }, // Student icon
+        { label: 'Upcoming Exams', value: '15', icon: '📝' },      // Exam/Note icon
+        { label: 'Upcoming Events', value: '2', icon: '📅' },      // Calendar icon
+        { label: 'Hostel Students', value: '50', icon: '🏠' }     // House icon
     ];
 
     const iconStyle = {

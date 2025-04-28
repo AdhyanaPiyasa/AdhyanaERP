@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="hostel-service:war exploded" />
+      <artifact name="student-service:war exploded" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -12,8 +12,6 @@
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +72,7 @@
     "Tomcat Server.Faculty Service.executor": "Run",
     "Tomcat Server.Hostel Service.executor": "Run",
     "Tomcat Server.Student Service.executor": "Run",
-    "git-widget-placeholder": "administration-service",
+    "git-widget-placeholder": "student",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP",
     "node.js.detected.package.eslint": "true",
@@ -118,7 +116,7 @@
       <recent name="com.adhyana.exam.filters" />
     </key>
   </component>
-  <component name="RunManager" selected="Tomcat Server.Hostel Service">
+  <component name="RunManager" selected="Tomcat Server.Student Service">
     <configuration name="ddbms_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/ddbms-service/src/main/resources/ddbms_schema.sql" />
       <script-mode>FILE</script-mode>

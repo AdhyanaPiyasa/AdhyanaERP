@@ -1,8 +1,23 @@
 // components/teacher/courses/TeacherCourseDetail/Materials/MaterialList.js
 const MaterialList = () => {
     const [showAddModal, setShowAddModal] = MiniReact.useState(false);
-    const [title, setTitle] = MiniReact.useState('');
-    const [description, setDescription] = MiniReact.useState('');
+    const [formData, setFormData] = MiniReact.useState({
+        title: '',
+        description: '',
+        file: null
+    });
+
+    const handleChange = (field, value) => {
+        setFormData({
+            ...formData,
+            [field]: value
+        });
+    };
+
+    const handleSubmit = () => {
+        console.log('Form submitted:', formData);
+        setShowAddModal(false);
+    };
 
     const renderAddModal = () => ({
         type: Modal,
@@ -12,43 +27,58 @@ const MaterialList = () => {
             title: "Add Study Material",
             children: [
                 {
-                    type: TextField,
+                    type: 'form',
                     props: {
-                        label: "Title",
-                        placeholder: "Enter the title of your study material",
-                        value: title,
-                        onChange: (e) => setTitle(e.target.value)
-                    }
-                },
-                {
-                    type: TextField,
-                    props: {
-                        label: "Description",
-                        placeholder: "Write a description of your Study material",
-                        multiline: true,
-                        value: description,
-                        onChange: (e) => setDescription(e.target.value)
-                    }
-                },
-                {
-                    type: Button,
-                    props: {
-                        children: ['Add a file']
-                    }
-                },
-                {
-                    type: Button,
-                    props: {
-                        onClick: () => setShowAddModal(false),
-                        children: ['Submit']
-                    }
-                },
-                {
-                    type: Button,
-                    props: {
-                        variant: 'secondary',
-                        onClick: () => setShowAddModal(false),
-                        children: ['Cancel']
+                        children: [
+                            {
+                                type: TextField,
+                                props: {
+                                    label: "Title",
+                                    placeholder: "Enter the title of your study material",
+                                    value: formData.title,
+                                    onChange: (e) => handleChange('title', e.target.value)
+                                }
+                            },
+                            {
+                                type: TextField,
+                                props: {
+                                    label: "Description",
+                                    placeholder: "Write a description of your study material",
+                                    multiline: true,
+                                    value: formData.description,
+                                    onChange: (e) => handleChange('description', e.target.value)
+                                }
+                            },
+                            
+                            {
+                                type: 'div',
+                                props: {
+                                    style: {
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        gap: theme.spacing.sm,
+                                        marginTop: theme.spacing.lg
+                                    },
+                                    children: [
+                                        {
+                                            type: Button,
+                                            props: {
+                                                variant: 'secondary',
+                                                onClick: () => setShowAddModal(false),
+                                                children: ['Cancel']
+                                            }
+                                        },
+                                        {
+                                            type: Button,
+                                            props: {
+                                                onClick: handleSubmit,
+                                                children: ['Submit']
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
                     }
                 }
             ]
@@ -60,16 +90,29 @@ const MaterialList = () => {
         props: {
             children: [
                 {
-                    type: 'h2',
+                    type: 'div',
                     props: {
-                        children: ['Study Materials']
-                    }
-                },
-                {
-                    type: Button,
-                    props: {
-                        onClick: () => setShowAddModal(true),
-                        children: ['Add Material']
+                        style: {
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: theme.spacing.lg
+                        },
+                        children: [
+                            {
+                                type: 'h2',
+                                props: {
+                                    children: ['Study Materials']
+                                }
+                            },
+                            {
+                                type: Button,
+                                props: {
+                                    onClick: () => setShowAddModal(true),
+                                    children: ['Add Material']
+                                }
+                            }
+                        ]
                     }
                 },
                 showAddModal && renderAddModal()
@@ -79,6 +122,3 @@ const MaterialList = () => {
 };
 
 window.MaterialList = MaterialList;
-
-
-

@@ -19,56 +19,56 @@ const AttendanceManager = ({ courseId }) => {
     ]);
 
     // Fetch students with attendance status for the selected date and course
-    const fetchStudentsForSession = async () => {
-        setLoading(true);
-        setError(null);
+    // const fetchStudentsForSession = async () => {
+    //     setLoading(true);
+    //     setError(null);
         
-        try {
-            // Get the auth token
-            const token = localStorage.getItem('token');
+    //     try {
+    //         // Get the auth token
+    //         const token = localStorage.getItem('token');
             
-            // Construct API URL - format: /attendance/mark/{courseCode}/{date}
-            const url = `http://localhost:8081/api/api/students/attendance/mark/${courseId}/${selectedDate}`;
+    //         // Construct API URL - format: /attendance/mark/{courseCode}/{date}
+    //         const url = `http://localhost:8081/api/api/students/attendance/mark/${courseId}/${selectedDate}`;
             
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+    //         const response = await fetch(url, {
+    //             method: 'GET',
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! Status: ${response.status}`);
+    //         }
             
-            const data = await response.json();
+    //         const data = await response.json();
             
-            if (data.success) {
-                // Map the backend data structure to our frontend structure
-                const mappedStudents = data.data.map(student => ({
-                    id: student.studentIndex,
-                    name: student.studentName || `Student ${student.studentIndex}`, // Use a fallback if name not provided
-                    attendance: student.present ? "present" : "absent"
-                }));
+    //         if (data.success) {
+    //             // Map the backend data structure to our frontend structure
+    //             const mappedStudents = data.data.map(student => ({
+    //                 id: student.studentIndex,
+    //                 name: student.studentName || `Student ${student.studentIndex}`, // Use a fallback if name not provided
+    //                 attendance: student.present ? "present" : "absent"
+    //             }));
                 
-                setStudents(mappedStudents);
-            } else {
-                setError(data.message || "Failed to fetch student attendance data");
-                console.error("API error:", data.message);
-            }
-        } catch (error) {
-            setError(`Error fetching student data: ${error.message}`);
-            console.error("Error fetching students for session:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    //             setStudents(mappedStudents);
+    //         } else {
+    //             setError(data.message || "Failed to fetch student attendance data");
+    //             console.error("API error:", data.message);
+    //         }
+    //     } catch (error) {
+    //         setError(`Error fetching student data: ${error.message}`);
+    //         console.error("Error fetching students for session:", error);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
     
-    // Fetch students when date or courseId changes
-    MiniReact.useEffect(() => {
-        fetchStudentsForSession();
-    }, [selectedDate, courseId]);
+    // // Fetch students when date or courseId changes
+    // MiniReact.useEffect(() => {
+    //     fetchStudentsForSession();
+    // }, [selectedDate, courseId]);
     
     // Handle attendance change for a student
     const handleAttendanceChange = (studentId, value) => {
@@ -282,15 +282,7 @@ const AttendanceManager = ({ courseId }) => {
                                         marginTop: theme.spacing.md
                                     },
                                     children: [
-                                       // View records button
-                                        {
-                                            type: Button,
-                                            props: {
-                                                onClick: () => setShowRecords(true),
-                                                children: 'Attendance records'
-                                            }
-                                        },
-                                        // Calculate percentage button
+                                    // Calculate percentage button
                                         {
                                             type: Button,
                                             props: {

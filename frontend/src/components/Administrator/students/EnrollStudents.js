@@ -141,7 +141,7 @@ const EnrollStudents = ({ onClose, selectedApplicants = [] }) => {
                             {
                                 type: 'p',
                                 props: {
-                                    children: [`${selectedApplicants.length} students have been successfully enrolled to ${batches.find(b => b.id === formData.batch)?.name || formData.batch}`]
+                                    children: [`All applicants have been successfully enrolled to ${batches.find(b => b.id === formData.batch)?.name || formData.batch}`]
                                 }
                             },
                             {
@@ -201,52 +201,52 @@ const EnrollStudents = ({ onClose, selectedApplicants = [] }) => {
                                 }
                             },
                             
-                            // Selected Applicants Summary
-                            {
-                                type: 'div',
-                                props: {
-                                    style: { marginBottom: theme.spacing.lg },
-                                    children: [
-                                        {
-                                            type: 'h4',
-                                            props: {
-                                                style: { marginBottom: theme.spacing.xs },
-                                                children: [`Selected Applicants (${selectedApplicants.length})`]
-                                            }
-                                        },
-                                        {
-                                            type: 'div',
-                                            props: {
-                                                style: {
-                                                    padding: theme.spacing.sm,
-                                                    border: `1px solid ${theme.colors.border}`,
-                                                    borderRadius: '4px',
-                                                    maxHeight: '150px',
-                                                    overflowY: 'auto'
-                                                },
-                                                children: selectedApplicants.length > 0 ?
-                                                    selectedApplicants.map(applicant => ({
-                                                        type: 'div',
-                                                        props: {
-                                                            style: {
-                                                                padding: `${theme.spacing.xs} 0`,
-                                                                borderBottom: `1px solid ${theme.colors.border}10`
-                                                            },
-                                                            children: [applicant.name || `Applicant #${applicant.id || applicant.applicantId}`]
-                                                        }
-                                                    })) : 
-                                                    [{
-                                                        type: 'div',
-                                                        props: {
-                                                            style: { fontStyle: 'italic', color: theme.colors.textSecondary },
-                                                            children: ['No applicants selected']
-                                                        }
-                                                    }]
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
+                            // // Selected Applicants Summary
+                            // {
+                            //     type: 'div',
+                            //     props: {
+                            //         style: { marginBottom: theme.spacing.lg },
+                            //         children: [
+                            //             {
+                            //                 type: 'h4',
+                            //                 props: {
+                            //                     style: { marginBottom: theme.spacing.xs },
+                            //                     children: [`Selected Applicants (${selectedApplicants.length})`]
+                            //                 }
+                            //             },
+                            //             {
+                            //                 type: 'div',
+                            //                 props: {
+                            //                     style: {
+                            //                         padding: theme.spacing.sm,
+                            //                         border: `1px solid ${theme.colors.border}`,
+                            //                         borderRadius: '4px',
+                            //                         maxHeight: '150px',
+                            //                         overflowY: 'auto'
+                            //                     },
+                            //                     children: selectedApplicants.length > 0 ?
+                            //                         selectedApplicants.map(applicant => ({
+                            //                             type: 'div',
+                            //                             props: {
+                            //                                 style: {
+                            //                                     padding: `${theme.spacing.xs} 0`,
+                            //                                     borderBottom: `1px solid ${theme.colors.border}10`
+                            //                                 },
+                            //                                 children: [applicant.name || `Applicant #${applicant.id || applicant.applicantId}`]
+                            //                             }
+                            //                         })) : 
+                            //                         [{
+                            //                             type: 'div',
+                            //                             props: {
+                            //                                 style: { fontStyle: 'italic', color: theme.colors.textSecondary },
+                            //                                 children: ['No applicants selected']
+                            //                             }
+                            //                         }]
+                            //                 }
+                            //             }
+                            //         ]
+                            //     }
+                            // },
 
                             // Action Buttons
                             {
