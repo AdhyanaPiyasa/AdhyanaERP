@@ -27,7 +27,7 @@ public class UserProfileService {
      */
     public boolean createStaffUserProfile(Staff staff) throws Exception {
         UserProfileRequest request = new UserProfileRequest();
-        request.setUserId("S" + staff.getStaffId()); // Prefix 'S' for Staff
+        request.setUserId(String.valueOf(staff.getStaffId()));
         request.setUsername(staff.getEmail());
         // Default password is staff ID + first 3 chars of name
         String defaultPassword = "S" + staff.getStaffId() +
@@ -54,7 +54,7 @@ public class UserProfileService {
      */
     public boolean createStudentUserProfile(Student student) throws Exception {
         UserProfileRequest request = new UserProfileRequest();
-        request.setUserId("STU" + student.getIndexNumber()); // Prefix 'STU' for Student
+        request.setUserId(String.valueOf(student.getIndexNumber()));
         request.setUsername(student.getEmail());
         // Default password is registration number
         request.setPassword(hashPassword(student.getRegistrationNumber()));
@@ -73,7 +73,7 @@ public class UserProfileService {
     public boolean createGuardianUserProfile(String guardianName, String guardianEmail,
                                              int studentIndexNumber) throws Exception {
         UserProfileRequest request = new UserProfileRequest();
-        request.setUserId("G" + studentIndexNumber); // Prefix 'G' + student ID
+        request.setUserId(String.valueOf(-studentIndexNumber));
         request.setUsername(guardianEmail);
         // Default password is "guardian" + student index
         request.setPassword(hashPassword("guardian" + studentIndexNumber));

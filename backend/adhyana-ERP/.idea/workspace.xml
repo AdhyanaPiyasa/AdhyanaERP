@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-<<<<<<< Updated upstream
-      <artifact name="auth-service:war exploded" />
-=======
-      <artifact name="course-service:war exploded" />
->>>>>>> Stashed changes
+      <artifact name="hostel-service:war exploded" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -14,24 +10,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-<<<<<<< Updated upstream
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/AuthServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/AuthServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/ApiResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/TokenResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/TokenResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/services/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/services/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/service/authService.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/service/authService.js" afterDir="false" />
-=======
-      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/SemesterServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/SemesterServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/ApiResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/Semester.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/Semester.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/SemesterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/SemesterService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/AddSemester.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/AddSemester.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/EditSemester.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/EditSemester.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/SemesterContentArea.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/SemesterContentArea.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/SemesterFocusPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/SemesterFocusPanel.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/SemesterTable.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/SemesterTable.js" afterDir="false" />
->>>>>>> Stashed changes
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,50 +52,52 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Database Script.admin_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.auth_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.course_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.ddbms_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.exam_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.hostel_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;Database Script.student_schema.sql.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Tomcat Server.API Gateway.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Administration Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Auth Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Course Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.DDBMS.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Exam Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Faculty Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Hostel Service.executor&quot;: &quot;Run&quot;,
-    &quot;Tomcat Server.Student Service.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Course-Service&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
-    &quot;sql.rename.search.for.storage.occurrences&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Database Script.admin_schema.sql.executor": "Run",
+    "Database Script.announcement_schema.sql.executor": "Run",
+    "Database Script.auth_schema.sql.executor": "Run",
+    "Database Script.calendar_schema.sql.executor": "Run",
+    "Database Script.course_schema.sql.executor": "Run",
+    "Database Script.ddbms_schema.sql.executor": "Run",
+    "Database Script.exam_schema.sql.executor": "Run",
+    "Database Script.hostel_schema.sql.executor": "Run",
+    "Database Script.scholarship_schema.sql.executor": "Run",
+    "Database Script.student_schema.sql.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "Tomcat Server.API Gateway.executor": "Run",
+    "Tomcat Server.Administration Service.executor": "Run",
+    "Tomcat Server.Auth Service.executor": "Run",
+    "Tomcat Server.Course Service.executor": "Run",
+    "Tomcat Server.DDBMS.executor": "Run",
+    "Tomcat Server.Exam Service.executor": "Run",
+    "Tomcat Server.Faculty Service.executor": "Run",
+    "Tomcat Server.Hostel Service.executor": "Run",
+    "Tomcat Server.Student Service.executor": "Run",
+    "git-widget-placeholder": "administration-service",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "sql.rename.search.for.storage.occurrences": "true",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
     ],
-    &quot;RunConfigurationTargetLRU&quot;: [
-      &quot;49f1bd22-26c2-4195-b1fc-ad75bf85e7c8&quot;
+    "RunConfigurationTargetLRU": [
+      "49f1bd22-26c2-4195-b1fc-ad75bf85e7c8"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\viduranga\Documents\GitHub\AdhyanaERP\backend\adhyana-ERP" />
@@ -127,31 +111,16 @@
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\api-gateway\src\main\java\com\adhyana\gateway" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.adhyana.administration.models" />
       <recent name="com.adhyana.course.utils" />
       <recent name="com.adhyana.exam.utils" />
       <recent name="com.adhyana.course.filters" />
       <recent name="com.adhyana.exam.filters" />
-      <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
-<<<<<<< Updated upstream
-  <component name="RunManager" selected="Tomcat Server.Auth Service">
-=======
-  <component name="RunManager" selected="Tomcat Server.Course Service">
->>>>>>> Stashed changes
-    <configuration name="auth_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
-      <script-file value="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" />
-      <script-mode>FILE</script-mode>
-      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
-      <method v="2" />
-    </configuration>
-    <configuration name="course_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
-      <script-file value="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" />
-      <script-mode>FILE</script-mode>
-      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Tomcat Server.Hostel Service">
     <configuration name="ddbms_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/ddbms-service/src/main/resources/ddbms_schema.sql" />
       <script-mode>FILE</script-mode>
       <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
       <method v="2" />
@@ -164,6 +133,18 @@
     </configuration>
     <configuration name="hostel_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/hostel-service/src/main/resources/hostel_schema.sql" />
+      <script-mode>FILE</script-mode>
+      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
+      <method v="2" />
+    </configuration>
+    <configuration name="scholarship_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/scholarship-service/src/main/resources/scholarship_schema.sql" />
+      <script-mode>FILE</script-mode>
+      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
+      <method v="2" />
+    </configuration>
+    <configuration name="student_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" />
       <script-mode>FILE</script-mode>
       <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
       <method v="2" />
@@ -711,9 +692,9 @@
       <option name="BROWSER_ID" value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
-        <artifact name="ddmbs-service:war exploded">
+        <artifact name="ddbms-service:war exploded">
           <settings>
-            <option name="CONTEXT_PATH" value="" />
+            <option name="CONTEXT_PATH" value="/ddbms_service_war_exploded" />
           </settings>
         </artifact>
       </deployment>
@@ -793,7 +774,7 @@
       <method v="2">
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
-          <artifact name="ddmbs-service:war exploded" />
+          <artifact name="ddbms-service:war exploded" />
         </option>
       </method>
     </configuration>
@@ -1158,9 +1139,9 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Database Script.scholarship_schema.sql" />
+      <item itemvalue="Database Script.student_schema.sql" />
       <item itemvalue="Database Script.hostel_schema.sql" />
-      <item itemvalue="Database Script.auth_schema.sql" />
-      <item itemvalue="Database Script.course_schema.sql" />
       <item itemvalue="Database Script.ddbms_schema.sql" />
       <item itemvalue="Database Script.exam_schema.sql" />
       <item itemvalue="Tomcat Server.API Gateway" />
@@ -1177,11 +1158,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Database Script.student_schema.sql" />
+        <item itemvalue="Database Script.scholarship_schema.sql" />
         <item itemvalue="Database Script.hostel_schema.sql" />
-        <item itemvalue="Database Script.ddbms_schema.sql" />
-        <item itemvalue="Database Script.course_schema.sql" />
         <item itemvalue="Database Script.exam_schema.sql" />
-        <item itemvalue="Database Script.auth_schema.sql" />
+        <item itemvalue="Database Script.ddbms_schema.sql" />
       </list>
     </recent_temporary>
   </component>

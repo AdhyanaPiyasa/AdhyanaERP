@@ -1,50 +1,53 @@
 // src/components/App.js
+
 const App = () => {
-  if (!AppState.isAuthenticated || !AppState.userRole) {
-    return {
-      type: Login,
-      props: {},
-    };
+  const currentRoute = navigation.getCurrentRoute(); 
+
+  if (currentRoute === navigation.routes.APPLICATION_FORM) {
+     return {
+      type: PublicLayout, // Use the new layout
+      props: {
+          children: [
+              { // Pass the form component as children to the layout
+                  type: StudentApplicationForm,
+                  props: { isStandalone: true },
+              }
+          ]
+      }
+  };
+     
   }
 
-  // Your existing App implementation for authenticated users
-  const getContent = () => {
-    const route = navigation.getCurrentRoute();
-    if (route === "apply") {
+  if (!AppState.isAuthenticated || !AppState.userRole) {
+      if (currentRoute !== 'login') {
+      }
       return {
-        type: ApplicationPage,
-        props: {},
+          type: Login,
+          props: {},
       };
-    }
-    const role = AppState.userRole;
-    const params = navigation.getParams();
+  }
 
-    // Common routes for all roles
-    // if (route === 'profile') {
-    //     // Correctly format the component name based on role
-    //     const componentName = role.charAt(0).toUpperCase() +
-    //                         role.slice(1) + 'Profile';
-    //     return {
-    //         type: window[componentName], // Use window to access globally registered component
-    //         props: params
-    //     };
-    // }
+  const getContent = () => {
+      const route = currentRoute;
 
-    // Role-specific routing
-    switch (role) {
-      case "student":
-        return getStudentContent(route, params);
-      case "teacher":
-        return getTeacherContent(route, params);
-      case "parent":
-        return getParentContent(route, params);
-      case "admin":
-        return getAdminContent(route, params);
-      case "reviewer":
-        return getReviewerContent(route, params);
-      default:
-        return { type: "div", props: { children: ["Invalid role"] } };
-    }
+      const role = AppState.userRole;
+      const params = navigation.getParams();
+
+      switch (role) {
+        case "student":
+          return getStudentContent(route, params);
+        case "teacher":
+          return getTeacherContent(route, params);
+        case "parent":
+          return getParentContent(route, params);
+        case "admin":
+          return getAdminContent(route, params);
+        case "reviewer":
+          return getReviewerContent(route, params);
+        default:
+           console.error("Invalid role:", role);
+           return { type: "div", props: { children: ["Invalid role."] } };
+      }
   };
 
   // Role-specific content getters
@@ -171,6 +174,8 @@ const App = () => {
         return { type: AannouncementList };
       case "other/hostel":
         return { type: AdminHostelInfo };
+        case 'other/hostel/applications':  // New route for applications
+        return { type: HostelApplicationsList };
       case "other/scholarship":
         return { type: ScholarshipMain };
       case "other/scholarship/applications":

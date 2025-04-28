@@ -53,7 +53,7 @@ public class StudentApplicationService {
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int id = generatedKeys.getInt(1);
-                    application.setId(id);
+                    application.setId(id);;
 
                     // Generate application ID with prefix "APP" followed by the generated ID with leading zeros
                     String applicantId = String.format("APP%06d", id);
