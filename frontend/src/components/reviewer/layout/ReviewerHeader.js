@@ -1,4 +1,4 @@
-// components/reviewer/layout/ReviewerHeader.js
+// components/layout/Header.js
 const ReviewerHeader = () => {
     const [showProfileMenu, setShowProfileMenu] = MiniReact.useState(false);
     const currentRoute = navigation.getCurrentRoute();
@@ -8,7 +8,7 @@ const ReviewerHeader = () => {
             display: 'flex',
             alignItems: 'center',
             padding: '0 24px',
-            backgroundColor: '#e6f7ff',  // Light blue background for reviewer
+            backgroundColor: '#a6e7ff ',
             height: '80px',
             borderBottom: `1px solid ${theme.colors.border}`,
             position: 'fixed',
@@ -23,11 +23,11 @@ const ReviewerHeader = () => {
             gap: '12px'
         },
         logo: {
-            width: '24px',
-            height: '24px'
+            width: '60px',
+            height: '60px'
         },
         brandName: {
-            fontSize: '18px',
+            fontSize: '22px',
             fontWeight: 'bold',
             color: '#0066CC'
         },
@@ -77,13 +77,86 @@ const ReviewerHeader = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
-        }
+        },
+        dropdown: {
+            position: 'absolute',
+            top: '100%',
+            right: 0,
+            marginTop: '8px',
+            backgroundColor: 'white',
+            borderRadius: '4px',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+            width: '200px',
+            zIndex: 1000
+        },
+        dropdownItem: {
+            padding: '10px 16px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            color: '#333',
+            transition: 'background-color 0.2s',
+            display: 'block',
+            width: '100%',
+            textAlign: 'left',
+            border: 'none',
+            backgroundColor: 'transparent'
+        },
+        dropdownItemHover: {
+            backgroundColor: '#f5f5f5'
+        },
+        logoutButton: {
+            padding: '10px 16px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            color: '#dc2626',
+            transition: 'background-color 0.2s',
+            display: 'block',
+            width: '100%',
+            textAlign: 'left',
+            border: 'none',
+            backgroundColor: 'transparent',
+            borderTop: '1px solid #eee'
+        },
+        profileButton: {
+            backgroundColor: '#0066CC',
+            color: 'white',
+            padding: '6px 16px',
+            borderRadius: '4px',
+            fontSize: '14px',
+            fontWeight: '500',
+            cursor: 'pointer',
+            border: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+        },
     };
+
+
 
     // Navigation items with icons - keep it simple for reviewer
     const navItems = [
         { label: 'Applications', path: 'applications', icon: '📝' }
     ];
+
+
+    // Handle click outside to close dropdown
+    MiniReact.useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (showProfileMenu && !event.target.closest('.profile-menu')) {
+                setShowProfileMenu(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, [showProfileMenu]);
+
+    const handleProfileClick = (e) => {
+        e.preventDefault();
+        setShowProfileMenu(!showProfileMenu);
+    };
+
 
     return {
         type: 'header',
@@ -96,10 +169,11 @@ const ReviewerHeader = () => {
                         style: styles.brandSection,
                         children: [
                             {
-                                type: 'div',
+                                type: 'img',
                                 props: {
-                                    style: styles.logo,
-                                    children: ['🏫'] // School icon
+                                    src: 'src/assets/logo.png',
+                                    alt: 'ADHYANA Logo',
+                                    style: styles.logo
                                 }
                             },
                             {
@@ -132,7 +206,6 @@ const ReviewerHeader = () => {
                                             onclick: (e) => {
                                                 e.preventDefault();
                                                 navigation.navigate(item.path);
-                  
                                             },
                                             children: [
                                                 {
@@ -154,6 +227,57 @@ const ReviewerHeader = () => {
                                     }))
                                 }
                             },
+                            {
+                                type: 'div',
+                                props: {
+                                    className: 'profile-menu',
+                                    style: styles.profileSection,
+                                    children: [
+                                        {
+                                            type: 'button',
+                                            props: {
+                                                style: styles.profileButton,
+                                                onClick: handleProfileClick,
+                                                children: [
+                                                    'Profile',
+                                                ]
+                                            }
+                                        },
+                                        showProfileMenu && {
+                                            type: 'div',
+                                            props: {
+                                                style: styles.dropdown,
+                                                children: [
+                                                    {
+                                                        type: 'button',
+                                                        props: {
+                                                            style: styles.dropdownItem,
+                                                            onClick: (e) => {
+                                                                e.stopPropagation(); // Prevent event bubbling
+                                                                console.log("Clicking View Profile");
+                                                                navigation.navigate('profile');
+                                                                setShowProfileMenu(false);
+                                                            },
+                                                            children: ['View Profile']
+                                                        }
+                                                    },
+                                                    {
+                                                        type: 'button',
+                                                        props: {
+                                                            style: styles.logoutButton,
+                                                            onClick: () => {
+                                                                authService.logout();
+                                                                setShowProfileMenu(false);
+                                                            },
+                                                            children: ['Logout']
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
                         ]
                     }
                 }

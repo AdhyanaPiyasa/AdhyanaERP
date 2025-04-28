@@ -211,7 +211,7 @@ const ApplicantList = () => {
                                 props: {
                                     headers: ['Applicant ID', 'Name', 'Applied Program', 'Application Date', 'Actions'],
                                     data: approvedApplicants.map(applicant => ({
-                                        'Applicant ID': applicant.id,
+                                        'Applicant ID': ("APP0"+ applicant.student_application_id),
                                         'Name': applicant.name,
                                         'Applied Program': applicant.appliedProgram,
                                         'Application Date': applicant.applicationDate,

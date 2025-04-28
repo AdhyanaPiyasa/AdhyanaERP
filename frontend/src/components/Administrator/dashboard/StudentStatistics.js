@@ -1,12 +1,12 @@
 const StudentStatistics = () => {
     const getDegreeStatistics = () => {
         const programCounts = {
-            "Computer Science Y2022": 200,
-            "Information Systems Y2022": 120,
-            "Computer Science Y2023": 237,
-            "Information Systems Y2023": 112,
-            "Computer Science Y2024": 340,
-            "Information Systems Y2024": 90
+            "Computer Science Y2022": 20,
+            "Information Systems Y2022": 30,
+            "Computer Science Y2023": 35,
+            "Information Systems Y2023": 15,
+            "Computer Science Y2024": 35,
+            "Information Systems Y2024": 25
         };
 
         return Object.entries(programCounts).map(([program, count]) => ({
