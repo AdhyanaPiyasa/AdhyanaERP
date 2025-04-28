@@ -18,10 +18,9 @@ CREATE TABLE IF NOT EXISTS students (
     -- No FK here to avoid cross-db constraints, app logic ensures consistency
 );
 
-
 -- Shared Table: Enrolled_Students
 CREATE TABLE IF NOT EXISTS enrolled_students (
-                                                 student_index INT PRIMARY KEY AUTO_INCREMENT,
+                                                 student_index INT PRIMARY KEY, -- Removed AUTO_INCREMENT to match students table
                                                  registration_number VARCHAR(20) NOT NULL UNIQUE,
                                                  batch_id VARCHAR(10) NULL,
                                                  name VARCHAR(100) NOT NULL,
@@ -38,40 +37,20 @@ CREATE TABLE IF NOT EXISTS enrolled_students (
                                                  guardian_email VARCHAR(100),
                                                  hostel_required VARCHAR(5),
                                                  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                                                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                                 FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE CASCADE
 );
 
-
--- Shared Table: Courses (Reference Only - Data Managed by Admin/Course Service)
-CREATE TABLE IF NOT EXISTS courses (
-                                       course_id VARCHAR(10) PRIMARY KEY,
-                                       name VARCHAR(100) NOT NULL,
-                                       year INT NOT NULL,
-                                       credits INT NOT NULL,
-                                       duration INT NOT NULL,
-                                       avg_rating DECIMAL(3,2) DEFAULT NULL,
+-- Shared Table: Batches (Reference Only - Data Managed by Admin)
+CREATE TABLE IF NOT EXISTS batches (
+                                       batch_id VARCHAR(10) PRIMARY KEY,
+                                       batch_name VARCHAR(50) NOT NULL UNIQUE,
+                                       start_date DATE,
+                                       end_date DATE,
+                                       status ENUM('PLANNED', 'ACTIVE', 'COMPLETED', 'CANCELLED') DEFAULT 'PLANNED',
                                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
-CREATE TABLE IF NOT EXISTS student_semester_courses (
-                                                        student_index INT NOT NULL,
-                                                        semester_id VARCHAR(5) NOT NULL,
-                                                        course_id VARCHAR(10) NOT NULL,
-                                                        enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                                        PRIMARY KEY (student_index, semester_id, course_id),
-                                                        FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE CASCADE,
-                                                        FOREIGN KEY (semester_id) REFERENCES semesters(semester_id) ON DELETE CASCADE,
-                                                        FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE
-);
-
--- Insert data into student_semester_courses table
-INSERT INTO student_semester_courses (student_index, semester_id, course_id) VALUES
-                                                                                 (20240001, 'y24s1', 'CS1101'),
-                                                                                 (20240001, 'y24s2', 'ENG1001'),
-                                                                                 (20240002, 'y25s1', 'CS2101'),
-                                                                                 (20230010, 'y24s1', 'CS1101'),
-                                                                                 (20240002, 'y24s1', 'CS1101');
 
 CREATE TABLE IF NOT EXISTS semesters (
                                          semester_id VARCHAR(5) PRIMARY KEY,
@@ -86,20 +65,17 @@ CREATE TABLE IF NOT EXISTS semesters (
                                          FOREIGN KEY (batch_id) REFERENCES batches(batch_id) ON DELETE CASCADE
 );
 
--- Shared Table: Batches (Reference Only - Data Managed by Admin)
-CREATE TABLE IF NOT EXISTS batches (
-                                       batch_id VARCHAR(10) PRIMARY KEY,
-                                       batch_name VARCHAR(50) NOT NULL UNIQUE,
-                                       start_date DATE,
-                                       end_date DATE,
-                                       status ENUM('PLANNED', 'ACTIVE', 'COMPLETED', 'CANCELLED') DEFAULT 'PLANNED',
+-- Shared Table: Courses (Reference Only - Data Managed by Admin/Course Service)
+CREATE TABLE IF NOT EXISTS courses (
+                                       course_id VARCHAR(10) PRIMARY KEY,
+                                       name VARCHAR(100) NOT NULL,
+                                       year INT NOT NULL,
+                                       credits INT NOT NULL,
+                                       duration INT NOT NULL,
+                                       avg_rating DECIMAL(3,2) DEFAULT NULL,
                                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
-INSERT INTO batches (batch_id, batch_name, start_date, end_date) VALUES
-                                                                     ('CS24F', 'CS-2024-Fall', '2024-09-15', '2028-08-31'),
-                                                                     ('BM23S', 'BM-2023-Spring', '2023-02-01', '2027-01-31')
 
 -- Shared Table: Student Applications (Reference Only - Data Managed by Admin)
 CREATE TABLE IF NOT EXISTS student_applications (
@@ -135,8 +111,8 @@ CREATE TABLE IF NOT EXISTS hostel_applications (
                                                    application_date DATE NOT NULL DEFAULT (CURDATE()),
                                                    status VARCHAR(20) NOT NULL DEFAULT 'Pending',
                                                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                                   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    -- No FK here to avoid cross-db constraints
+                                                   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                                   FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE CASCADE
 );
 
 -- Student Specific: Attendance
@@ -168,59 +144,100 @@ CREATE TABLE IF NOT EXISTS scholarships (
 -- Student Specific: Scholarship Applications
 CREATE TABLE IF NOT EXISTS scholarship_applications (
                                                         scholarship_application_id INT PRIMARY KEY AUTO_INCREMENT,
-                                                        student_index INT NOT NULL, -- Changed from VARCHAR, Removed UNIQUE
+                                                        student_index INT NOT NULL,
                                                         scholarship_id INT NOT NULL,
-                                                        student_batch VARCHAR(20) NULL, -- Denormalized for convenience, but can get from student_index
-                                                        student_degree VARCHAR(50) NULL, -- Denormalized
-                                                        student_gpa DOUBLE NOT NULL, -- GPA at time of application
-                                                        status ENUM('Pending','Approved','Rejected') NOT NULL ,
+                                                        student_batch VARCHAR(20) NULL,
+                                                        student_degree VARCHAR(50) NULL,
+                                                        student_gpa DOUBLE NOT NULL,
+                                                        status ENUM('Pending','Approved','Rejected') NOT NULL,
                                                         comments TEXT,
                                                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                                        FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE CASCADE,
                                                         FOREIGN KEY (scholarship_id) REFERENCES scholarships(scholarship_id) ON DELETE CASCADE
 );
 
--- Sample Data Insertion (Student Schema) --
+CREATE TABLE IF NOT EXISTS student_semester_courses (
+                                                        student_index INT NOT NULL,
+                                                        semester_id VARCHAR(5) NOT NULL,
+                                                        course_id VARCHAR(10) NOT NULL,
+                                                        enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                                        PRIMARY KEY (student_index, semester_id, course_id),
+                                                        FOREIGN KEY (student_index) REFERENCES students(student_index) ON DELETE CASCADE,
+                                                        FOREIGN KEY (semester_id) REFERENCES semesters(semester_id) ON DELETE CASCADE,
+                                                        FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE
+);
 
--- Re-insert sample student/course data (for reference, assuming not live linked)
-INSERT INTO students (student_index, registration_number, name, email, batch_id) VALUES
-                                                                                    (20240001, '2024CS001','Janith Perera' ,'janith.p@student.adhyana.lk', 'CS24F'),
-                                                                                    (20240002, '2024CS002','Aisha Khan' ,'aisha.k@student.adhyana.lk', 'CS24F'),
-                                                                                    (20230010, '2023BM010','Ravi Sharma' ,'ravi.s@student.adhyana.lk', 'BM23S')
-ON DUPLICATE KEY UPDATE student_index=student_index; -- Avoid error if already exists
+-- =============================================
+-- Insert batches data
+-- =============================================
+INSERT INTO batches (batch_id, batch_name, start_date, end_date, status) VALUES
+                                                                             ('CS24F', 'CS-2024-Fall', '2024-09-15', '2028-08-31', 'ACTIVE'),
+                                                                             ('BM23S', 'BM-2023-Spring', '2023-02-01', '2027-01-31', 'ACTIVE');
 
+-- =============================================
+-- Insert semesters data (missing in original schema)
+-- =============================================
+INSERT INTO semesters (semester_id, batch_id, academic_year, semester_num, start_date, end_date, status) VALUES
+                                                                                                             ('y24s1', 'CS24F', 2024, 1, '2024-09-15', '2025-01-31', 'ONGOING'),
+                                                                                                             ('y24s2', 'CS24F', 2024, 2, '2025-02-01', '2025-06-30', 'PLANNED'),
+                                                                                                             ('y25s1', 'CS24F', 2025, 1, '2025-09-01', '2026-01-31', 'PLANNED');
 
--- Sample data to enrolled_students table
-INSERT INTO enrolled_students (registration_number, batch_id, name, national_id, email, phone, gender, date_of_birth, address, guardian_name, guardian_national_id, guardian_relation, guardian_contact_number, guardian_email, hostel_required) VALUES
-        ('2024CS001', 'CS24F', 'Janith Perera', '19980515234V', 'janith.p@student.adhyana.lk', '0771234567', 'Male', '1998-05-15', '123 Main Street, Colombo', 'Kamal Perera', '19701020567V', 'Father', '0719876543', 'kamal.p@example.com', 'No'),
-        ('2024CS002', 'CS24F', 'Aisha Khan', '20001102876V', 'aisha.k@student.adhyana.lk', '0765432109', 'Female', '2000-11-02', '45 Flower Road, Kandy', 'Farah Khan', '19750318901V', 'Mother', '0721122334', 'farah.k@example.com', 'Yes'),
-        ('2023BM010', 'BM23S', 'Ravi Sharma', '19990728123V', 'ravi.s@student.adhyana.lk', '0759876543', 'Male', '1999-07-28', '78 Lake View Avenue, Galle', 'Priya Sharma', '19730905432V', 'Mother', '0705556667', 'priya.s@example.com', 'No');
-
-
-
+-- =============================================
+-- Insert courses data
+-- =============================================
 INSERT INTO courses (course_id, name, year, credits, duration) VALUES
                                                                    ('CS1101', 'Introduction to Programming', 1, 3, 45),
                                                                    ('CS2101', 'Data Structures', 1, 4, 60),
-                                                                   ('ENG1001', 'Calculus I', 1, 3, 45)
-ON DUPLICATE KEY UPDATE course_id=course_id; -- Avoid error if already exists
+                                                                   ('ENG1001', 'Calculus I', 1, 3, 45);
 
--- Insert sample attendance data
+-- =============================================
+-- Insert students data with consistent IDs
+-- =============================================
+INSERT INTO students (student_index, registration_number, name, email, batch_id) VALUES
+                                                                                     (2024001, '2024CS001', 'Janith Perera', 'janith.p@student.adhyana.lk', 'CS24F'),
+                                                                                     (2024002, '2024CS002', 'Aisha Khan', 'aisha.k@student.adhyana.lk', 'CS24F'),
+                                                                                     (2023010, '2023BM010', 'Ravi Sharma', 'ravi.s@student.adhyana.lk', 'BM23S');
+
+-- =============================================
+-- Insert enrolled_students data with matching student_index
+-- =============================================
+INSERT INTO enrolled_students (student_index, registration_number, batch_id, name, national_id, email, phone, gender, date_of_birth, address, guardian_name, guardian_national_id, guardian_relation, guardian_contact_number, guardian_email, hostel_required) VALUES
+                                                                                                                                                                                                                                                                    (2024001, '2024CS001', 'CS24F', 'Janith Perera', '19980515234V', 'janith.p@student.adhyana.lk', '0771234567', 'Male', '1998-05-15', '123 Main Street, Colombo', 'Kamal Perera', '19701020567V', 'Father', '0719876543', 'kamal.p@example.com', 'No'),
+                                                                                                                                                                                                                                                                    (2024002, '2024CS002', 'CS24F', 'Aisha Khan', '20001102876V', 'aisha.k@student.adhyana.lk', '0765432109', 'Female', '2000-11-02', '45 Flower Road, Kandy', 'Farah Khan', '19750318901V', 'Mother', '0721122334', 'farah.k@example.com', 'Yes'),
+                                                                                                                                                                                                                                                                    (2023010, '2023BM010', 'BM23S', 'Ravi Sharma', '19990728123V', 'ravi.s@student.adhyana.lk', '0759876543', 'Male', '1999-07-28', '78 Lake View Avenue, Galle', 'Priya Sharma', '19730905432V', 'Mother', '0705556667', 'priya.s@example.com', 'No');
+
+-- =============================================
+-- Insert student_semester_courses data with consistent student_index values
+-- =============================================
+INSERT INTO student_semester_courses (student_index, semester_id, course_id) VALUES
+                                                                                 (2024001, 'y24s1', 'CS1101'),
+                                                                                 (2024001, 'y24s2', 'ENG1001'),
+                                                                                 (2024002, 'y25s1', 'CS2101'),
+                                                                                 (2023010, 'y24s1', 'CS1101'),
+                                                                                 (2024002, 'y24s1', 'CS1101');
+
+-- =============================================
+-- Insert attendance data with consistent student_index values
+-- =============================================
 INSERT INTO attendance (student_index, course_id, date, present) VALUES
-                                                                             (20240001, 'CS1101', '2025-04-15', true),
-                                                                             (20240001, 'CS1101', '2025-04-17', true),
-                                                                             (20240002, 'CS1101', '2025-04-15', false),
-                                                                             (20240001, 'ENG1001', '2025-04-16', true);
+                                                                     (2024001, 'CS1101', '2025-04-15', true),
+                                                                     (2024001, 'CS1101', '2025-04-17', true),
+                                                                     (2024002, 'CS1101', '2025-04-15', false),
+                                                                     (2024001, 'ENG1001', '2025-04-16', true);
 
--- Insert sample scholarships
-INSERT INTO scholarships (scholarship_id, name, description, min_gpa, amount, application_deadline) VALUES
-                                                                                                        (1, 'Merit Scholarship', 'Scholarship for students with excellent academic performance in Year 1', 3.7, 50000.00, '2025-08-31'),
-                                                                                                        (2, 'Academic Excellence Scholarship', 'For students maintaining outstanding academic performance (overall)', 3.8, 80000.00, '2025-08-31'),
-                                                                                                        (3, 'Financial Need Bursary', 'For students requiring financial assistance (proof required)', 3.0, 30000.00, '2025-07-15'),
-                                                                                                        (4, 'Leadership Award', 'For students demonstrating significant leadership qualities', 3.5, 40000.00, '2025-08-15');
+-- =============================================
+-- Insert scholarships data
+-- =============================================
+INSERT INTO scholarships (name, description, min_gpa, amount, application_deadline) VALUES
+                                                                                        ('Merit Scholarship', 'Scholarship for students with excellent academic performance in Year 1', 3.7, 50000.00, '2025-08-31'),
+                                                                                        ('Academic Excellence Scholarship', 'For students maintaining outstanding academic performance (overall)', 3.8, 80000.00, '2025-08-31'),
+                                                                                        ('Financial Need Bursary', 'For students requiring financial assistance (proof required)', 3.0, 30000.00, '2025-07-15'),
+                                                                                        ('Leadership Award', 'For students demonstrating significant leadership qualities', 3.5, 40000.00, '2025-08-15');
 
--- Insert sample scholarship application data
+-- =============================================
+-- Insert scholarship_applications data with consistent student_index values
+-- =============================================
 INSERT INTO scholarship_applications (student_index, scholarship_id, student_batch, student_degree, student_gpa, status, comments) VALUES
-                                                                                                                                       (20240001, 1, 'CS24F', 'Computer Science', 3.85, 'Pending', 'Attaching Year 1 results transcript.'), -- Use existing student
-                                                                                                                                       (20240002, 3, 'CS24F', 'Computer Science', 3.60, 'Pending', 'Submitting financial need documentation separately.'); -- Use existing student
-
-
+                                                                                                                                       (2024001, 1, 'CS24F', 'Computer Science', 3.85, 'Pending', 'Attaching Year 1 results transcript.'),
+                                                                                                                                       (2024002, 3, 'CS24F', 'Computer Science', 3.60, 'Pending', 'Submitting financial need documentation separately.');

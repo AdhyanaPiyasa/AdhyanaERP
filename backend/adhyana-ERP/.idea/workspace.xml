@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="ddbms-service:war exploded" />
+      <artifact name="hostel-service:war exploded" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -10,12 +10,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/StudentApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/EnrollmentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/EnrollmentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/services/StudentApplicationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/services/StudentApplicationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/students/ApplicantList.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/students/ApplicantList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/students/EnrollStudents.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/students/EnrollStudents.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,11 +55,14 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Database Script.admin_schema.sql.executor": "Run",
+    "Database Script.announcement_schema.sql.executor": "Run",
     "Database Script.auth_schema.sql.executor": "Run",
+    "Database Script.calendar_schema.sql.executor": "Run",
     "Database Script.course_schema.sql.executor": "Run",
     "Database Script.ddbms_schema.sql.executor": "Run",
     "Database Script.exam_schema.sql.executor": "Run",
     "Database Script.hostel_schema.sql.executor": "Run",
+    "Database Script.scholarship_schema.sql.executor": "Run",
     "Database Script.student_schema.sql.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "Tomcat Server.API Gateway.executor": "Run",
@@ -117,20 +118,9 @@
       <recent name="com.adhyana.exam.filters" />
     </key>
   </component>
-  <component name="RunManager" selected="Tomcat Server.DDBMS">
-    <configuration name="auth_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
-      <script-file value="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" />
-      <script-mode>FILE</script-mode>
-      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
-      <method v="2" />
-    </configuration>
-    <configuration name="course_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
-      <script-file value="$PROJECT_DIR$/course-service/src/main/resources/course_schema.sql" />
-      <script-mode>FILE</script-mode>
-      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Tomcat Server.Hostel Service">
     <configuration name="ddbms_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/ddbms-service/src/main/resources/ddbms_schema.sql" />
       <script-mode>FILE</script-mode>
       <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
       <method v="2" />
@@ -143,6 +133,18 @@
     </configuration>
     <configuration name="hostel_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/hostel-service/src/main/resources/hostel_schema.sql" />
+      <script-mode>FILE</script-mode>
+      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
+      <method v="2" />
+    </configuration>
+    <configuration name="scholarship_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/scholarship-service/src/main/resources/scholarship_schema.sql" />
+      <script-mode>FILE</script-mode>
+      <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
+      <method v="2" />
+    </configuration>
+    <configuration name="student_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/student-service/src/main/resources/student_schema.sql" />
       <script-mode>FILE</script-mode>
       <data-source id="49f1bd22-26c2-4195-b1fc-ad75bf85e7c8" />
       <method v="2" />
@@ -1137,9 +1139,9 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Database Script.scholarship_schema.sql" />
+      <item itemvalue="Database Script.student_schema.sql" />
       <item itemvalue="Database Script.hostel_schema.sql" />
-      <item itemvalue="Database Script.auth_schema.sql" />
-      <item itemvalue="Database Script.course_schema.sql" />
       <item itemvalue="Database Script.ddbms_schema.sql" />
       <item itemvalue="Database Script.exam_schema.sql" />
       <item itemvalue="Tomcat Server.API Gateway" />
@@ -1156,11 +1158,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Database Script.student_schema.sql" />
+        <item itemvalue="Database Script.scholarship_schema.sql" />
         <item itemvalue="Database Script.hostel_schema.sql" />
-        <item itemvalue="Database Script.ddbms_schema.sql" />
-        <item itemvalue="Database Script.course_schema.sql" />
         <item itemvalue="Database Script.exam_schema.sql" />
-        <item itemvalue="Database Script.auth_schema.sql" />
+        <item itemvalue="Database Script.ddbms_schema.sql" />
       </list>
     </recent_temporary>
   </component>
