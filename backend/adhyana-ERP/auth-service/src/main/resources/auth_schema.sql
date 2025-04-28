@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Insert default admin user (password: admin123)
-INSERT INTO users (username, password, role) VALUES
-                                                 ('admin', 'nqzva123', 'admin'),
-                                                 ('teacher1', 'grnpure123', 'teacher'),
-                                                 ('student1', 'fghqrag123', 'student'),
-                                                 ('parent1', 'cnerag123', 'parent');
+INSERT INTO users (username, password, role, user_external_id) VALUES
+                                                 ('admin', 'nqzva123', 'admin', 1),
+                                                 ('teacher1', 'grnpure123', 'teacher', 2),
+                                                 ('student1', 'fghqrag123', 'student', 2024001),
+                                                 ('parent1', 'cnerag123', 'parent', 1);
