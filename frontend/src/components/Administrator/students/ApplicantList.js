@@ -7,6 +7,11 @@ const ApplicantList = () => {
     const [showViewModal, setShowViewModal] = MiniReact.useState(false);
     const [showEnrollModal, setShowEnrollModal] = MiniReact.useState(false);
     const [selectedApplicants, setSelectedApplicants] = MiniReact.useState([]);
+    const [selectedBatchId, setSelectedBatchId] = MiniReact.useState('');
+    const [availableBatches, setAvailableBatches] = MiniReact.useState([]);
+    const [enrollmentLoading, setEnrollmentLoading] = MiniReact.useState(false);
+    const [enrollmentError, setEnrollmentError] = MiniReact.useState(null);
+    const [enrollmentSuccess, setEnrollmentSuccess] = MiniReact.useState('');
     
     const fetchApprovedApplicants = async () => {
         setLoading(true);
@@ -49,6 +54,8 @@ const ApplicantList = () => {
             setLoading(false);
         }
     };
+
+    
 
     MiniReact.useEffect(() => {
         fetchApprovedApplicants();
@@ -229,6 +236,14 @@ const ApplicantList = () => {
                     props: {
                         application: selectedApplication,
                         onClose: () => setShowViewModal(false),                    }
+                },
+                // Add EnrollStudents modal when showEnrollModal is true
+                showEnrollModal && {
+                    type: EnrollStudents,
+                    props: {
+                        selectedApplicants: selectedApplicants,
+                        onClose: () => setShowEnrollModal(false)
+                    }
                 }
             ]
         }

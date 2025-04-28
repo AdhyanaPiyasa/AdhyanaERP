@@ -1,93 +1,102 @@
 // components/Administrator/students/EnrollStudents.js
 const EnrollStudents = ({ onClose, selectedApplicants = [] }) => {
     const [formData, setFormData] = MiniReact.useState({
-        degreeProgram: '',
-        batch: '',
-        courses: [],
-        duration: 3
+        batch: ''
     });
     
     const [isSubmitting, setIsSubmitting] = MiniReact.useState(false);
     const [showSuccessMessage, setShowSuccessMessage] = MiniReact.useState(false);
+    const [error, setError] = MiniReact.useState(null);
+    const [batches, setBatches] = MiniReact.useState([]);
 
-    // Mock data for degree programs and courses
-    const degreePrograms = [
-        { id: 'CS', name: 'Computer Science' },
-        { id: 'IS', name: 'Information Systems' },
-        { id: 'SE', name: 'Software Engineering' }
-    ];
-
-    const availableCourses = [
-        { id: 'CS1101', name: 'Introduction to Programming', credits: 3 },
-        { id: 'CS1102', name: 'Data Structures and Algorithms', credits: 3 },
-        { id: 'CS1103', name: 'Database Systems', credits: 3 },
-        { id: 'CS1104', name: 'Computer Architecture', credits: 3 },
-        { id: 'IS1101', name: 'Information Systems Fundamentals', credits: 3 },
-        { id: 'IS1102', name: 'Business Process Modeling', credits: 3 },
-        { id: 'SE1101', name: 'Software Engineering Principles', credits: 3 },
-        { id: 'SE1102', name: 'Software Design and Architecture', credits: 3 }
-    ];
-
-    // Handle form input changes
-    const handleChange = (e) => {
-        console.log('Change event:', e);
-        
-        // Check if this is our synthetic event
-        if (e.target && e.target.name && typeof e.target.value !== 'undefined') {
-            const { name, value } = e.target;
-            
-            console.log(`Updating formData: ${name} = ${value}`);
-            
-            // Use the functional form of setState to ensure we're working with the latest state
-            setFormData(prevData => {
-                const newData = {
-                    ...prevData,
-                    [name]: value
-                };
-                console.log('New formData:', newData);
-                return newData;
+    // Function to fetch batches from the server
+    const fetchBatches = async () => {
+        try {
+            const response = await fetch('http://localhost:8081/api/api/admin/batch', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
             });
-        } else {
-            console.log('Ignoring non-synthetic event:', e);
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch batches');
+            }
+            
+            const data = await response.json();
+            
+            if (data.success && Array.isArray(data.data)) {
+                setBatches(data.data.map(batch => ({
+                    id: batch.batchId,
+                    name: batch.batchName
+                })));
+            } else {
+                console.error('Invalid batch data format:', data);
+                setBatches([]);
+            }
+        } catch (error) {
+            console.error('Error fetching batches:', error);
+            setBatches([]);
         }
     };
 
-    const handleDegreeChange = (e) => {
-        setFormData({
-            ...formData,
-            degreeProgram: e.target.value
-        });
-    };
+    // Fetch available batches when component mounts
+    MiniReact.useEffect(() => {
+        fetchBatches();
+    }, []);
 
-    // Handle course selection
-    const handleCourseSelection = (e) => {
-        const courseId = e.target.value;
-        const isChecked = e.target.checked;
-        
-        if (isChecked) {
-            setFormData({
-                ...formData,
-                courses: [...formData.courses, courseId]
-            });
-        } else {
-            setFormData({
-                ...formData,
-                courses: formData.courses.filter(id => id !== courseId)
-            });
+    // Handle form input changes
+    const handleChange = (e) => {
+        if (e.target && e.target.name && typeof e.target.value !== 'undefined') {
+            const { name, value } = e.target;
+            
+            setFormData(prevData => ({
+                ...prevData,
+                [name]: value
+            }));
         }
     };
 
     // Handle form submission
-    const handleSubmit = () => {
-        // Here you would typically send the data to your backend
-        // You can use FormData to handle the file upload
-        const submitData = new FormData();
-        Object.keys(formData).forEach(key => {
-            submitData.append(key, formData[key]);
-        });
+    const handleSubmit = async () => {
+        if (!formData.batch) {
+            setError("Please select a batch");
+            return;
+        }
 
-        console.log('Form submitted:', formData);
-        onClose();
+        setIsSubmitting(true);
+        setError(null);
+
+        try {
+            // Prepare the applicant IDs for bulk enrollment
+            const applicantIds = selectedApplicants.map(applicant => 
+                applicant.id || applicant.applicantId
+            );
+
+            // API call to enroll students to the selected batch
+            const response = await fetch(`http://localhost:8081/api/api/admin/batch/${formData.batch}/enrollment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+
+                },
+                body: JSON.stringify({ applicantIds })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to enroll students');
+            }
+
+            const result = await response.json();
+            console.log('Bulk enrollment successful:', result);
+            setShowSuccessMessage(true);
+        } catch (error) {
+            console.error('Error enrolling students:', error);
+            setError(error.message || 'Failed to enroll students');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return {
@@ -95,7 +104,7 @@ const EnrollStudents = ({ onClose, selectedApplicants = [] }) => {
         props: {
             isOpen: true,
             onClose: onClose,
-            title: 'Enroll Students to New Batch',
+            title: 'Enroll Students to Batch',
             children: [
                 showSuccessMessage ? 
                 // Success message
@@ -132,7 +141,14 @@ const EnrollStudents = ({ onClose, selectedApplicants = [] }) => {
                             {
                                 type: 'p',
                                 props: {
-                                    children: [`${selectedApplicants.length} students have been successfully enrolled to ${degreePrograms.find(dp => dp.id === formData.degreeProgram)?.name} - ${batches.find(b => b.id === formData.batch)?.name}`]
+                                    children: [`${selectedApplicants.length} students have been successfully enrolled to ${batches.find(b => b.id === formData.batch)?.name || formData.batch}`]
+                                }
+                            },
+                            {
+                                type: Button,
+                                props: {
+                                    onClick: onClose,
+                                    children: ['Close']
                                 }
                             }
                         ]
@@ -142,82 +158,90 @@ const EnrollStudents = ({ onClose, selectedApplicants = [] }) => {
                 {
                     type: 'form',
                     props: {
-                        onSubmit: handleSubmit,
+                        onSubmit: (e) => { e.preventDefault(); handleSubmit(); },
                         children: [
-                            // Degree Program Selection
+                            // Error message if exists
+                            error && {
+                                type: 'div',
+                                props: {
+                                    style: {
+                                        color: theme.colors.error,
+                                        marginBottom: theme.spacing.md,
+                                        padding: theme.spacing.sm,
+                                        backgroundColor: theme.colors.error + '10',
+                                        borderRadius: '4px'
+                                    },
+                                    children: [error]
+                                }
+                            },
+                            
+                            // Select Batch
                             {
                                 type: 'div',
                                 props: {
+                                    style: { marginBottom: theme.spacing.md },
                                     children: [                                        
                                         {
                                             type: Select,
                                             props: {
-                                                name: 'degreeProgram',
-                                                label: 'Degree Program *',
-                                                value: formData.degreeProgram,
+                                                name: 'batch',
+                                                label: 'Batch *',
+                                                value: formData.batch,
                                                 onChange: handleChange,
                                                 options: [
-                                                    { value: '', label: 'Select Degree Program' },
-                                                    ...degreePrograms.map(program => ({
-                                                        value: program.id,
-                                                        label: program.name
+                                                    { value: '', label: 'Select Batch' },
+                                                    ...batches.map(batch => ({
+                                                        value: batch.id,
+                                                        label: batch.name
                                                     }))
                                                 ]
                                             }
                                         }
                                     ]
                                 }
-                            },                            
-                            // Courses Selection
+                            },
+                            
+                            // Selected Applicants Summary
                             {
                                 type: 'div',
-                                props: {                                
+                                props: {
+                                    style: { marginBottom: theme.spacing.lg },
                                     children: [
                                         {
-                                            type: 'label',
+                                            type: 'h4',
                                             props: {
-                                                style: {
-                                                    marginBottom: theme.spacing.xs,
-                                                    fontWeight: 'bold'
-                                                },
-                                                children: ['Courses *']
+                                                style: { marginBottom: theme.spacing.xs },
+                                                children: [`Selected Applicants (${selectedApplicants.length})`]
                                             }
                                         },
                                         {
                                             type: 'div',
                                             props: {
                                                 style: {
-                                                    display: 'grid',
-                                                    gridTemplateColumns: 'repeat(2, 1fr)',
-                                                    gap: theme.spacing.md,
+                                                    padding: theme.spacing.sm,
                                                     border: `1px solid ${theme.colors.border}`,
-                                                    padding: theme.spacing.md
+                                                    borderRadius: '4px',
+                                                    maxHeight: '150px',
+                                                    overflowY: 'auto'
                                                 },
-                                                children: availableCourses.map(course => ({
-                                                    type: 'div',
-                                                    props: {
-                                                        children: [
-                                                            {
-                                                                type: 'label',
-                                                                props: {                                                            
-                                                                    children: [
-                                                                        {
-                                                                            type: 'input',
-                                                                            props: {
-                                                                                type: 'checkbox',
-                                                                                value: course.id,
-                                                                                checked: formData.courses.includes(course.id),
-                                                                                onChange: handleCourseSelection,
-                                                                                style: { marginRight: theme.spacing.sm }
-                                                                            }
-                                                                        },
-                                                                        `${course.name} (${course.credits} credits)`
-                                                                    ]
-                                                                }
-                                                            }
-                                                        ]
-                                                    }
-                                                }))
+                                                children: selectedApplicants.length > 0 ?
+                                                    selectedApplicants.map(applicant => ({
+                                                        type: 'div',
+                                                        props: {
+                                                            style: {
+                                                                padding: `${theme.spacing.xs} 0`,
+                                                                borderBottom: `1px solid ${theme.colors.border}10`
+                                                            },
+                                                            children: [applicant.name || `Applicant #${applicant.id || applicant.applicantId}`]
+                                                        }
+                                                    })) : 
+                                                    [{
+                                                        type: 'div',
+                                                        props: {
+                                                            style: { fontStyle: 'italic', color: theme.colors.textSecondary },
+                                                            children: ['No applicants selected']
+                                                        }
+                                                    }]
                                             }
                                         }
                                     ]
@@ -238,20 +262,18 @@ const EnrollStudents = ({ onClose, selectedApplicants = [] }) => {
                                         {
                                             type: Button,
                                             props: {
-                
                                                 variant: 'secondary',
                                                 onClick: onClose,
-                                               // disabled: isSubmitting,
+                                                disabled: isSubmitting,
                                                 children: ['Cancel']
                                             }
                                         },
                                         {
                                             type: Button,
                                             props: {
-                                                // type: 'submit',
-                                                // disabled: isSubmitting,
+                                                disabled: isSubmitting,
                                                 onClick: handleSubmit,
-                                                children: ['Enroll Students']
+                                                children: [isSubmitting ? 'Enrolling...' : 'Enroll Students']
                                             }
                                         }
                                     ]

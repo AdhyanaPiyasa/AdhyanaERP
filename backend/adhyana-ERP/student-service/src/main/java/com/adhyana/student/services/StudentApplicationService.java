@@ -14,11 +14,11 @@ public class StudentApplicationService {
      * Creates a new student application in the database
      */
     public StudentApplication.ApplicationResponse createApplication(StudentApplication application) throws Exception {
-        String query = "INSERT INTO student_applications (student_application_id,name, national_id, email, phone, gender, date_of_birth, " +
+        String query = "INSERT INTO student_applications (name, national_id, email, phone, gender, date_of_birth, " +
                 "address, applied_program, application_date, mathematics, science, english, computer_studies, " +
                 "guardian_name, guardian_national_id, guardian_relation, guardian_contact_number, guardian_email, " +
                 "hostel_required, status) " +
-                "VALUES (20,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
