@@ -1,6 +1,9 @@
+// src/main/java/com/adhyana/course/models/Semester.java
 package com.adhyana.course.models;
 
 import java.sql.Date;
+import java.util.List; // Import List
+import java.util.ArrayList; // Import ArrayList
 
 public class Semester {
     private String semesterId;
@@ -13,7 +16,10 @@ public class Semester {
     private Date createdAt;
     private Date updatedAt;
 
-    // Constructor with fields in database table order
+    // --- NEW FIELD ---
+    private List<SemesterOfferingDetail> offerings; // To hold course code and teacher name
+
+    // Constructor with fields in database table order (excluding offerings initially)
     public Semester(String semesterId, String batchId, int academicYear, int semesterNum,
                     Date startDate, Date endDate, String status, Date createdAt, Date updatedAt) {
         this.semesterId = semesterId;
@@ -25,9 +31,10 @@ public class Semester {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.offerings = new ArrayList<>(); // Initialize the list
     }
 
-    // Constructor without timestamps for creation
+    // Constructor without timestamps for creation (excluding offerings initially)
     public Semester(String semesterId, String batchId, int academicYear, int semesterNum,
                     Date startDate, Date endDate, String status) {
         this.semesterId = semesterId;
@@ -37,6 +44,7 @@ public class Semester {
         this.startDate = startDate;
         this.endDate = endDate;
         this.status = status;
+        this.offerings = new ArrayList<>(); // Initialize the list
     }
 
     // Getters and setters
@@ -67,6 +75,17 @@ public class Semester {
     public Date getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
 
+    // --- GETTER AND SETTER FOR OFFERINGS ---
+    public List<SemesterOfferingDetail> getOfferings() {
+        return offerings;
+    }
+
+    public void setOfferings(List<SemesterOfferingDetail> offerings) {
+        this.offerings = offerings;
+    }
+    // --- END GETTER AND SETTER ---
+
+
     @Override
     public String toString() {
         return "Semester{" +
@@ -79,6 +98,7 @@ public class Semester {
                 ", status='" + status + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", offerings=" + (offerings != null ? offerings.size() : 0) + // Show count in toString
                 '}';
     }
 }

@@ -1,11 +1,46 @@
 // components/Admin/courses/SemesterFocusPanel.js
 const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
+  console.log(
+    "[SemesterFocusPanel] Rendering with semester prop:",
+    JSON.stringify(semester, null, 2)
+  );
+
+  // Add debugging for button handlers
+  const handleEditClick = () => {
+    console.log("[SemesterFocusPanel] Edit button clicked, calling onEdit");
+    // Ensure we have a semester selected before calling onEdit
+    if (semester) {
+      // Call the onEdit handler passed from parent
+      if (typeof onEdit === "function") {
+        onEdit(semester);
+      } else {
+        console.error("[SemesterFocusPanel] onEdit is not a function:", onEdit);
+      }
+    } else {
+      console.warn("[SemesterFocusPanel] Cannot edit: No semester selected");
+    }
+  };
+
+  const handleDeleteClick = () => {
+    console.log("[SemesterFocusPanel] Delete button clicked, calling onDelete");
+    // Ensure we have a semester selected before calling onDelete
+    if (semester) {
+      // Call the onDelete handler passed from parent
+      if (typeof onDelete === "function") {
+        onDelete(semester);
+      } else {
+        console.error(
+          "[SemesterFocusPanel] onDelete is not a function:",
+          onDelete
+        );
+      }
+    } else {
+      console.warn("[SemesterFocusPanel] Cannot delete: No semester selected");
+    }
+  };
+
   const styles = {
-    focusPanel: {
-      display: "flex",
-      flexDirection: "column",
-      height: "100%",
-    },
+    focusPanel: { display: "flex", flexDirection: "column", height: "100%" },
     focusHeader: {
       fontSize: theme.typography.h2.fontSize,
       fontWeight: "bold",
@@ -16,10 +51,7 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
       borderBottom: `1px solid ${theme.colors.border}`,
       paddingBottom: theme.spacing.sm,
     },
-    focusIcon: {
-      marginRight: theme.spacing.sm,
-      fontSize: "24px",
-    },
+    focusIcon: { marginRight: theme.spacing.sm, fontSize: "24px" },
     fieldRow: {
       display: "flex",
       borderBottom: `1px solid ${theme.colors.border}`,
@@ -30,9 +62,7 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
       fontWeight: "bold",
       color: theme.colors.textSecondary,
     },
-    fieldValue: {
-      width: "60%",
-    },
+    fieldValue: { width: "60%", wordBreak: "break-word" },
     buttonRow: {
       display: "flex",
       justifyContent: "flex-end",
@@ -49,86 +79,72 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
       color: theme.colors.textSecondary,
       textAlign: "center",
     },
-    coursesTable: {
-      width: "100%",
-      marginTop: theme.spacing.md,
-      marginBottom: theme.spacing.md,
-      borderCollapse: "collapse",
-    },
-    tableHeader: {
-      textAlign: "left",
-      padding: "8px",
-      borderBottom: `1px solid ${theme.colors.border}`,
-      backgroundColor: "#f5f5f5",
-    },
-    tableCell: {
-      padding: "8px",
-      borderBottom: `1px solid ${theme.colors.border}`,
-    },
     statusText: (status) => ({
-      color: status === "ongoing" ? "#4caf50" : "#9e9e9e",
+      color:
+        status === "ONGOING"
+          ? "#4caf50"
+          : status === "PLANNED"
+          ? "#2196f3"
+          : status === "COMPLETED"
+          ? "#ff9800"
+          : status === "CANCELLED"
+          ? "#f44336"
+          : "#9e9e9e",
       fontWeight: "bold",
+      display: "inline-block",
+      padding: "4px 8px",
+      borderRadius: "4px",
+      backgroundColor:
+        status === "ONGOING"
+          ? "rgba(76, 175, 80, 0.1)"
+          : status === "PLANNED"
+          ? "rgba(33, 150, 243, 0.1)"
+          : status === "COMPLETED"
+          ? "rgba(255, 152, 0, 0.1)"
+          : status === "CANCELLED"
+          ? "rgba(244, 67, 54, 0.1)"
+          : "rgba(158, 158, 158, 0.1)",
+      fontSize: "0.9em",
+      textAlign: "center",
     }),
+    sectionTitle: {
+      fontSize: theme.typography.h3.fontSize,
+      fontWeight: "bold",
+      marginTop: theme.spacing.lg,
+      marginBottom: theme.spacing.sm,
+      borderTop: `2px solid ${theme.colors.border}`,
+      paddingTop: theme.spacing.md,
+      color: theme.colors.textPrimary,
+    },
+    offeringsTableContainer: {
+      marginTop: theme.spacing.xs,
+    },
+    offeringsTable: {
+      width: "100%",
+      borderCollapse: "collapse",
+      border: `1px solid ${theme.colors.border}`,
+    },
+    offeringsTh: {
+      padding: theme.spacing.sm,
+      textAlign: "left",
+      borderBottom: `2px solid ${theme.colors.border}`,
+      backgroundColor: "#f5f5f5",
+      fontWeight: "bold",
+      color: theme.colors.textSecondary,
+    },
+    offeringsTd: {
+      padding: theme.spacing.sm,
+      borderBottom: `1px solid ${theme.colors.border}`,
+      verticalAlign: "top",
+    },
+    offeringsTr: (index) => ({
+      backgroundColor: index % 2 === 0 ? "white" : "#f9f9f9",
+    }),
+    noOfferingsMessage: {
+      padding: `${theme.spacing.sm} 0`,
+      color: theme.colors.textSecondary,
+    },
   };
-
-  // Function to render rating circles with special handling for ongoing semesters
-  function renderRatingCircles(rating, isOngoing = false) {
-    // For ongoing semesters, always show all grey circles
-    if (isOngoing) {
-      return {
-        type: "div",
-        props: {
-          style: {
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-          },
-          children: Array.from({ length: 5 }).map(() => ({
-            type: "div",
-            props: {
-              style: {
-                width: "12px",
-                height: "12px",
-                borderRadius: "50%",
-                backgroundColor: "#e0e0e0", // All grey for ongoing semesters
-              },
-            },
-          })),
-        },
-      };
-    }
-
-    // For past semesters, show colored ratings
-    return {
-      type: "div",
-      props: {
-        style: {
-          display: "flex",
-          alignItems: "center",
-          gap: "4px",
-        },
-        children: Array.from({ length: 5 }).map((_, i) => {
-          let color = "#e0e0e0"; // Default empty color
-          if (i < rating) {
-            // Set color based on rating value
-            color = rating < 3 ? "#f44336" : rating < 4 ? "#ff9800" : "#4caf50";
-          }
-
-          return {
-            type: "div",
-            props: {
-              style: {
-                width: "12px",
-                height: "12px",
-                borderRadius: "50%",
-                backgroundColor: color,
-              },
-            },
-          };
-        }),
-      },
-    };
-  }
 
   if (!semester) {
     return {
@@ -136,7 +152,6 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
       props: {
         style: styles.focusPanel,
         children: [
-          // Focus Header
           {
             type: "div",
             props: {
@@ -144,16 +159,12 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
               children: [
                 {
                   type: "span",
-                  props: {
-                    style: styles.focusIcon,
-                    children: ["📅"],
-                  },
+                  props: { style: styles.focusIcon, children: ["🎓"] },
                 },
                 "Focus",
               ],
             },
           },
-          // No selection message
           {
             type: "div",
             props: {
@@ -162,11 +173,8 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
                 {
                   type: "div",
                   props: {
-                    style: {
-                      fontSize: "48px",
-                      marginBottom: theme.spacing.md,
-                    },
-                    children: ["📅"],
+                    style: { fontSize: "48px", marginBottom: theme.spacing.md },
+                    children: ["🎓"],
                   },
                 },
                 {
@@ -195,12 +203,28 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
     };
   }
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString + "T00:00:00");
+      return date.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    } catch (e) {
+      console.error("Error formatting date:", dateString, e);
+      return dateString;
+    }
+  };
+
   const semesterFields = [
+    { label: "Semester ID", value: semester.id || semester.semesterId },
     { label: "Batch ID", value: semester.batchId },
-    { label: "Year", value: semester.year },
-    { label: "Semester", value: semester.semester },
-    { label: "Started At", value: semester.startedAt },
-    { label: "End At", value: semester.endAt },
+    { label: "Academic Year", value: semester.year },
+    { label: "Semester No", value: semester.semester },
+    { label: "Start Date", value: formatDate(semester.startedAt) },
+    { label: "End Date", value: formatDate(semester.endAt) },
     {
       label: "Status",
       value: {
@@ -208,12 +232,26 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
         props: {
           style: styles.statusText(semester.status),
           children: [
-            semester.status.charAt(0).toUpperCase() + semester.status.slice(1),
+            semester.status
+              ? semester.status.charAt(0).toUpperCase() +
+                semester.status.slice(1).toLowerCase()
+              : "N/A",
           ],
         },
       },
     },
   ];
+
+  const hasOfferings =
+    semester &&
+    semester.offerings &&
+    Array.isArray(semester.offerings) &&
+    semester.offerings.length > 0;
+  console.log(
+    `[SemesterFocusPanel] Checking for offerings. semester.offerings exists: ${!!semester.offerings}, isArray: ${Array.isArray(
+      semester.offerings
+    )}, length: ${semester.offerings?.length}. Result: ${hasOfferings}`
+  );
 
   return {
     type: "div",
@@ -228,12 +266,9 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
             children: [
               {
                 type: "span",
-                props: {
-                  style: styles.focusIcon,
-                  children: ["📅"],
-                },
+                props: { style: styles.focusIcon, children: ["🎓"] },
               },
-              "Focus",
+              "Semester Details",
             ],
           },
         },
@@ -243,128 +278,124 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
           type: "div",
           props: {
             style: styles.fieldRow,
+            key: field.label,
             children: [
               {
                 type: "div",
-                props: {
-                  style: styles.fieldLabel,
-                  children: [field.label],
-                },
+                props: { style: styles.fieldLabel, children: [field.label] },
               },
               {
                 type: "div",
                 props: {
                   style: styles.fieldValue,
-                  children: [field.value],
+                  children: [field.value || "N/A"],
                 },
               },
             ],
           },
         })),
 
-        // Courses table
+        // Section for Courses & Teachers Table
         {
           type: "div",
           props: {
-            style: {
-              marginTop: theme.spacing.md,
-              borderTop: `2px solid ${theme.colors.border}`,
-              paddingTop: theme.spacing.md,
-            },
+            style: { marginTop: theme.spacing.md },
             children: [
               {
                 type: "h3",
                 props: {
-                  style: {
-                    marginBottom: theme.spacing.sm,
-                  },
-                  children: ["Courses"],
+                  style: styles.sectionTitle,
+                  children: ["Courses & Teachers"],
                 },
               },
+              // Container for the table or the 'no offerings' message
               {
-                type: "table",
+                type: "div",
                 props: {
-                  style: styles.coursesTable,
+                  style: styles.offeringsTableContainer,
                   children: [
-                    // Table header
-                    {
-                      type: "thead",
-                      props: {
-                        children: [
-                          {
-                            type: "tr",
-                            props: {
-                              children: [
-                                {
-                                  type: "th",
-                                  props: {
-                                    style: styles.tableHeader,
-                                    children: ["Course ID"],
-                                  },
-                                },
-                                {
-                                  type: "th",
-                                  props: {
-                                    style: styles.tableHeader,
-                                    children: ["Teacher"],
-                                  },
-                                },
-                                {
-                                  type: "th",
-                                  props: {
-                                    style: styles.tableHeader,
-                                    children: ["Rating"],
-                                  },
-                                },
-                              ],
-                            },
-                          },
-                        ],
-                      },
-                    },
-                    // Table body
-                    {
-                      type: "tbody",
-                      props: {
-                        children: semester.courses.map((course, index) => ({
-                          type: "tr",
+                    hasOfferings
+                      ? {
+                          type: "table",
                           props: {
-                            style: {
-                              backgroundColor:
-                                index % 2 === 0 ? "white" : "#f9f9f9",
-                            },
+                            style: styles.offeringsTable,
                             children: [
+                              // Table Header
                               {
-                                type: "td",
+                                type: "thead",
                                 props: {
-                                  style: styles.tableCell,
-                                  children: [course.courseId],
-                                },
-                              },
-                              {
-                                type: "td",
-                                props: {
-                                  style: styles.tableCell,
-                                  children: [course.teacherName],
-                                },
-                              },
-                              {
-                                type: "td",
-                                props: {
-                                  style: styles.tableCell,
                                   children: [
-                                    renderRatingCircles(
-                                      course.teacherRating,
-                                      semester.status === "ongoing"
-                                    ),
+                                    {
+                                      type: "tr",
+                                      props: {
+                                        children: [
+                                          {
+                                            type: "th",
+                                            props: {
+                                              style: styles.offeringsTh,
+                                              children: ["Course Code"],
+                                            },
+                                          },
+                                          {
+                                            type: "th",
+                                            props: {
+                                              style: styles.offeringsTh,
+                                              children: ["Teacher"],
+                                            },
+                                          },
+                                        ],
+                                      },
+                                    },
                                   ],
+                                },
+                              },
+                              // Table Body
+                              {
+                                type: "tbody",
+                                props: {
+                                  children: semester.offerings.map(
+                                    (offering, index) => ({
+                                      type: "tr",
+                                      props: {
+                                        style: styles.offeringsTr(index),
+                                        key: `${offering.courseId}-${index}`,
+                                        children: [
+                                          {
+                                            type: "td",
+                                            props: {
+                                              style: styles.offeringsTd,
+                                              children: [
+                                                offering.courseId || "N/A",
+                                              ],
+                                            },
+                                          },
+                                          {
+                                            type: "td",
+                                            props: {
+                                              style: styles.offeringsTd,
+                                              children: [
+                                                offering.teacherName || "N/A",
+                                              ],
+                                            },
+                                          },
+                                        ],
+                                      },
+                                    })
+                                  ),
                                 },
                               },
                             ],
                           },
-                        })),
-                      },
-                    },
+                        }
+                      : {
+                          type: "div",
+                          props: {
+                            style: styles.noOfferingsMessage,
+                            children: [
+                              "No courses assigned to this semester yet.",
+                            ],
+                          },
+                        },
                   ],
                 },
               },
@@ -372,7 +403,7 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
           },
         },
 
-        // Button Row
+        // Button Row - Using our new handler functions instead of directly calling props
         {
           type: "div",
           props: {
@@ -382,22 +413,22 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
                 type: Button,
                 props: {
                   variant: "secondary",
-                  onClick: onEdit,
-                  children: "Edit",
+                  onClick: handleEditClick, // Use our new handler
+                  children: "Edit Semester",
                 },
               },
               {
                 type: Button,
                 props: {
                   variant: "error",
-                  onClick: onDelete,
-                  children: "Delete",
+                  onClick: handleDeleteClick, // Use our new handler
+                  children: "Delete Semester",
                 },
               },
             ],
           },
         },
-      ],
+      ].filter(Boolean),
     },
   };
 };
