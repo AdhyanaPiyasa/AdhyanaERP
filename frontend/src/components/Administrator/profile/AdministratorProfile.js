@@ -2,13 +2,13 @@ const AdministratorProfile = () => {
     const [showEditModal, setShowEditModal] = MiniReact.useState(false);
 
     const profileData = {
-        name: 'John Doe',
-        email: 'johndoe@college.edu',
+        name: AppState?.userData?.name || 'John Doe',
+        email: AppState?.userData?.email || 'johndoe@college.edu',
         role: 'Administrator',
-        employeeNumber: '22000846',
-        mobileNumber: '07123456789',
-        birthDate: '05-08-2002',
-        state: 'Colombo'
+        employeeNumber: AppState?.userData?.staffId || '22000846',
+        mobileNumber: AppState?.userData?.phone || '07123456789',
+        birthDate: AppState?.userData?.birthDate || '05-08-2002',
+        state: AppState?.userData?.state || 'Colombo'
     };
 
     const styles = {
