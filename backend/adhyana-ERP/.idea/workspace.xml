@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="hostel-service:war exploded" />
+      <artifact name="ddbms-service:war exploded" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -10,9 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/models/StudentApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/applicant/StudentApplicationForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/applicant/StudentApplicationForm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/EnrollmentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/administration-service/src/main/java/com/adhyana/administration/services/EnrollmentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/services/StudentApplicationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/com/adhyana/student/services/StudentApplicationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/students/ApplicantList.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/students/ApplicantList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/students/EnrollStudents.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/students/EnrollStudents.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,11 +110,11 @@
       <recent name="D:\UCSC\VLE\Y2_Sem1\SCS2202 Group Project\Work\Dev2\backend\adhyana-ERP\api-gateway\src\main\java\com\adhyana\gateway" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.adhyana.administration.models" />
       <recent name="com.adhyana.course.utils" />
       <recent name="com.adhyana.exam.utils" />
       <recent name="com.adhyana.course.filters" />
       <recent name="com.adhyana.exam.filters" />
-      <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
   <component name="RunManager" selected="Tomcat Server.DDBMS">
