@@ -3,11 +3,11 @@ const TeacherProfile = () => {
     const [showEditModal, setShowEditModal] = MiniReact.useState(false);
 
     const teacherData = {
-        name: "John Doe",
-        email: "johndoe@college.edu",
+        name: AppState?.userData?.name || "John Doe",
+        email: AppState?.userData?.email || "johndoe@college.edu",
         role: "Teacher",
         employeeNumber: "E200",
-        mobileNumber: "0147258369",
+        mobileNumber: AppState?.userData?.phone || "0147258369",
         address: "Colombo"
     };
 
