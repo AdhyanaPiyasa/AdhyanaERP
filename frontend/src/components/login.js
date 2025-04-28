@@ -109,6 +109,41 @@ const Login = () => {
             if (typeof AppState !== 'undefined' && AppState.isAuthenticated) {
                 console.log('Login component: AppState updated with user:', AppState.userId, AppState.userRole);
 
+                console.log("AppState:", AppState);
+                const token = AppState.token;
+
+                // Fetch user data based on role
+                try {
+                    const endpoint = ['admin', 'teacher'].includes(AppState.userRole) 
+                        ? 'http://localhost:8081/api/api/admin/staff'
+                        : 'http://localhost:8081/api/api/admin/student';
+
+                    const response = await fetch(endpoint, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch user data');
+                    }
+
+                    const userData = await response.json();
+                    const idField = ['admin', 'teacher'].includes(AppState.userRole) ? 'staffId' : 'studentId';
+                    const filteredUser = userData.data.find(user => 
+                        `${user[idField]}` === AppState.userId
+                    );
+                    
+                    if (!filteredUser) {
+                        throw new Error('User data not found');
+                    }
+                    
+                    AppState.userData = filteredUser;
+                } catch (error) {
+                    console.error('Error fetching user data:', error);
+                }
+
                 // Set navigation role before rerender 
                 if (typeof navigation !== 'undefined') {
                     navigation.setRole(AppState.userRole); 

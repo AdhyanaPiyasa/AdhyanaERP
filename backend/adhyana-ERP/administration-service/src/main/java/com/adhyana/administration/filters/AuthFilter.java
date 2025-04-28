@@ -14,7 +14,7 @@ import java.net.URL;
  * Authentication filter for the Core Administration Service API.
  * Verifies JWT tokens with the Auth Service and enforces role-based access control.
  */
-@WebFilter("/api/core-admin/*")
+@WebFilter("/api/admin/*")
 public class AuthFilter implements Filter {
 
     // Auth service URL (configurable properties would be better in production)
@@ -22,7 +22,7 @@ public class AuthFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("AUTH FILTER: Initializing authentication filter for /api/core-admin/*");
+        System.out.println("AUTH FILTER: Initializing authentication filter for /api/admin/*");
         System.out.println("AUTH FILTER: Using Auth Service at " + AUTH_SERVICE_URL);
     }
 
@@ -72,16 +72,8 @@ public class AuthFilter implements Filter {
         System.out.println("AUTH FILTER: Token successfully validated with Auth Service");
         System.out.println("AUTH FILTER: User role from Auth Service: " + role);
 
-        // Only certain roles can access the Core Admin API
-        if (!isAuthorizedRole(role)) {
-            System.out.println("AUTH FILTER: ERROR - User lacks required role for Core Admin API (role: " + role + ")");
-            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Insufficient privileges");
-            System.out.println("AUTH FILTER: Sending 403 Forbidden response");
-            System.out.println("========== AUTH FILTER END ==========");
-            return;
-        }
-
-        System.out.println("AUTH FILTER: Role authorization passed");
+        // Accept any valid token for authenticated users
+        // The original restriction on roles has been removed
 
         // For non-GET requests or sensitive endpoints, verify admin role
         boolean isGetMethod = httpRequest.getMethod().equals("GET");
@@ -90,7 +82,12 @@ public class AuthFilter implements Filter {
         System.out.println("AUTH FILTER: Request method: " + httpRequest.getMethod());
         System.out.println("AUTH FILTER: Is admin-only endpoint: " + isAdminEndpoint);
 
-        if (!isGetMethod || isAdminEndpoint) {
+        // Allow any authenticated user to access GET requests for staff and student information
+        if (isGetMethod && (httpRequest.getRequestURI().contains("/api/admin/staff") || 
+                          httpRequest.getRequestURI().contains("/api/admin/student"))) {
+            System.out.println("AUTH FILTER: Allowing authenticated user access to staff/student data");
+        }
+        else if (!isGetMethod || isAdminEndpoint) {
             System.out.println("AUTH FILTER: Admin role verification required");
 
             if (!"admin".equals(role)) {
@@ -121,28 +118,17 @@ public class AuthFilter implements Filter {
     }
 
     /**
-     * Check if the user's role is authorized to access the Core Admin API
-     * @param role User role
-     * @return true if authorized, false otherwise
-     */
-    private boolean isAuthorizedRole(String role) {
-        // Only ADMIN, FACULTY, and STAFF roles can access the Core Admin API
-        return "admin".equals(role) || "administrator".equals(role) || "sysadmin".equals(role);
-    }
-
-    /**
      * Check if the requested endpoint is admin-only
      * @param uri Request URI
      * @return true if admin-only endpoint, false otherwise
      */
     private boolean isAdminOnlyEndpoint(String uri) {
-        boolean isAdminEndpoint = uri.contains("/api/core-admin/staff") ||
-                uri.contains("/api/core-admin/payroll") ||
-                uri.contains("/api/core-admin/batch");
+        // Staff and student GET requests are no longer admin-only
+        boolean isAdminEndpoint = uri.contains("/api/admin/payroll") ||
+                uri.contains("/api/admin/batch");
 
-        // Students endpoint GET is not admin-only, but POST/PUT/DELETE are
-        if (uri.contains("/api/core-admin/student")) {
-            // This will be checked in combination with the request method
+        // Allow GET requests for staff and student data for all authenticated users
+        if (uri.contains("/api/admin/staff") || uri.contains("/api/admin/student")) {
             return false;
         }
 
