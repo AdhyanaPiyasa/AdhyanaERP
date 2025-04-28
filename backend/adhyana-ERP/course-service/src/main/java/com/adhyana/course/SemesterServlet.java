@@ -1,7 +1,9 @@
+// src/main/java/com/adhyana/course/SemesterServlet.java
 package com.adhyana.course;
 
 import com.adhyana.course.models.ApiResponse;
 import com.adhyana.course.models.Semester;
+// No longer importing SemesterOfferingDetail here as it's not parsed from request
 import com.adhyana.course.services.SemesterService;
 
 import javax.servlet.annotation.WebServlet;
@@ -23,212 +25,116 @@ public class SemesterServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        try {
-            // Debug the full request details
-            System.out.println("=============== REQUEST DEBUG ===============");
-            System.out.println("Request URL: " + request.getRequestURL());
-            System.out.println("Path Info: " + request.getPathInfo());
-
-            String pathInfo = request.getPathInfo();
-
-            // No pathInfo means get all semesters
-            if (pathInfo == null || pathInfo.equals("/")) {
-                List<Semester> semesters = semesterService.getAllSemesters();
-                ApiResponse<List<Semester>> apiResponse = new ApiResponse<>(true, "All semesters retrieved", semesters);
-                sendJsonResponse(response, apiResponse);
-                return;
-            }
-
-            // Remove leading slash
-            if (pathInfo.startsWith("/")) {
-                pathInfo = pathInfo.substring(1);
-            }
-
-            // Special case for batch lookup
-            if (pathInfo.startsWith("batch/")) {
-                String batchId = pathInfo.substring("batch/".length());
-                List<Semester> semesters = semesterService.getSemestersByBatchId(batchId);
-
-                if (!semesters.isEmpty()) {
-                    ApiResponse<List<Semester>> apiResponse = new ApiResponse<>(true,
-                            "Semesters retrieved for batch ID: " + batchId, semesters);
-                    sendJsonResponse(response, apiResponse);
-                } else {
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND,
-                            "No semesters found for batch ID: " + batchId);
-                }
-                return;
-            }
-
-            // First try direct ID lookup
-            Semester semester = semesterService.getSemesterById(pathInfo);
-            if (semester != null) {
-                ApiResponse<Semester> apiResponse = new ApiResponse<>(true,
-                        "Semester retrieved by ID: " + pathInfo, semester);
-                sendJsonResponse(response, apiResponse);
-                return;
-            }
-
-            // Split the path into field and value parts
-            String[] pathParts = pathInfo.split("/", 2);
-
-            if (pathParts.length < 2) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                        "Invalid URL format. Use /{fieldName}/{value} (e.g., /academicYear/2024)");
-                return;
-            }
-
-            String fieldName = pathParts[0];
-            String fieldValue = URLDecoder.decode(pathParts[1], StandardCharsets.UTF_8.name());
-
-            System.out.println("Searching semesters with " + fieldName + " = " + fieldValue);
-
-            try {
-                List<Semester> semesters = semesterService.searchSemestersByField(fieldName, fieldValue);
-
-                if (!semesters.isEmpty()) {
-                    ApiResponse<List<Semester>> apiResponse = new ApiResponse<>(true,
-                            "Semesters retrieved by " + fieldName + ": " + fieldValue, semesters);
-                    sendJsonResponse(response, apiResponse);
-                } else {
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND,
-                            "No semesters found with " + fieldName + " = " + fieldValue);
-                }
-            } catch (IllegalArgumentException e) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-            }
-
-        } catch (Exception e) {
-            System.err.println("Error in doGet: " + e.getMessage());
-            e.printStackTrace();
-            handleError(response, e);
-        }
+        // --- doGet remains the same: Fetches data including offerings for display ---
+        try { String pathInfo = request.getPathInfo(); System.out.println("GET PathInfo: " + pathInfo); if (pathInfo == null || pathInfo.equals("/")) { List<Semester> sems = semesterService.getAllSemesters(); sendJsonResponse(response, new ApiResponse<>(true, "All semesters", sems)); } else { if (pathInfo.startsWith("/")) pathInfo = pathInfo.substring(1); if (pathInfo.startsWith("batch/")) { String batchId = pathInfo.substring("batch/".length()); List<Semester> sems = semesterService.getSemestersByBatchId(batchId); if (!sems.isEmpty()) sendJsonResponse(response, new ApiResponse<>(true, "Semesters for batch " + batchId, sems)); else response.sendError(HttpServletResponse.SC_NOT_FOUND, "No semesters for batch " + batchId); } else { Semester semById = semesterService.getSemesterById(pathInfo); if (semById != null) { sendJsonResponse(response, new ApiResponse<>(true, "Semester by ID " + pathInfo, semById)); } else { String[] parts = pathInfo.split("/", 2); if (parts.length < 2) { response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid URL or ID not found"); return; } String field = parts[0]; String value = URLDecoder.decode(parts[1], StandardCharsets.UTF_8.name()); System.out.println("Searching: " + field + "=" + value); try { List<Semester> sems = semesterService.searchSemestersByField(field, value); if (!sems.isEmpty()) sendJsonResponse(response, new ApiResponse<>(true, "Semesters by " + field, sems)); else response.sendError(HttpServletResponse.SC_NOT_FOUND, "No semesters found for " + field + "=" + value); } catch (IllegalArgumentException e) { response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage()); } } } } }
+        catch (Exception e) { System.err.println("Error doGet: " + e.getMessage()); e.printStackTrace(); handleError(response, e); }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            Semester semester = parseSemesterFromRequest(request);
+            // --- Use Simplified Parsing ---
+            Semester semester = parseSemesterFromRequestSimple(request);
+            // Use simplified service method (no offerings handling here)
             Semester createdSemester = semesterService.createSemester(semester);
-
-            ApiResponse<Semester> apiResponse = new ApiResponse<>(true, "Semester created successfully", createdSemester);
-            sendJsonResponse(response, apiResponse);
-        } catch (Exception e) {
-            handleError(response, e);
-        }
+            // Fetch the full data (including any DB defaults/triggers and empty offerings list) to return
+            Semester responseSemester = semesterService.getSemesterById(createdSemester.getSemesterId());
+            sendJsonResponse(response, new ApiResponse<>(true, "Semester created successfully", responseSemester));
+        } catch (Exception e) { System.err.println("Error doPost: " + e.getMessage()); e.printStackTrace(); handleError(response, e); }
     }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            String pathInfo = request.getPathInfo();
-            if (pathInfo == null || pathInfo.equals("/")) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Semester ID required");
-                return;
-            }
-
+            String pathInfo = request.getPathInfo(); if (pathInfo == null || pathInfo.equals("/")) { response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Semester ID required for update"); return; }
             String semesterId = pathInfo.substring(1);
-            Semester semester = parseSemesterFromRequest(request);
-            semester.setSemesterId(semesterId);
-
+            // --- Use Simplified Parsing ---
+            Semester semester = parseSemesterFromRequestSimple(request);
+            semester.setSemesterId(semesterId); // Ensure ID from URL is set
+            // Use simplified service method (no offerings handling here)
             boolean updated = semesterService.updateSemester(semester);
             if (updated) {
-                // Fetch the updated semester to return in the response
-                Semester updatedSemester = semesterService.getSemesterById(semesterId);
-                ApiResponse<Semester> apiResponse = new ApiResponse<>(true, "Semester updated successfully", updatedSemester);
-                sendJsonResponse(response, apiResponse);
-            } else {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Semester not found or update failed");
-            }
-        } catch (Exception e) {
-            handleError(response, e);
-        }
+                // Fetch updated data (incl. offerings) to return consistent response
+                Semester updatedSemesterData = semesterService.getSemesterById(semesterId);
+                sendJsonResponse(response, new ApiResponse<>(true, "Semester updated successfully", updatedSemesterData));
+            } else { response.sendError(HttpServletResponse.SC_NOT_FOUND, "Semester not found or update failed for ID: " + semesterId); }
+        } catch (Exception e) { System.err.println("Error doPut: " + e.getMessage()); e.printStackTrace(); handleError(response, e); }
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        try {
-            String pathInfo = request.getPathInfo();
-            if (pathInfo == null || pathInfo.equals("/")) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Semester ID required");
-                return;
-            }
-
-            String semesterId = pathInfo.substring(1);
-            boolean deleted = semesterService.deleteSemester(semesterId);
-
-            if (deleted) {
-                ApiResponse<Void> apiResponse = new ApiResponse<>(true, "Semester deleted successfully", null);
-                sendJsonResponse(response, apiResponse);
-            } else {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Semester not found or deletion failed");
-            }
-        } catch (Exception e) {
-            handleError(response, e);
-        }
+        // --- doDelete remains the same ---
+        try { String pathInfo = request.getPathInfo(); if (pathInfo == null || pathInfo.equals("/")) { response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Semester ID required"); return; } String semesterId = pathInfo.substring(1); boolean deleted = semesterService.deleteSemester(semesterId); if (deleted) { sendJsonResponse(response, new ApiResponse<>(true, "Semester deleted successfully", null)); } else { response.sendError(HttpServletResponse.SC_NOT_FOUND, "Semester not found or deletion failed"); } }
+        catch (Exception e) { System.err.println("Error doDelete: " + e.getMessage()); e.printStackTrace(); handleError(response, e); }
     }
 
-    private Semester parseSemesterFromRequest(HttpServletRequest request) throws IOException {
+    // --- Simplified Request Parser (Core Fields Only) ---
+    private Semester parseSemesterFromRequestSimple(HttpServletRequest request) throws IOException {
         String json = readRequestBody(request);
-        Map<String, String> semesterData = parseJsonToMap(json);
-
-        System.out.println("Parsed semester data from request:");
-        for (Map.Entry<String, String> entry : semesterData.entrySet()) {
-            System.out.println("  " + entry.getKey() + ": " + entry.getValue());
-        }
+        System.out.println("Received JSON for POST/PUT (Simplified): " + json);
+        Map<String, String> semesterData = parseJsonToFlatMap(json); // Use the basic flat parser
+        System.out.println("Parsed Flat Map: " + semesterData);
 
         String semesterId = semesterData.getOrDefault("semesterId", "");
         String batchId = semesterData.getOrDefault("batchId", "");
-        int academicYear = Integer.parseInt(semesterData.getOrDefault("academicYear", "0"));
-        int semesterNum = Integer.parseInt(semesterData.getOrDefault("semesterNum", "0"));
-        Date startDate = Date.valueOf(semesterData.getOrDefault("startDate", "2000-01-01"));
-        Date endDate = Date.valueOf(semesterData.getOrDefault("endDate", "2000-01-01"));
+        int academicYear = parseInteger(semesterData.get("academicYear"), 0); // Use helper
+        int semesterNum = parseInteger(semesterData.get("semesterNum"), 0);   // Use helper
+        Date startDate = parseDate(semesterData.get("startDate"));           // Use helper
+        Date endDate = parseDate(semesterData.get("endDate"));               // Use helper
         String status = semesterData.getOrDefault("status", "PLANNED");
 
-        return new Semester(semesterId, batchId, academicYear, semesterNum, startDate, endDate, status);
+        // Create Semester object WITHOUT setting offerings from request
+        Semester semester = new Semester(semesterId, batchId, academicYear, semesterNum, startDate, endDate, status);
+        System.out.println("Parsed Semester object: " + semester.toString());
+        return semester;
     }
 
+    // Helper to read request body
     private String readRequestBody(HttpServletRequest request) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader reader = request.getReader()) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-        }
-        return sb.toString();
+        StringBuilder sb = new StringBuilder(); try (BufferedReader reader = request.getReader()) { String line; while ((line = reader.readLine()) != null) { sb.append(line).append(System.lineSeparator()); } } return sb.toString();
     }
 
-    private Map<String, String> parseJsonToMap(String json) {
-        Map<String, String> map = new HashMap<>();
-        if (json == null || json.isEmpty()) {
-            return map;
-        }
-
-        json = json.replaceAll("[{}\"]", "");
-        String[] pairs = json.split(",");
-
+    // Original Simple Flat JSON Parser
+    private Map<String, String> parseJsonToFlatMap(String json) {
+        Map<String, String> map = new HashMap<>(); if (json == null || json.isEmpty()) return map; json = json.trim(); if (json.startsWith("{") && json.endsWith("}")) json = json.substring(1, json.length() - 1).trim();
+        // Regex split by comma not inside quotes
+        String[] pairs = json.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         for (String pair : pairs) {
-            String[] keyValue = pair.split(":", 2); // Split only on the first ":"
+            // Regex split on first colon not inside quotes
+            String[] keyValue = pair.split(":(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", 2);
             if (keyValue.length == 2) {
-                map.put(keyValue[0].trim(), keyValue[1].trim());
+                String key = keyValue[0].trim(); String value = keyValue[1].trim();
+                // Remove quotes from keys/values
+                if (key.startsWith("\"") && key.endsWith("\"")) key = key.substring(1, key.length() - 1);
+                if (value.startsWith("\"") && value.endsWith("\"")) value = value.substring(1, value.length() - 1);
+                else if (value.equalsIgnoreCase("null")) value = null; // Handle JSON null literal
+                // Basic unescaping
+                if (value != null) value = value.replace("\\\"", "\"").replace("\\\\", "\\");
+                map.put(key, value);
             }
-        }
-
-        return map;
+        } return map;
     }
 
+    // Helper to safely parse Integer
+    private Integer parseInteger(String str, Integer defaultValue) {
+        if (str == null || str.trim().isEmpty()) return defaultValue;
+        try { return Integer.parseInt(str.trim()); }
+        catch (NumberFormatException e) { System.err.println("WARN: Could not parse integer from '" + str + "'"); return defaultValue; }
+    }
+    // Helper to safely parse Date
+    private Date parseDate(String dateStr) {
+        System.out.println("parseDate received string: [" + dateStr + "]"); // Log input
+        if (dateStr == null || dateStr.trim().isEmpty()) { System.out.println("parseDate returning null: input empty/null."); return null; }
+        try { Date parsedDate = Date.valueOf(dateStr.trim()); System.out.println("parseDate success: " + parsedDate); return parsedDate; } // Expects yyyy-MM-dd
+        catch (IllegalArgumentException e) { System.err.println("WARN: Could not parse date from '" + dateStr + "'. Error: " + e.getMessage()); return null; }
+    }
+
+    // --- Helper to send JSON response ---
     private void sendJsonResponse(HttpServletResponse response, ApiResponse<?> apiResponse) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(apiResponse.toJson());
+        response.setContentType("application/json"); response.setCharacterEncoding("UTF-8"); response.getWriter().write(apiResponse.toJson());
     }
-
+    // --- Helper to handle errors ---
     private void handleError(HttpServletResponse response, Exception e) throws IOException {
-        System.err.println("Error processing request: " + e.getMessage());
-        e.printStackTrace();
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        ApiResponse<Void> apiResponse = new ApiResponse<>(false, "Error: " + e.getMessage(), null);
-        sendJsonResponse(response, apiResponse);
+        System.err.println("Error processing request: " + e.getClass().getName() + " - " + e.getMessage()); e.printStackTrace(); response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); ApiResponse<Void> apiResponse = new ApiResponse<>(false, "Server Error: " + e.getMessage(), null); sendJsonResponse(response, apiResponse);
     }
 }

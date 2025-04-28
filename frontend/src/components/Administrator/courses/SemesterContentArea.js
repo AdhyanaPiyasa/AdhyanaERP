@@ -1,252 +1,302 @@
 // components/Admin/courses/SemesterContentArea.js
-const SemesterContentArea = ({ state, setState }) => {
-  // Use state from props or fallback to local state if not provided
+
+const SemesterContentArea = ({ state, setState, isActive }) => {
   const showAddModal = state?.showAddModal || false;
   const showEditModal = state?.showEditModal || false;
   const showDeleteModal = state?.showDeleteModal || false;
   const selectedSemester = state?.selectedSemester || null;
 
-  // Function to update parent state
+  const [semesters, setSemesters] = MiniReact.useState([]);
+  const [loading, setLoading] = MiniReact.useState(true);
+  const [error, setError] = MiniReact.useState(null);
+
   const updateState = (updates) => {
     if (setState) {
+      // --- LOGGING: Log state update request ---
+      console.log("[SemesterContentArea] updateState called with:", updates);
+      // --- END LOGGING ---
       setState((prevState) => ({
         ...prevState,
         ...updates,
       }));
+    } else {
+      console.warn("[SemesterContentArea] setState function not provided.");
     }
   };
 
-  // Sample semester data
-  const semesters = [
-    {
-      id: 1,
-      batchId: "CS2023",
-      year: 1,
-      semester: 1,
-      status: "ongoing",
-      startedAt: "August 2023",
-      endAt: "December 2023",
-      courses: [
-        { courseId: "CS101", teacherName: "Dr. John Smith", teacherRating: 4 },
-        {
-          courseId: "CS102",
-          teacherName: "Dr. Sarah Johnson",
-          teacherRating: 5,
-        },
-        {
-          courseId: "MATH101",
-          teacherName: "Prof. Michael Brown",
-          teacherRating: 3,
-        },
-      ],
-    },
-    {
-      id: 2,
-      batchId: "CS2023",
-      year: 1,
-      semester: 2,
-      status: "ongoing",
-      startedAt: "January 2024",
-      endAt: "May 2024",
-      courses: [
-        { courseId: "CS201", teacherName: "Dr. Emma Wilson", teacherRating: 4 },
-        {
-          courseId: "CS202",
-          teacherName: "Prof. Robert Taylor",
-          teacherRating: 3,
-        },
-        {
-          courseId: "MATH102",
-          teacherName: "Dr. Lisa Anderson",
-          teacherRating: 5,
-        },
-      ],
-    },
-    {
-      id: 3,
-      batchId: "CS2022",
-      year: 2,
-      semester: 1,
-      status: "past",
-      startedAt: "August 2022",
-      endAt: "December 2022",
-      courses: [
-        {
-          courseId: "CS301",
-          teacherName: "Prof. David Clark",
-          teacherRating: 4,
-        },
-        { courseId: "CS302", teacherName: "Dr. Emily White", teacherRating: 2 },
-        {
-          courseId: "MATH201",
-          teacherName: "Prof. James Wilson",
-          teacherRating: 5,
-        },
-      ],
-    },
-    {
-      id: 4,
-      batchId: "CS2022",
-      year: 2,
-      semester: 2,
-      status: "past",
-      startedAt: "January 2023",
-      endAt: "May 2023",
-      courses: [
-        {
-          courseId: "CS401",
-          teacherName: "Dr. Linda Martinez",
-          teacherRating: 4,
-        },
-        {
-          courseId: "CS402",
-          teacherName: "Prof. Thomas Johnson",
-          teacherRating: 5,
-        },
-        {
-          courseId: "MATH202",
-          teacherName: "Dr. Kevin Davis",
-          teacherRating: 3,
-        },
-      ],
-    },
-    {
-      id: 5,
-      batchId: "CS2021",
-      year: 3,
-      semester: 1,
-      status: "past",
-      startedAt: "August 2021",
-      endAt: "December 2021",
-      courses: [
-        {
-          courseId: "CS501",
-          teacherName: "Prof. Richard Lee",
-          teacherRating: 4,
-        },
-        {
-          courseId: "CS502",
-          teacherName: "Dr. Catherine Moore",
-          teacherRating: 5,
-        },
-        {
-          courseId: "MATH301",
-          teacherName: "Prof. Jennifer Adams",
-          teacherRating: 3,
-        },
-      ],
-    },
-    {
-      id: 6,
-      batchId: "CS2021",
-      year: 3,
-      semester: 2,
-      status: "past",
-      startedAt: "January 2022",
-      endAt: "May 2022",
-      courses: [
-        {
-          courseId: "CS601",
-          teacherName: "Dr. Samuel Wilson",
-          teacherRating: 4,
-        },
-        {
-          courseId: "CS602",
-          teacherName: "Prof. Elizabeth Taylor",
-          teacherRating: 5,
-        },
-        {
-          courseId: "MATH302",
-          teacherName: "Dr. Andrew Brown",
-          teacherRating: 3,
-        },
-      ],
-    },
-  ];
+  const fetchSemesters = async () => {
+    // ... (fetchSemesters remains the same - logging already added) ...
+    console.log("[SemesterContentArea] fetchSemesters called");
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem("token");
+      const apiUrl = "http://localhost:8081/api/api/courses/semesters";
+      console.log(`[SemesterContentArea] Fetching from: ${apiUrl}`);
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      };
+      if (!token) delete headers.Authorization;
+      const response = await fetch(apiUrl, { method: "GET", headers: headers });
+      if (!response.ok) {
+        let errorMsg = `HTTP error! Status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.message || errorMsg;
+        } catch (e) {
+          /* Ignore */
+        }
+        throw new Error(errorMsg);
+      }
+      const data = await response.json();
+      console.log(
+        "[SemesterContentArea] Raw API Response Data:",
+        JSON.stringify(data, null, 2)
+      );
+      if (data.success) {
+        const formattedSemesters = data.data.map((semester) => ({
+          id: semester.semesterId,
+          semesterId: semester.semesterId,
+          batchId: semester.batchId,
+          year: semester.academicYear,
+          semester: semester.semesterNum,
+          status: semester.status,
+          startedAt: semester.startDate,
+          endAt: semester.endDate,
+          created_at: semester.createdAt,
+          updated_at: semester.updatedAt,
+          offerings: semester.offerings || [],
+        }));
+        console.log(
+          "[SemesterContentArea] Formatted semesters (first item):",
+          JSON.stringify(formattedSemesters[0], null, 2)
+        );
+        setSemesters(formattedSemesters);
+        if (selectedSemester) {
+          const updatedSelectedSemester = formattedSemesters.find(
+            (s) => s.id === selectedSemester.id
+          );
+          console.log(
+            "[SemesterContentArea] Attempting to update selected semester. Found:",
+            JSON.stringify(updatedSelectedSemester, null, 2)
+          );
+          updateState({
+            selectedSemester: updatedSelectedSemester,
+          }); /* Update with found or null */
+        }
+      } else {
+        console.error("[SemesterContentArea] API Error:", data.message);
+        setError(data.message || "Failed to fetch semesters");
+      }
+    } catch (error) {
+      console.error("[SemesterContentArea] Error in fetchSemesters:", error);
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        setError("Failed to fetch. Check network/server/CORS.");
+      } else {
+        setError(error.message || "Failed to fetch semesters");
+      }
+    } finally {
+      setLoading(false);
+      console.log("[SemesterContentArea] fetchSemesters finished.");
+    }
+  };
 
+  MiniReact.useEffect(() => {
+    // ... (useEffect for isActive remains the same) ...
+    console.log(`[SemesterContentArea] isActive changed to: ${isActive}`);
+    if (isActive) {
+      console.log("[SemesterContentArea] Component is active, fetching data.");
+      fetchSemesters();
+    } else {
+      console.log("[SemesterContentArea] Component is inactive.");
+    }
+  }, [isActive]);
+
+  // --- EDIT MODAL DEBUG ---
   const handleEdit = () => {
+    // --- LOGGING: Check if selectedSemester exists ---
+    console.log(
+      "[SemesterContentArea] handleEdit called. Selected semester:",
+      selectedSemester
+    );
+    // --- END LOGGING ---
     if (selectedSemester) {
-      updateState({ showEditModal: true });
+      updateState({ showEditModal: true }); // Request parent to show modal
+    } else {
+      console.warn(
+        "[SemesterContentArea] Edit clicked but no semester selected."
+      );
+      // Optionally show a user message here
     }
   };
+  // --- END EDIT MODAL DEBUG ---
 
   const handleDelete = () => {
-    if (selectedSemester) {
-      updateState({ showDeleteModal: true });
-    }
+    if (selectedSemester) updateState({ showDeleteModal: true });
   };
-
   const handleRowClick = (semester) => {
-    console.log("Row clicked, setting semester:", semester);
+    console.log(
+      "[SemesterContentArea] Row clicked. Semester data:",
+      JSON.stringify(semester, null, 2)
+    );
     updateState({ selectedSemester: semester });
   };
-
   const handleAddClick = () => {
     updateState({ showAddModal: true });
   };
+  const handleAddSuccess = (addedSem) => {
+    console.log("Add Success, refreshing", addedSem);
+    updateState({ showAddModal: false });
+    fetchSemesters();
+  };
+  const handleEditSuccess = (updatedSem) => {
+    console.log("Edit Success, refreshing", updatedSem);
+    updateState({ showEditModal: false, selectedSemester: updatedSem });
+    fetchSemesters();
+  }; // Update selection on edit success
+  const handleDeleteConfirm = async () => {
+    /* ... delete logic ... */
+    if (!selectedSemester || !selectedSemester.id) return;
+    console.log(
+      "[SemesterContentArea] Confirming delete for:",
+      selectedSemester.id
+    );
+    try {
+      const token = localStorage.getItem("token");
+      const deleteUrl = `http://localhost:8081/api/api/courses/semesters/${selectedSemester.id}`;
+      const response = await fetch(deleteUrl, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `HTTP error! Status: ${response.status}`
+        );
+      }
+      console.log(
+        "[SemesterContentArea] Semester deleted successfully:",
+        selectedSemester.id
+      );
+      updateState({ showDeleteModal: false, selectedSemester: null });
+      fetchSemesters();
+    } catch (error) {
+      console.error("[SemesterContentArea] Error deleting semester:", error);
+      setError(`Delete failed: ${error.message}`);
+      updateState({ showDeleteModal: false });
+    }
+  };
 
   const styles = {
-    container: {
-      display: "flex",
-      height: "100%",
-    },
-    tableSection: {
-      width: "60%",
-      paddingRight: theme.spacing.lg,
-    },
+    /* ... styles ... */
+    container: { display: "flex", flexDirection: "column", height: "100%" },
+    contentContainer: { display: "flex", flex: 1 },
+    tableSection: { width: "60%", paddingRight: theme.spacing.lg },
     detailsSection: {
       width: "40%",
       borderLeft: `1px solid ${theme.colors.border}`,
       paddingLeft: theme.spacing.lg,
     },
+    loadingContainer: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100%",
+      width: "100%",
+      padding: theme.spacing.xl,
+    },
+    errorContainer: {
+      padding: theme.spacing.md,
+      backgroundColor: "#ffebee",
+      color: "#c62828",
+      borderRadius: theme.spacing.sm,
+      marginBottom: theme.spacing.md,
+    },
   };
+
+  // --- LOGGING: Check modal state before rendering ---
+  console.log(
+    `[SemesterContentArea] Rendering. isActive: ${isActive}, showAddModal: ${showAddModal}, showEditModal: ${showEditModal}, showDeleteModal: ${showDeleteModal}`
+  );
+  // --- END LOGGING ---
+  console.log(
+    "[SemesterContentArea] Rendering. Selected Semester State:",
+    JSON.stringify(selectedSemester, null, 2)
+  );
+
+  if (!isActive) {
+    return null; // Don't render if not active
+  }
 
   return {
     type: "div",
     props: {
       style: styles.container,
       children: [
-        // Left side - Semester Table
+        error && {
+          type: "div",
+          props: {
+            style: styles.errorContainer,
+            children: [`Error: ${error}`],
+          },
+        },
         {
           type: "div",
           props: {
-            style: styles.tableSection,
-            children: [
-              {
-                type: SemesterTable,
-                props: {
-                  semesters: semesters,
-                  onRowClick: handleRowClick,
-                  onAddClick: handleAddClick,
-                },
-              },
-            ],
+            style: styles.contentContainer,
+            children: loading
+              ? [
+                  {
+                    type: "div",
+                    props: {
+                      style: styles.loadingContainer,
+                      children: ["Loading semesters..."],
+                    },
+                  },
+                ]
+              : [
+                  {
+                    type: "div",
+                    props: {
+                      style: styles.tableSection,
+                      children: [
+                        {
+                          type: SemesterTable,
+                          props: {
+                            semesters: semesters,
+                            onRowClick: handleRowClick,
+                            onAddClick: handleAddClick,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    type: "div",
+                    props: {
+                      style: styles.detailsSection,
+                      children: [
+                        {
+                          type: SemesterFocusPanel,
+                          props: {
+                            semester: selectedSemester,
+                            onEdit: handleEdit,
+                            onDelete: handleDelete,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
           },
         },
-
-        // Right side - Focus Panel
-        {
-          type: "div",
-          props: {
-            style: styles.detailsSection,
-            children: [
-              {
-                type: SemesterFocusPanel,
-                props: {
-                  semester: selectedSemester,
-                  onEdit: handleEdit,
-                  onDelete: handleDelete,
-                },
-              },
-            ],
-          },
-        },
-
-        // Modals
+        // Modals are rendered based on state passed from AdministratorCourseList via props
         showAddModal && {
           type: AddSemester,
           props: {
             onClose: () => updateState({ showAddModal: false }),
+            onSuccess: handleAddSuccess,
           },
         },
         showEditModal && {
@@ -254,16 +304,15 @@ const SemesterContentArea = ({ state, setState }) => {
           props: {
             semester: selectedSemester,
             onClose: () => updateState({ showEditModal: false }),
+            onSuccess: handleEditSuccess,
           },
         },
         showDeleteModal && {
           type: SemesterDeleteConfirmation,
           props: {
+            semester: selectedSemester,
             onClose: () => updateState({ showDeleteModal: false }),
-            onConfirm: () => {
-              console.log("Deleting semester:", selectedSemester);
-              updateState({ showDeleteModal: false, selectedSemester: null });
-            },
+            onConfirm: handleDeleteConfirm,
           },
         },
       ].filter(Boolean),

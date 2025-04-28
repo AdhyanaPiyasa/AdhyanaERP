@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
+<<<<<<< Updated upstream
       <artifact name="auth-service:war exploded" />
+=======
+      <artifact name="course-service:war exploded" />
+>>>>>>> Stashed changes
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -11,11 +15,23 @@
   <component name="ChangeListManager">
     <list default="true" id="7fcdbf04-46ba-4e88-a435-285b5ef6c2f6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+<<<<<<< Updated upstream
       <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/AuthServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/AuthServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/ApiResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/TokenResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/models/TokenResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/services/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/adhyana/auth/services/AuthService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../frontend/src/service/authService.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/service/authService.js" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/SemesterServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/SemesterServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/ApiResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/Semester.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/models/Semester.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/SemesterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/course-service/src/main/java/com/adhyana/course/services/SemesterService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/AddSemester.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/AddSemester.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/EditSemester.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/EditSemester.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/SemesterContentArea.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/SemesterContentArea.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/SemesterFocusPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/SemesterFocusPanel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/SemesterTable.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../frontend/src/components/Administrator/courses/SemesterTable.js" afterDir="false" />
+>>>>>>> Stashed changes
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,6 +80,7 @@
     &quot;Database Script.hostel_schema.sql.executor&quot;: &quot;Run&quot;,
     &quot;Database Script.student_schema.sql.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;Tomcat Server.API Gateway.executor&quot;: &quot;Run&quot;,
     &quot;Tomcat Server.Administration Service.executor&quot;: &quot;Run&quot;,
     &quot;Tomcat Server.Auth Service.executor&quot;: &quot;Run&quot;,
@@ -73,7 +90,7 @@
     &quot;Tomcat Server.Faculty Service.executor&quot;: &quot;Run&quot;,
     &quot;Tomcat Server.Hostel Service.executor&quot;: &quot;Run&quot;,
     &quot;Tomcat Server.Student Service.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;administration-service&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Course-Service&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/viduranga/Documents/GitHub/AdhyanaERP/backend/adhyana-ERP&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -117,7 +134,11 @@
       <recent name="com.adhyana.faculty.filters" />
     </key>
   </component>
+<<<<<<< Updated upstream
   <component name="RunManager" selected="Tomcat Server.Auth Service">
+=======
+  <component name="RunManager" selected="Tomcat Server.Course Service">
+>>>>>>> Stashed changes
     <configuration name="auth_schema.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
       <script-file value="$PROJECT_DIR$/auth-service/src/main/resources/auth_schema.sql" />
       <script-mode>FILE</script-mode>
@@ -1167,8 +1188,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.20224.300" />
-        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-IU-242.20224.300" />
+        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.21565.193" />
+        <option value="bundled-js-predefined-d6986cc7102b-e768b9ed790e-JavaScript-IU-243.21565.193" />
       </set>
     </attachedChunks>
   </component>
@@ -1222,6 +1243,8 @@
       <workItem from="1745741301840" duration="70000" />
       <workItem from="1745741382696" duration="2184000" />
       <workItem from="1745770567651" duration="1109000" />
+      <workItem from="1745774474641" duration="3049000" />
+      <workItem from="1745783591233" duration="8730000" />
     </task>
     <servers />
   </component>
