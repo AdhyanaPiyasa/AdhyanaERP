@@ -124,12 +124,12 @@ const AppState = {
     isLoading: false,
     error: null,
     notifications: [],
-    // isAuthenticated: false,
-    // token: localStorage.getItem('token') || null,
-    // userRole: localStorage.getItem('userRole') || null
-    isAuthenticated: true,
-    token: 'dev-token',
-    userRole: 'teacher'
+    isAuthenticated: false,
+    token: localStorage.getItem('token') || null,
+    userRole: localStorage.getItem('userRole') || null
+    // isAuthenticated: true,
+    // token: 'dev-token',
+    // userRole: 'teacher'
 
 };
 const initializeApp = async () => {
@@ -168,11 +168,11 @@ const initializeApp = async () => {
     }
 };
 const checkAuthStatus = async () => {
-    // const token = localStorage.getItem('token');
-    // const userRole = localStorage.getItem('userRole');
+    const token = localStorage.getItem('token');
+    const userRole = localStorage.getItem('userRole');
 
-    const token = 'dev-token';
-    const userRole = 'teacher';
+    // const token = 'dev-token';
+    // const userRole = 'teacher';
 
 
     if (token && userRole) {
