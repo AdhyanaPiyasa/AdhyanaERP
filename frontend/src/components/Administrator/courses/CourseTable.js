@@ -258,28 +258,6 @@ const CourseTable = ({ courses, onRowClick, onAddClick }) => {
     tableContent: {
       marginTop: theme.spacing.md,
     },
-    table: {
-      width: "100%",
-      borderCollapse: "collapse",
-    },
-    th: {
-      padding: "12px",
-      textAlign: "left",
-      borderBottom: "2px solid #e0e0e0",
-      background: "#f5f5f5",
-      fontWeight: "bold",
-    },
-    tr: (index) => ({
-      cursor: "pointer",
-      backgroundColor: index % 2 === 0 ? "white" : "#f9f9f9",
-      ":hover": {
-        backgroundColor: "#f0f0f0",
-      },
-    }),
-    td: {
-      padding: "12px",
-      borderBottom: "1px solid #e0e0e0",
-    },
     errorMessage: {
       color: "#c62828",
       padding: theme.spacing.sm,
@@ -440,65 +418,20 @@ const CourseTable = ({ courses, onRowClick, onAddClick }) => {
                     },
                   }
                 : {
-                    type: "table",
+                    type: Table,
                     props: {
-                      style: styles.table,
-                      children: [
-                        // Table header
-                        {
-                          type: "thead",
-                          props: {
-                            children: [
-                              {
-                                type: "tr",
-                                props: {
-                                  children: [
-                                    "Code",
-                                    "Title",
-                                    "Year",
-                                    "Rating",
-                                  ].map((header) => ({
-                                    type: "th",
-                                    props: {
-                                      style: styles.th,
-                                      children: [header],
-                                    },
-                                  })),
-                                },
-                              },
-                            ],
-                          },
-                        },
-                        // Table body
-                        {
-                          type: "tbody",
-                          props: {
-                            children: filteredTableData.map((row, index) => ({
-                              type: "tr",
-                              props: {
-                                style: styles.tr(index),
-                                onClick: () => {
-                                  if (row.course) {
-                                    onRowClick(row.course);
-                                  }
-                                },
-                                children: [
-                                  "Code",
-                                  "Title",
-                                  "Year",
-                                  "Rating",
-                                ].map((header) => ({
-                                  type: "td",
-                                  props: {
-                                    style: styles.td,
-                                    children: [row[header]],
-                                  },
-                                })),
-                              },
-                            })),
-                          },
-                        },
-                      ],
+                      headers: ["Code", "Title", "Year", "Rating"],
+                      data: filteredTableData.map((row) => ({
+                        Code: row.Code,
+                        Title: row.Title,
+                        Year: row.Year,
+                        Rating: row.Rating,
+                      })),
+                      onRowClick: (_, index) => {
+                        if (filteredTableData[index].course) {
+                          onRowClick(filteredTableData[index].course);
+                        }
+                      },
                     },
                   },
               // Show message when no courses found

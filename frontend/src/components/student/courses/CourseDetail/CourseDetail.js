@@ -1,7 +1,12 @@
-// components/courses/CourseDetail.js
 const CourseDetail = ({ courseId, routeParams }) => {
-  // Set initial active tab to "announcements"
+  // Set initial states
   const [activeTab, setActiveTab] = MiniReact.useState("announcements");
+  const [course, setCourse] = MiniReact.useState(null);
+  const [semesterDetails, setSemesterDetails] = MiniReact.useState([]);
+  const [loading, setLoading] = MiniReact.useState(true);
+  const [error, setError] = MiniReact.useState(null);
+  // Add state for teacher information
+  const [instructorInfo, setInstructorInfo] = MiniReact.useState({});
 
   // Find the current active tab's label for the dropdown
   const getActiveTabLabel = () => {
@@ -9,12 +14,10 @@ const CourseDetail = ({ courseId, routeParams }) => {
     return activeTabObj ? activeTabObj.label : "📢 Course Announcements"; // Default to announcements
   };
 
-  // Get the active tab icon - ensure this matches exactly with the labels
+  // Get the active tab icon
   const getActiveTabIcon = () => {
-    // Find the icon from the label itself for consistency
     const activeTabObj = tabs.find((tab) => tab.id === activeTab);
     if (activeTabObj && activeTabObj.label) {
-      // Extract the emoji at the beginning of the label
       const match = activeTabObj.label.match(
         /^([\u{1F300}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1F1E0}-\u{1F1FF}])/u
       );
@@ -23,7 +26,7 @@ const CourseDetail = ({ courseId, routeParams }) => {
       }
     }
 
-    // Fallback to hardcoded values if we couldn't extract from the label
+    // Fallback to hardcoded values
     switch (activeTab) {
       case "announcements":
         return "📢";
@@ -43,14 +46,11 @@ const CourseDetail = ({ courseId, routeParams }) => {
   // Get course code directly from URL path
   const getCourseCode = () => {
     try {
-      // The URL has format: 127.0.0.1:5502/courses#courses/CS1205
       const urlPathParts = window.location.href.split("/");
-      // Get the last part which should be CS1205
       return urlPathParts[urlPathParts.length - 1] || "Unknown";
     } catch (error) {
       console.error("Error extracting course code from URL:", error);
 
-      // Try alternate methods if the first approach fails
       if (routeParams && routeParams.course && routeParams.course.code) {
         return routeParams.course.code;
       }
@@ -63,53 +63,202 @@ const CourseDetail = ({ courseId, routeParams }) => {
     }
   };
 
+  // Get userId from localStorage
+  const getUserId = () => {
+    try {
+      // First try to get the user object
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        if (user.studentIndex) {
+          return user.studentIndex;
+        } else if (user.id) {
+          return user.id;
+        }
+      }
+
+      // If user object doesn't have the needed property, try userId directly
+      const userId = localStorage.getItem("userId");
+      if (userId) {
+        return userId;
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Error getting user ID from localStorage:", error);
+      return null;
+    }
+  };
+
+  // Fetch course details from the API
+  const fetchCourseDetails = async () => {
+    try {
+      setLoading(true);
+      const extractedCourseId = getCourseCode();
+      console.log("Fetching details for course:", extractedCourseId);
+
+      const token = localStorage.getItem("token") || "";
+      const url = `http://localhost:8081/api/api/courses/courseCore/${extractedCourseId}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch course details: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || "Failed to fetch course details");
+      }
+
+      console.log("Course details fetched successfully:", data.data);
+      setCourse(data.data);
+
+      // After successful course fetch, get semester details
+      fetchSemesterDetails(extractedCourseId);
+    } catch (err) {
+      console.error("Error fetching course details:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // New function to fetch semester offerings (teacher/staff details)
+  const fetchSemesterOfferings = async (semesterId) => {
+    try {
+      const token = localStorage.getItem("token") || "";
+      const url = `http://localhost:8081/api/api/courses/semesters/${semesterId}`;
+
+      console.log(`Fetching offerings for semester: ${semesterId}`);
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch semester offerings: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || "Failed to fetch semester offerings");
+      }
+
+      console.log(`Semester offerings fetched for ${semesterId}:`, data.data);
+
+      // Extract instructor info from offerings
+      if (data.data && data.data.offerings && data.data.offerings.length > 0) {
+        const extractedCourseId = getCourseCode();
+        const courseOffering = data.data.offerings.find(
+          (offering) => offering.courseId === extractedCourseId
+        );
+
+        if (courseOffering) {
+          console.log(
+            `Found offering for course ${extractedCourseId} in semester ${semesterId}:`,
+            courseOffering
+          );
+
+          // Update instructor info state
+          setInstructorInfo((prevState) => ({
+            ...prevState,
+            [semesterId]: courseOffering.teacherName,
+          }));
+        } else {
+          console.log(
+            `No offering found for course ${extractedCourseId} in semester ${semesterId}`
+          );
+        }
+      }
+    } catch (err) {
+      console.error(
+        `Error fetching offerings for semester ${semesterId}:`,
+        err
+      );
+    }
+  };
+
+  // Fetch semester details for this student and course
+  const fetchSemesterDetails = async (extractedCourseId) => {
+    try {
+      const userId = getUserId();
+      if (!userId) {
+        console.error("User ID not found in localStorage");
+        return;
+      }
+
+      console.log(
+        `Fetching semester details for student ${userId} and course ${extractedCourseId}`
+      );
+
+      const token = localStorage.getItem("token") || "";
+      const url = `http://localhost:8081/api/api/courses/studentCourses/student/${userId}/course/${extractedCourseId}/semesters`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch semester details: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || "Failed to fetch semester details");
+      }
+
+      console.log("Semester details fetched successfully:", data.data);
+      setSemesterDetails(data.data);
+
+      // After getting semester details, fetch offerings for each semester to get teacher info
+      if (data.data && data.data.length > 0) {
+        data.data.forEach((semester) => {
+          fetchSemesterOfferings(semester.semesterId);
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching semester details:", err);
+      // Not setting error state here as we still want to show course details
+      // even if semester details fail to load
+    }
+  };
+
   const courseCode = getCourseCode();
   console.log("Extracted course code:", courseCode);
 
-  // Predefined course data with the correct code from URL
-  const course = {
-    id: courseCode,
-    code: courseCode, // Use the code we obtained
-    name: "Sample Course",
-    credits: 3,
-    lecturer: "Dr. John Smith",
-    semesterText: "2023/24 Second Semester",
-    year: 1,
-    semester: 2,
-    duration: 40,
-    rating: 4,
-    created_at: "2025-01-15 14:30:22",
-    updated_at: "2025-01-15 14:30:22",
-  };
-
   const tabs = [
-    { id: "announcements", label: " Course Announcements" },
-    { id: "materials", label: " Study Materials" },
-    { id: "assignments", label: " Assignments" },
-    { id: "grades", label: " Grades" },
-    { id: "feedback", label: " Feedback" },
+    { id: "announcements", label: "📢 Course Announcements" },
+    { id: "materials", label: "📚 Study Materials" },
+    { id: "assignments", label: "📝 Assignments" },
+    { id: "grades", label: "📊 Grades" },
+    { id: "feedback", label: "⭐ Feedback" },
   ];
 
   const selectStyles = {
-    select: {
-      fontSize: "18px",
-      padding: `${theme.spacing.md} ${theme.spacing.lg}`,
-      marginBottom: theme.spacing.lg,
-      borderRadius: theme.borderRadius.md,
-      border: `2px solid ${theme.colors.primary}`,
-      backgroundColor: "white",
-      fontWeight: "500",
-      cursor: "pointer",
-      width: "100%",
-      outline: "none",
-      appearance: "none",
-      backgroundImage:
-        'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")',
-      backgroundRepeat: "no-repeat",
-      backgroundPosition: "right 12px top 50%",
-      backgroundSize: "12px auto",
-      paddingRight: "30px",
-    },
     dropdownBox: {
       width: "100%",
       padding: "12px 16px",
@@ -180,6 +329,8 @@ const CourseDetail = ({ courseId, routeParams }) => {
     },
     fieldValue: {
       width: "60%",
+      display: "flex",
+      alignItems: "center",
     },
     rating: {
       display: "flex",
@@ -191,19 +342,48 @@ const CourseDetail = ({ courseId, routeParams }) => {
     emptyStar: {
       color: "#e0e0e0",
     },
-    highlightCode: {
+    statusChip: (status) => ({
+      display: "inline-block",
+      padding: "0.25rem 0.75rem",
+      borderRadius: "16px",
+      fontSize: "0.8rem",
       fontWeight: "bold",
-      color: theme.colors.primary,
-      fontSize: "1.2em",
-    },
+      color: "#fff",
+      backgroundColor:
+        status === "ACTIVE"
+          ? "#4CAF50"
+          : status === "COMPLETED"
+          ? "#2196F3"
+          : status === "PLANNED"
+          ? "#FF9800"
+          : "#9E9E9E",
+    }),
+  };
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    } catch (e) {
+      console.error("Date formatting error:", e);
+      return dateString;
+    }
   };
 
   // Render star rating
   const renderRating = (rating) => {
     const stars = [];
+    const ratingValue = rating || 0;
 
     for (let i = 0; i < 5; i++) {
-      if (i < rating) {
+      if (i < ratingValue) {
         stars.push({
           type: "span",
           props: {
@@ -231,45 +411,132 @@ const CourseDetail = ({ courseId, routeParams }) => {
     };
   };
 
-  // Course information fields to display
-  const courseFields = [
-    {
-      label: "Course Code",
-      value: {
-        type: "span",
+  // Combined render function for course and semester details
+  const renderCourseAndSemesterDetails = () => {
+    if (loading) {
+      return {
+        type: "div",
         props: {
-          style: detailStyles.highlightCode,
-          children: [courseCode], // Using the directly extracted course code
+          style: detailStyles.container,
+          children: [
+            {
+              type: "div",
+              props: {
+                style: { textAlign: "center", padding: "1rem" },
+                children: ["Loading course details..."],
+              },
+            },
+          ],
         },
-      },
-    },
-    { label: "Course Name", value: course.name },
-    { label: "Credits", value: course.credits },
-    { label: "Lecturer", value: course.lecturer },
-    { label: "Semester", value: course.semesterText },
-    { label: "Year", value: course.year },
-    { label: "Duration (hours)", value: course.duration },
-    { label: "Created At", value: course.created_at },
-    { label: "Updated At", value: course.updated_at },
-  ];
+      };
+    }
 
-  const renderCourseDetails = () => {
+    if (error && !course) {
+      return {
+        type: "div",
+        props: {
+          style: detailStyles.container,
+          children: [
+            {
+              type: "div",
+              props: {
+                style: { color: "red", textAlign: "center", padding: "1rem" },
+                children: [`Error loading course: ${error}`],
+              },
+            },
+          ],
+        },
+      };
+    }
+
+    if (!course) {
+      return {
+        type: "div",
+        props: {
+          style: detailStyles.container,
+          children: [
+            {
+              type: "div",
+              props: {
+                style: { textAlign: "center", padding: "1rem" },
+                children: ["No course details available."],
+              },
+            },
+          ],
+        },
+      };
+    }
+
+    // Create all fields in a single array
+    const allFields = [
+      { label: "Course Code", value: course.courseId },
+      { label: "Course Name", value: course.name },
+      { label: "Duration (hours)", value: course.duration },
+      { label: "Credits", value: course.credits },
+      { label: "Year", value: course.year },
+    ];
+
+    // Add semester fields if available
+    if (semesterDetails && semesterDetails.length > 0) {
+      semesterDetails.forEach((semester, index) => {
+        allFields.push(
+          {
+            label: "Semester Number",
+            value: semester.semesterNum,
+          },
+          {
+            label: "Academic Year ",
+            value: semester.academicYear,
+          },
+          {
+            label: "Start Date ",
+            value: formatDate(semester.startDate),
+          },
+          {
+            label: "End Date ",
+            value: formatDate(semester.endDate),
+          },
+          {
+            label: "Instructor ",
+            value: instructorInfo[semester.semesterId] || "Loading...",
+          },
+          {
+            label: "Status ",
+            value: {
+              type: "span",
+              props: {
+                style: detailStyles.statusChip(semester.status),
+                children: [semester.status],
+              },
+            },
+          }
+        );
+      });
+    } else {
+      // Add a placeholder if no semester data
+      allFields.push({
+        label: "Semester Enrollment",
+        value: "No semester enrollment data available",
+      });
+    }
+    allFields.push({ label: "Rating", value: renderRating(course.avgRating) });
+
     return {
       type: "div",
       props: {
         style: detailStyles.container,
         children: [
-          // Section Header
+          // SINGLE HEADER FOR ALL DETAILS
           {
             type: "div",
             props: {
               style: detailStyles.header,
-              children: ["Course Details"],
+              children: ["Course Information"],
             },
           },
 
-          // Course fields displayed line by line
-          ...courseFields.map((field) => ({
+          // All fields in one list
+          ...allFields.map((field) => ({
             type: "div",
             props: {
               style: detailStyles.fieldRow,
@@ -285,36 +552,15 @@ const CourseDetail = ({ courseId, routeParams }) => {
                   type: "div",
                   props: {
                     style: detailStyles.fieldValue,
-                    children: [field.value],
+                    children:
+                      typeof field.value === "object"
+                        ? [field.value]
+                        : [field.value],
                   },
                 },
               ],
             },
           })),
-
-          // Rating field with stars
-          {
-            type: "div",
-            props: {
-              style: detailStyles.fieldRow,
-              children: [
-                {
-                  type: "div",
-                  props: {
-                    style: detailStyles.fieldLabel,
-                    children: ["Rating"],
-                  },
-                },
-                {
-                  type: "div",
-                  props: {
-                    style: detailStyles.fieldValue,
-                    children: [renderRating(course.rating)],
-                  },
-                },
-              ],
-            },
-          },
         ],
       },
     };
@@ -329,7 +575,7 @@ const CourseDetail = ({ courseId, routeParams }) => {
       materials: StudyMaterials,
       assignments: Assignments,
       grades: CourseGrades,
-      feedback: Feedback, // Add Feedback component to the components mapping
+      feedback: Feedback,
     };
 
     // Check if component exists
@@ -369,11 +615,15 @@ const CourseDetail = ({ courseId, routeParams }) => {
       : null;
   };
 
-  // Force initialize to announcements
+  // Force initialize to announcements and fetch course data
   MiniReact.useEffect(() => {
     // This will ensure announcements is selected on initial load
     setActiveTab("announcements");
-    console.log("Component mounted: activeTab set to announcements");
+    // Fetch course details
+    fetchCourseDetails();
+    console.log(
+      "Component mounted: activeTab set to announcements and fetching course data"
+    );
   }, []);
 
   return {
@@ -385,7 +635,7 @@ const CourseDetail = ({ courseId, routeParams }) => {
         margin: "0 auto",
       },
       children: [
-        // Page header - just the course title, no back button
+        // Page header - just the course title
         {
           type: "div",
           props: {
@@ -399,7 +649,7 @@ const CourseDetail = ({ courseId, routeParams }) => {
                     fontWeight: "bold",
                     color: "#2c3e50",
                   },
-                  children: [course.name],
+                  children: [course ? course.name : "Loading course..."],
                 },
               },
             ],
@@ -411,8 +661,8 @@ const CourseDetail = ({ courseId, routeParams }) => {
           type: Card,
           props: {
             children: [
-              // Course Details Panel (Always visible at the top)
-              renderCourseDetails(),
+              // Combined Course Details & Semester Details Panel
+              renderCourseAndSemesterDetails(),
 
               // Custom Dropdown with Hidden Select
               {
@@ -452,7 +702,6 @@ const CourseDetail = ({ courseId, routeParams }) => {
                           console.log("Selected tab:", e.target.value);
 
                           // Force a re-render by setting state
-                          // We use a timeout to ensure the event completes properly
                           setTimeout(() => {
                             setActiveTab(e.target.value);
                           }, 0);

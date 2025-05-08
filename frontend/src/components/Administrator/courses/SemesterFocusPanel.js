@@ -1,23 +1,34 @@
 // components/Admin/courses/SemesterFocusPanel.js
-const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
+const SemesterFocusPanel = ({ semester, onEditCourse, onEdit, onDelete }) => {
   console.log(
     "[SemesterFocusPanel] Rendering with semester prop:",
     JSON.stringify(semester, null, 2)
   );
 
+  // State for modals
+  const [isEditSemesterOpen, setIsEditSemesterOpen] = MiniReact.useState(false);
+  const [isEditCoursesOpen, setIsEditCoursesOpen] = MiniReact.useState(false);
+
   // Add debugging for button handlers
   const handleEditClick = () => {
-    console.log("[SemesterFocusPanel] Edit button clicked, calling onEdit");
-    // Ensure we have a semester selected before calling onEdit
+    console.log("[SemesterFocusPanel] Edit button clicked");
+    // Ensure we have a semester selected before opening the edit modal
     if (semester) {
-      // Call the onEdit handler passed from parent
-      if (typeof onEdit === "function") {
-        onEdit(semester);
-      } else {
-        console.error("[SemesterFocusPanel] onEdit is not a function:", onEdit);
-      }
+      setIsEditSemesterOpen(true);
     } else {
       console.warn("[SemesterFocusPanel] Cannot edit: No semester selected");
+    }
+  };
+
+  const handleEditCourseClick = () => {
+    console.log("[SemesterFocusPanel] EditCourse button clicked");
+    // Ensure we have a semester selected before opening the edit courses modal
+    if (semester) {
+      setIsEditCoursesOpen(true);
+    } else {
+      console.warn(
+        "[SemesterFocusPanel] Cannot edit courses: No semester selected"
+      );
     }
   };
 
@@ -39,18 +50,43 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
     }
   };
 
+  // Handle modal close events
+  const handleEditSemesterClose = () => {
+    setIsEditSemesterOpen(false);
+  };
+
+  const handleEditCoursesClose = () => {
+    setIsEditCoursesOpen(false);
+  };
+
+  // Handle successful updates
+  const handleSemesterUpdateSuccess = (updatedSemester) => {
+    console.log(
+      "[SemesterFocusPanel] Semester updated successfully:",
+      updatedSemester
+    );
+    // Call the onEdit handler passed from parent if available
+    if (typeof onEdit === "function") {
+      onEdit(updatedSemester);
+    }
+    setIsEditSemesterOpen(false);
+  };
+
+  const handleCoursesUpdateSuccess = (updatedSemester) => {
+    console.log(
+      "[SemesterFocusPanel] Semester courses updated successfully:",
+      updatedSemester
+    );
+    // Call the onEditCourse handler passed from parent if available
+    if (typeof onEditCourse === "function") {
+      onEditCourse(updatedSemester);
+    }
+    setIsEditCoursesOpen(false);
+  };
+
   const styles = {
     focusPanel: { display: "flex", flexDirection: "column", height: "100%" },
-    focusHeader: {
-      fontSize: theme.typography.h2.fontSize,
-      fontWeight: "bold",
-      marginBottom: theme.spacing.md,
-      color: theme.colors.primary,
-      display: "flex",
-      alignItems: "center",
-      borderBottom: `1px solid ${theme.colors.border}`,
-      paddingBottom: theme.spacing.sm,
-    },
+
     focusIcon: { marginRight: theme.spacing.sm, fontSize: "24px" },
     fieldRow: {
       display: "flex",
@@ -65,10 +101,14 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
     fieldValue: { width: "60%", wordBreak: "break-word" },
     buttonRow: {
       display: "flex",
-      justifyContent: "flex-end",
-      gap: theme.spacing.md,
+      justifyContent: "space-between", // Changed from flex-end to space-between
       marginTop: "auto",
       paddingTop: theme.spacing.lg,
+      paddingBottom: theme.spacing.md, // Added padding at the bottom
+    },
+    buttonGroup: {
+      display: "flex",
+      gap: theme.spacing.sm, // Reduced gap between buttons
     },
     noSelection: {
       display: "flex",
@@ -119,30 +159,13 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
     offeringsTableContainer: {
       marginTop: theme.spacing.xs,
     },
-    offeringsTable: {
-      width: "100%",
-      borderCollapse: "collapse",
-      border: `1px solid ${theme.colors.border}`,
-    },
-    offeringsTh: {
-      padding: theme.spacing.sm,
-      textAlign: "left",
-      borderBottom: `2px solid ${theme.colors.border}`,
-      backgroundColor: "#f5f5f5",
-      fontWeight: "bold",
-      color: theme.colors.textSecondary,
-    },
-    offeringsTd: {
-      padding: theme.spacing.sm,
-      borderBottom: `1px solid ${theme.colors.border}`,
-      verticalAlign: "top",
-    },
-    offeringsTr: (index) => ({
-      backgroundColor: index % 2 === 0 ? "white" : "#f9f9f9",
-    }),
     noOfferingsMessage: {
       padding: `${theme.spacing.sm} 0`,
       color: theme.colors.textSecondary,
+    },
+    // Adding button styles for better consistency
+    actionButton: {
+      minWidth: "140px", // Ensure buttons have consistent width
     },
   };
 
@@ -152,19 +175,6 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
       props: {
         style: styles.focusPanel,
         children: [
-          {
-            type: "div",
-            props: {
-              style: styles.focusHeader,
-              children: [
-                {
-                  type: "span",
-                  props: { style: styles.focusIcon, children: ["🎓"] },
-                },
-                "Focus",
-              ],
-            },
-          },
           {
             type: "div",
             props: {
@@ -253,26 +263,21 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
     )}, length: ${semester.offerings?.length}. Result: ${hasOfferings}`
   );
 
+  // Prepare table data for courses and teachers
+  const prepareCoursesTableData = () => {
+    if (!hasOfferings) return [];
+
+    return semester.offerings.map((offering) => ({
+      "Course Code": offering.courseId || "N/A",
+      Teacher: offering.teacherName || "N/A",
+    }));
+  };
+
   return {
     type: "div",
     props: {
       style: styles.focusPanel,
       children: [
-        // Focus Header
-        {
-          type: "div",
-          props: {
-            style: styles.focusHeader,
-            children: [
-              {
-                type: "span",
-                props: { style: styles.focusIcon, children: ["🎓"] },
-              },
-              "Semester Details",
-            ],
-          },
-        },
-
         // Semester basic fields
         ...semesterFields.map((field) => ({
           type: "div",
@@ -316,75 +321,11 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
                   children: [
                     hasOfferings
                       ? {
-                          type: "table",
+                          type: Table,
                           props: {
-                            style: styles.offeringsTable,
-                            children: [
-                              // Table Header
-                              {
-                                type: "thead",
-                                props: {
-                                  children: [
-                                    {
-                                      type: "tr",
-                                      props: {
-                                        children: [
-                                          {
-                                            type: "th",
-                                            props: {
-                                              style: styles.offeringsTh,
-                                              children: ["Course Code"],
-                                            },
-                                          },
-                                          {
-                                            type: "th",
-                                            props: {
-                                              style: styles.offeringsTh,
-                                              children: ["Teacher"],
-                                            },
-                                          },
-                                        ],
-                                      },
-                                    },
-                                  ],
-                                },
-                              },
-                              // Table Body
-                              {
-                                type: "tbody",
-                                props: {
-                                  children: semester.offerings.map(
-                                    (offering, index) => ({
-                                      type: "tr",
-                                      props: {
-                                        style: styles.offeringsTr(index),
-                                        key: `${offering.courseId}-${index}`,
-                                        children: [
-                                          {
-                                            type: "td",
-                                            props: {
-                                              style: styles.offeringsTd,
-                                              children: [
-                                                offering.courseId || "N/A",
-                                              ],
-                                            },
-                                          },
-                                          {
-                                            type: "td",
-                                            props: {
-                                              style: styles.offeringsTd,
-                                              children: [
-                                                offering.teacherName || "N/A",
-                                              ],
-                                            },
-                                          },
-                                        ],
-                                      },
-                                    })
-                                  ),
-                                },
-                              },
-                            ],
+                            headers: ["Course Code", "Teacher"],
+                            data: prepareCoursesTableData(),
+                            // We don't need row click behavior for this table
                           },
                         }
                       : {
@@ -403,31 +344,82 @@ const SemesterFocusPanel = ({ semester, onEdit, onDelete }) => {
           },
         },
 
-        // Button Row - Using our new handler functions instead of directly calling props
+        // Button Row - Now with improved layout and styling
         {
           type: "div",
           props: {
             style: styles.buttonRow,
             children: [
+              // Left side - can be empty or contain a back button if needed
               {
-                type: Button,
+                type: "div",
                 props: {
-                  variant: "secondary",
-                  onClick: handleEditClick, // Use our new handler
-                  children: "Edit Semester",
+                  children: [], // Left empty for now, could add a back button here
                 },
               },
+              // Right side - action buttons grouped together
               {
-                type: Button,
+                type: "div",
                 props: {
-                  variant: "error",
-                  onClick: handleDeleteClick, // Use our new handler
-                  children: "Delete Semester",
+                  style: styles.buttonGroup,
+                  children: [
+                    {
+                      type: Button,
+                      props: {
+                        variant: "secondary",
+                        onClick: handleEditCourseClick, // Now opens EditSemesterCourse modal
+                        style: styles.actionButton,
+                        children: "Edit Courses",
+                      },
+                    },
+                    {
+                      type: Button,
+                      props: {
+                        variant: "secondary",
+                        onClick: handleEditClick, // Now opens EditSemester modal
+                        style: styles.actionButton,
+                        children: "Edit Semester",
+                      },
+                    },
+                    {
+                      type: Button,
+                      props: {
+                        variant: "error",
+                        onClick: handleDeleteClick, // Existing delete functionality
+                        style: styles.actionButton,
+                        children: "Delete",
+                      },
+                    },
+                  ],
                 },
               },
             ],
           },
         },
+
+        // Edit Semester Modal
+        isEditSemesterOpen
+          ? {
+              type: EditSemester,
+              props: {
+                semester: semester,
+                onClose: handleEditSemesterClose,
+                onSuccess: handleSemesterUpdateSuccess,
+              },
+            }
+          : null,
+
+        // Edit Semester Courses Modal
+        isEditCoursesOpen
+          ? {
+              type: EditSemesterCourse,
+              props: {
+                semester: semester,
+                onClose: handleEditCoursesClose,
+                onSuccess: handleCoursesUpdateSuccess,
+              },
+            }
+          : null,
       ].filter(Boolean),
     },
   };

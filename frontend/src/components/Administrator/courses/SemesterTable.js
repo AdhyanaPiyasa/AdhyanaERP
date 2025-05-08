@@ -7,33 +7,18 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
   const [searchError, setSearchError] = MiniReact.useState(null);
 
   // UseEffect to trigger search when searchQuery changes (debounced)
-  // This helps avoid the double-click issue by decoupling search execution
-  // from the direct click handler and ensuring state is updated first.
   MiniReact.useEffect(() => {
-    // Simple debounce implementation
     const handler = setTimeout(() => {
-      // Trigger search only if query is not empty and user isn't manually clearing
-      // Search triggered automatically on type (after debounce) or field change
-      // Search button click will now primarily handle cases where debounce didn't fire
-      // or user explicitly wants to re-search the same term.
-      // Let's refine: only search automatically if query has content. Button press needed otherwise.
-      if (searchQuery.trim() !== "") {
-        // We might not want to auto-search on every keystroke.
-        // Let's keep the explicit button press for now and fix the state issue there.
-        // console.log("Debounced search trigger for:", searchQuery);
-        // performApiSearch(searchQuery.trim()); // Pass current query
-      } else {
-        // Clear results if query is empty
+      if (searchQuery.trim() === "") {
         setSearchResults(null);
         setSearchError(null);
       }
     }, 300); // 300ms debounce
 
-    // Cleanup function
     return () => {
       clearTimeout(handler);
     };
-  }, [searchQuery, searchField]); // Re-run effect if query or field changes
+  }, [searchQuery, searchField]);
 
   const searchFieldOptions = [
     { value: "all", label: "All Fields" },
@@ -90,10 +75,8 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
     };
   }
 
-  // --- FIX START: Pass the current query value directly to avoid state closure issues ---
   const performApiSearch = async (currentSearchQuery) => {
-    // --- FIX END ---
-    const queryToSearch = currentSearchQuery.trim(); // Use the passed value
+    const queryToSearch = currentSearchQuery.trim();
 
     if (!queryToSearch) {
       setSearchResults(null);
@@ -110,21 +93,19 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
     );
     setIsSearching(true);
     setSearchError(null);
-    setSearchResults(null); // Clear previous results
+    setSearchResults(null);
 
     try {
       const token = localStorage.getItem("token");
       let url = "http://localhost:8081/api/api/courses/semesters/";
-      const encodedQuery = encodeURIComponent(queryToSearch); // Use trimmed query
+      const encodedQuery = encodeURIComponent(queryToSearch);
 
       if (searchField !== "all") {
         url += `${searchField}/${encodedQuery}`;
       } else {
-        // Backend needs to handle 'all' or we fetch all and filter
         console.log(
           "[SemesterTable] 'All Fields' search selected. Fetching all for client-side filtering."
         );
-        // URL remains the base URL to fetch all
       }
 
       console.log(`[SemesterTable] Fetching URL: ${url}`);
@@ -173,7 +154,6 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
           );
           setSearchResults(clientFilteredResults);
         } else {
-          // Otherwise, use the results directly from the API
           setSearchResults(results);
         }
       } else {
@@ -192,7 +172,6 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
   const handleSearchChange = (e) => {
     const newValue = e.target.value;
     setSearchQuery(newValue);
-    // If input is cleared, also clear results immediately
     if (newValue.trim() === "") {
       setSearchResults(null);
       setSearchError(null);
@@ -202,27 +181,22 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
   const handleSearchFieldChange = (e) => {
     const newField = e.target.value;
     setSearchField(newField);
-    // Clear results when field changes, new search needed
     setSearchResults(null);
     setSearchError(null);
-    // Trigger search immediately if there's a query
     if (searchQuery.trim() !== "") {
-      performApiSearch(searchQuery); // Pass current query
+      performApiSearch(searchQuery);
     }
   };
 
-  // --- FIX START: Pass current searchQuery state to performApiSearch ---
   const handleSearchSubmit = () => {
     if (isSearching) return;
-    // Pass the current value from the state directly
     performApiSearch(searchQuery);
   };
-  // --- FIX END ---
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      handleSearchSubmit(); // Uses the fixed handler
+      handleSearchSubmit();
     }
   };
 
@@ -232,7 +206,6 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
     setSearchError(null);
   };
 
-  // --- FIX START: Use property names from SemesterContentArea's formatting ---
   const prepareTableData = (semestersList) => {
     if (!Array.isArray(semestersList)) {
       console.warn(
@@ -242,33 +215,24 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
       return [];
     }
 
-    // The `semestersList` here is the result of `formattedSemesters` from SemesterContentArea
     return semestersList
       .map((semester) => {
         if (!semester) return null;
 
-        // Access properties as named in SemesterContentArea's mapping:
-        // year: semester.academicYear -> semester.year
-        // semester: semester.semesterNum -> semester.semester
         return {
           semester: semester, // Keep original object
           "Semester ID": semester.semesterId || "N/A",
           "Batch ID": semester.batchId || "N/A",
-          Year: semester.year, // Access the 'year' property created in SemesterContentArea
-          "Semester No": semester.semester, // Access the 'semester' property created in SemesterContentArea
+          Year: semester.year || semester.academicYear,
+          "Semester No": semester.semester || semester.semesterNum,
           Status: renderStatus(semester.status),
         };
       })
       .filter((row) => row !== null);
   };
-  // --- FIX END ---
 
   const displayData = searchResults !== null ? searchResults : semesters;
-  // Added console log to check the data being passed to prepareTableData
-  // console.log("[SemesterTable] Data being passed to prepareTableData:", displayData);
   const filteredTableData = prepareTableData(displayData);
-  // Added console log to check the final table data
-  // console.log("[SemesterTable] Final data for table rendering:", filteredTableData);
 
   const styles = {
     tableSection: { width: "100%" },
@@ -278,7 +242,7 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
       alignItems: "center",
       marginBottom: theme.spacing.md,
     },
-    searchInputGroup: {
+    searchInput: {
       display: "flex",
       alignItems: "center",
       flex: 1,
@@ -286,112 +250,12 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
     },
     searchFieldSelect: { width: "130px", marginRight: theme.spacing.sm },
     searchInputWrapper: { position: "relative", flex: 1 },
-    tableContent: { marginTop: theme.spacing.md, overflowX: "auto" },
-    table: { width: "100%", borderCollapse: "collapse" },
-    th: {
-      padding: "12px",
-      textAlign: "left",
-      borderBottom: "2px solid #e0e0e0",
-      background: "#f5f5f5",
-      fontWeight: "bold",
-      whiteSpace: "nowrap",
-    },
-    tr: (index) => ({
-      cursor: "pointer",
-      backgroundColor: index % 2 === 0 ? "white" : "#f9f9f9",
-      ":hover": { backgroundColor: "#f0f0f0" },
-    }),
-    td: {
-      padding: "12px",
-      borderBottom: "1px solid #e0e0e0",
-      whiteSpace: "nowrap",
-      // --- FIX START: Ensure text is visible ---
-      color: "#333", // Added default text color
-      // --- FIX END ---
-    },
+    tableContent: { marginTop: theme.spacing.md },
     errorMessage: {
       color: "#c62828",
       padding: theme.spacing.sm,
-      backgroundColor: "#ffebee",
-      borderRadius: theme.spacing.sm,
       marginBottom: theme.spacing.md,
     },
-    loadingMessage: {
-      padding: theme.spacing.md,
-      textAlign: "center",
-      color: theme.colors.primary,
-    },
-    noResultsMessage: {
-      textAlign: "center",
-      padding: theme.spacing.lg,
-      color: theme.colors.textSecondary,
-    },
-    searchIconsContainer: {
-      position: "absolute",
-      right: "10px",
-      top: "50%",
-      transform: "translateY(-50%)",
-      display: "flex",
-      alignItems: "center",
-      zIndex: 2,
-    },
-    iconButton: {
-      background: "none",
-      border: "none",
-      cursor: "pointer",
-      padding: "3px 5px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontSize: "16px",
-    },
-    clearIcon: { color: "#FF0000", fontWeight: "bold", marginRight: "2px" },
-    searchIcon: { color: "#555" },
-  };
-
-  const SimpleTable = ({ headers, data, onRowClick }) => {
-    return {
-      type: "table",
-      props: {
-        style: styles.table,
-        children: [
-          {
-            type: "thead",
-            props: {
-              children: [
-                {
-                  type: "tr",
-                  props: {
-                    children: headers.map((header) => ({
-                      type: "th",
-                      props: { style: styles.th, children: [header] },
-                    })),
-                  },
-                },
-              ],
-            },
-          },
-          {
-            type: "tbody",
-            props: {
-              children: data.map((row, index) => ({
-                type: "tr",
-                props: {
-                  style: styles.tr(index),
-                  onClick: () => {
-                    if (onRowClick && row.semester) onRowClick(row.semester);
-                  },
-                  children: headers.map((header) => ({
-                    type: "td",
-                    props: { style: styles.td, children: [row[header] ?? ""] },
-                  })),
-                },
-              })),
-            },
-          },
-        ],
-      },
-    };
   };
 
   return {
@@ -408,8 +272,9 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
               {
                 type: "div",
                 props: {
-                  style: styles.searchInputGroup,
+                  style: styles.searchInput,
                   children: [
+                    // Search field dropdown
                     {
                       type: Select,
                       props: {
@@ -419,10 +284,14 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
                         style: styles.searchFieldSelect,
                       },
                     },
+                    // Search input with integrated icons
                     {
                       type: "div",
                       props: {
-                        style: styles.searchInputWrapper,
+                        style: {
+                          position: "relative",
+                          flex: 1,
+                        },
                         children: [
                           {
                             type: TextField,
@@ -431,36 +300,64 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
                               value: searchQuery,
                               onChange: handleSearchChange,
                               onKeyDown: handleKeyDown,
-                              style: { width: "100%" },
+                              style: {
+                                width: "100%",
+                              },
                             },
                           },
+                          // Both icons inside the search field
                           {
                             type: "div",
                             props: {
-                              style: styles.searchIconsContainer,
+                              style: {
+                                position: "absolute",
+                                right: "10px",
+                                top: "50%",
+                                transform: "translateY(-80%)",
+                                display: "flex",
+                                alignItems: "center",
+                                zIndex: 2,
+                              },
                               children: [
+                                // Clear button (X) - only visible when there's a search query
                                 searchQuery && {
                                   type: "button",
                                   props: {
                                     style: {
-                                      ...styles.iconButton,
-                                      ...styles.clearIcon,
+                                      background: "none",
+                                      border: "none",
+                                      cursor: "pointer",
+                                      color: "#FF0000",
+                                      fontSize: "16px",
+                                      fontWeight: "bold",
+                                      padding: "3px 5px",
+                                      marginRight: "2px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
                                     },
                                     onClick: handleClearSearch,
                                     type: "button",
                                     children: ["×"],
                                   },
                                 },
+                                // Magnifying glass icon
                                 {
                                   type: "button",
                                   props: {
                                     style: {
-                                      ...styles.iconButton,
-                                      ...styles.searchIcon,
+                                      background: "none",
+                                      border: "none",
+                                      cursor: "pointer",
+                                      color: "#555",
+                                      fontSize: "16px",
+                                      padding: "3px 5px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
                                     },
-                                    onClick: handleSearchSubmit, // Uses fixed handler
+                                    onClick: handleSearchSubmit,
                                     type: "button",
-                                    disabled: isSearching,
                                     children: ["🔍"],
                                   },
                                 },
@@ -473,38 +370,48 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
                   ],
                 },
               },
+              // Add semester button
               {
                 type: Button,
-                props: { onClick: onAddClick, children: "Create New Semester" },
+                props: {
+                  onClick: onAddClick,
+                  children: "Create New Semester",
+                },
               },
             ],
           },
         },
 
+        // Error message
         searchError && {
           type: "div",
           props: {
             style: styles.errorMessage,
-            children: [`Search Error: ${searchError}`],
+            children: [`Error: ${searchError}`],
           },
         },
 
+        // Semester Table
         {
           type: "div",
           props: {
             style: styles.tableContent,
             children: [
+              // Loading indicator when searching
               isSearching
                 ? {
                     type: "div",
                     props: {
-                      style: styles.loadingMessage,
+                      style: {
+                        padding: theme.spacing.md,
+                        textAlign: "center",
+                        color: theme.colors.primary,
+                      },
                       children: ["Searching..."],
                     },
                   }
-                : filteredTableData.length > 0
-                ? {
-                    type: SimpleTable,
+                : {
+                    type: Table,
                     props: {
                       headers: [
                         "Semester ID",
@@ -513,23 +420,37 @@ const SemesterTable = ({ semesters, onRowClick, onAddClick }) => {
                         "Semester No",
                         "Status",
                       ],
-                      data: filteredTableData,
-                      onRowClick: onRowClick,
-                    },
-                  }
-                : !isSearching &&
-                  (searchResults !== null ||
-                    (searchResults === null && semesters.length === 0)) && {
-                    type: "div",
-                    props: {
-                      style: styles.noResultsMessage,
-                      children: [
-                        searchResults !== null
-                          ? "No semesters found matching your criteria."
-                          : "No semesters available.",
-                      ],
+                      data: filteredTableData.map((row) => ({
+                        "Semester ID": row["Semester ID"],
+                        "Batch ID": row["Batch ID"],
+                        Year: row["Year"],
+                        "Semester No": row["Semester No"],
+                        Status: row["Status"],
+                      })),
+                      onRowClick: (_, index) => {
+                        if (filteredTableData[index].semester) {
+                          onRowClick(filteredTableData[index].semester);
+                        }
+                      },
                     },
                   },
+              // Show message when no semesters found
+              !isSearching &&
+                filteredTableData.length === 0 && {
+                  type: "div",
+                  props: {
+                    style: {
+                      textAlign: "center",
+                      padding: theme.spacing.lg,
+                      color: theme.colors.textSecondary,
+                    },
+                    children: [
+                      searchResults !== null
+                        ? "No semesters found matching your search criteria."
+                        : "No semesters available.",
+                    ],
+                  },
+                },
             ].filter(Boolean),
           },
         },

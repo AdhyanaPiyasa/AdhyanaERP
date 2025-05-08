@@ -25,7 +25,6 @@ const SemesterContentArea = ({ state, setState, isActive }) => {
   };
 
   const fetchSemesters = async () => {
-    // ... (fetchSemesters remains the same - logging already added) ...
     console.log("[SemesterContentArea] fetchSemesters called");
     setLoading(true);
     setError(null);
@@ -103,7 +102,6 @@ const SemesterContentArea = ({ state, setState, isActive }) => {
   };
 
   MiniReact.useEffect(() => {
-    // ... (useEffect for isActive remains the same) ...
     console.log(`[SemesterContentArea] isActive changed to: ${isActive}`);
     if (isActive) {
       console.log("[SemesterContentArea] Component is active, fetching data.");
@@ -113,28 +111,24 @@ const SemesterContentArea = ({ state, setState, isActive }) => {
     }
   }, [isActive]);
 
-  // --- EDIT MODAL DEBUG ---
   const handleEdit = () => {
-    // --- LOGGING: Check if selectedSemester exists ---
     console.log(
       "[SemesterContentArea] handleEdit called. Selected semester:",
       selectedSemester
     );
-    // --- END LOGGING ---
     if (selectedSemester) {
       updateState({ showEditModal: true }); // Request parent to show modal
     } else {
       console.warn(
         "[SemesterContentArea] Edit clicked but no semester selected."
       );
-      // Optionally show a user message here
     }
   };
-  // --- END EDIT MODAL DEBUG ---
 
   const handleDelete = () => {
     if (selectedSemester) updateState({ showDeleteModal: true });
   };
+
   const handleRowClick = (semester) => {
     console.log(
       "[SemesterContentArea] Row clicked. Semester data:",
@@ -142,21 +136,24 @@ const SemesterContentArea = ({ state, setState, isActive }) => {
     );
     updateState({ selectedSemester: semester });
   };
+
   const handleAddClick = () => {
     updateState({ showAddModal: true });
   };
+
   const handleAddSuccess = (addedSem) => {
     console.log("Add Success, refreshing", addedSem);
     updateState({ showAddModal: false });
     fetchSemesters();
   };
+
   const handleEditSuccess = (updatedSem) => {
     console.log("Edit Success, refreshing", updatedSem);
     updateState({ showEditModal: false, selectedSemester: updatedSem });
     fetchSemesters();
-  }; // Update selection on edit success
+  };
+
   const handleDeleteConfirm = async () => {
-    /* ... delete logic ... */
     if (!selectedSemester || !selectedSemester.id) return;
     console.log(
       "[SemesterContentArea] Confirming delete for:",
@@ -188,15 +185,49 @@ const SemesterContentArea = ({ state, setState, isActive }) => {
     }
   };
 
+  // Define card-based layout styles
   const styles = {
-    /* ... styles ... */
-    container: { display: "flex", flexDirection: "column", height: "100%" },
-    contentContainer: { display: "flex", flex: 1 },
-    tableSection: { width: "60%", paddingRight: theme.spacing.lg },
-    detailsSection: {
+    container: {
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+      padding: theme.spacing.md,
+      maxWidth: "1200px",
+      margin: "0 auto",
+    },
+    header: {
+      marginBottom: theme.spacing.md,
+    },
+    cardsContainer: {
+      display: "flex",
+      gap: theme.spacing.md,
+    },
+    semesterTableCard: {
+      width: "60%",
+      backgroundColor: "white",
+      borderRadius: theme.spacing.sm,
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+    },
+    focusPanelCard: {
       width: "40%",
-      borderLeft: `1px solid ${theme.colors.border}`,
-      paddingLeft: theme.spacing.lg,
+      backgroundColor: "white",
+      borderRadius: theme.spacing.sm,
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+    },
+    cardHeader: {
+      width: "100%",
+      textAlign: "center",
+      borderBottom: `1px solid ${theme.colors.border || "#eee"}`,
+      paddingBottom: theme.spacing.sm,
+      paddingTop: theme.spacing.sm,
+      fontSize: "18px",
+      fontWeight: "bold",
+    },
+    cardContent: {
+      padding: theme.spacing.md,
+      width: "100%",
+      height: "100%",
+      overflow: "auto",
     },
     loadingContainer: {
       display: "flex",
@@ -213,6 +244,83 @@ const SemesterContentArea = ({ state, setState, isActive }) => {
       borderRadius: theme.spacing.sm,
       marginBottom: theme.spacing.md,
     },
+  };
+
+  // Create the card components
+  const renderCards = () => {
+    const cards = [
+      // Semester Table Card
+      {
+        type: "div",
+        props: {
+          style: styles.semesterTableCard,
+          children: [
+            // Card header
+            {
+              type: "div",
+              props: {
+                style: styles.cardHeader,
+                children: ["Semester Listing"],
+              },
+            },
+            // Card content - Semester Table
+            {
+              type: "div",
+              props: {
+                style: styles.cardContent,
+                children: [
+                  {
+                    type: SemesterTable,
+                    props: {
+                      semesters: semesters,
+                      onRowClick: handleRowClick,
+                      onAddClick: handleAddClick,
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+
+      // Semester Focus Panel Card
+      {
+        type: "div",
+        props: {
+          style: styles.focusPanelCard,
+          children: [
+            // Card header
+            {
+              type: "div",
+              props: {
+                style: styles.cardHeader,
+                children: ["Semester Details"],
+              },
+            },
+            // Card content - Focus Panel
+            {
+              type: "div",
+              props: {
+                style: styles.cardContent,
+                children: [
+                  {
+                    type: SemesterFocusPanel,
+                    props: {
+                      semester: selectedSemester,
+                      onEdit: handleEdit,
+                      onDelete: handleDelete,
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ];
+
+    return cards;
   };
 
   // --- LOGGING: Check modal state before rendering ---
@@ -234,6 +342,7 @@ const SemesterContentArea = ({ state, setState, isActive }) => {
     props: {
       style: styles.container,
       children: [
+        // Error message if there is one
         error && {
           type: "div",
           props: {
@@ -241,57 +350,25 @@ const SemesterContentArea = ({ state, setState, isActive }) => {
             children: [`Error: ${error}`],
           },
         },
-        {
-          type: "div",
-          props: {
-            style: styles.contentContainer,
-            children: loading
-              ? [
-                  {
-                    type: "div",
-                    props: {
-                      style: styles.loadingContainer,
-                      children: ["Loading semesters..."],
-                    },
-                  },
-                ]
-              : [
-                  {
-                    type: "div",
-                    props: {
-                      style: styles.tableSection,
-                      children: [
-                        {
-                          type: SemesterTable,
-                          props: {
-                            semesters: semesters,
-                            onRowClick: handleRowClick,
-                            onAddClick: handleAddClick,
-                          },
-                        },
-                      ],
-                    },
-                  },
-                  {
-                    type: "div",
-                    props: {
-                      style: styles.detailsSection,
-                      children: [
-                        {
-                          type: SemesterFocusPanel,
-                          props: {
-                            semester: selectedSemester,
-                            onEdit: handleEdit,
-                            onDelete: handleDelete,
-                          },
-                        },
-                      ],
-                    },
-                  },
-                ],
-          },
-        },
-        // Modals are rendered based on state passed from AdministratorCourseList via props
+
+        // Main content - loading or card layout
+        loading
+          ? {
+              type: "div",
+              props: {
+                style: styles.loadingContainer,
+                children: ["Loading semesters..."],
+              },
+            }
+          : {
+              type: "div",
+              props: {
+                style: styles.cardsContainer,
+                children: renderCards(),
+              },
+            },
+
+        // Modals
         showAddModal && {
           type: AddSemester,
           props: {
