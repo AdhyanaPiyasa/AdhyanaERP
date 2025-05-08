@@ -7,8 +7,8 @@ const TeacherCourseList = () => {
   // Enhanced course data with more information
   const courses = [
     {
-      id: "CS1205",
-      code: "CS1205",
+      id: "CS1101",
+      code: "CS1101",
       name: "Data Structures and Algorithms",
       credits: 3,
       rating: 4,

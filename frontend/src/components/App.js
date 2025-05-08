@@ -83,7 +83,7 @@ const App = () => {
   const getTeacherContent = (route, params) => {
     switch (route) {
       case "dashboard":
-        return { type: TeacherDashboard };
+        return { type: TeacherCourseList };
       case "profile":
         return { type: TeacherProfile };
       case "courses":
@@ -97,7 +97,7 @@ const App = () => {
       case "communication":
         return { type: EmailList };
       default:
-        return { type: TeacherDashboard };
+        return { type: TeacherCourseList };
     }
   };
 
