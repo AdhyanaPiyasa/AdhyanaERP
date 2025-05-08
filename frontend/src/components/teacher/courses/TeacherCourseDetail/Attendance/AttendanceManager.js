@@ -9,18 +9,7 @@ const AttendanceManager = ({ courseId }) => {
     const [success, setSuccess] = MiniReact.useState(null);
     const [students, setStudents] = MiniReact.useState([]);
 
-    
-    // // Students data state
-    // const [students, setStudents] = MiniReact.useState([
-    //     { id: 1001, name: "Alice Smith", attendance: "present" },
-    //     { id: 1002, name: "Bob Johnson", attendance: "present" },
-    //     { id: 1003, name: "Charlie Brown", attendance: "present" },
-    //     { id: 1004, name: "Diana Prince", attendance: "present" },
-    //     { id: 1005, name: "Edward Clark", attendance: "present" },
-    //     { id: 1006, name: "Fiona Martinez", attendance: "present" }
-    // ]);
-
-    //Fetch students with attendance status for the selected date and course
+    // Fetch students with attendance status for the selected date and course
     const fetchStudentsForSession = async () => {
         setLoading(true);
         setError(null);
@@ -70,13 +59,12 @@ const AttendanceManager = ({ courseId }) => {
     }, [selectedDate, courseId]);
     
     // Corrected handleAttendanceChange method
-const handleAttendanceChange = (studentId, value) => {
-    const updatedStudents = students.map(student => 
-        student.studentIndex === studentId ? { ...student, attendance: value } : student
-    );
-    setStudents(updatedStudents);
-};
-
+    const handleAttendanceChange = (studentId, value) => {
+        const updatedStudents = students.map(student => 
+            student.studentIndex === studentId ? { ...student, attendance: value } : student
+        );
+        setStudents(updatedStudents);
+    };
 
     // Submit attendance data to the backend
     const handleSubmit = async () => {
@@ -194,11 +182,14 @@ const handleAttendanceChange = (studentId, value) => {
                     }
                 },
                 
-                // Date input
+                // Date input and View Records button
                 {
                     type: 'div',
                     props: {
                         style: {
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
                             marginBottom: theme.spacing.lg,
                             backgroundColor: '#f5f5f5',
                             padding: theme.spacing.md,
@@ -212,11 +203,23 @@ const handleAttendanceChange = (studentId, value) => {
                                     value: selectedDate,
                                     onChange: (e) => setSelectedDate(e.target.value),
                                     style: {
-                                        width: '100%',
                                         padding: theme.spacing.md,
                                         border: '1px solid #ccc',
                                         borderRadius: theme.borderRadius.sm,
-                                        fontSize: '16px'
+                                        fontSize: '16px',
+                                        flexGrow: 1,
+                                        marginRight: theme.spacing.md
+                                    }
+                                }
+                            },
+                            {
+                                type: Button,
+                                props: {
+                                    onClick: () => setShowRecords(true),
+                                    variant: 'secondary',
+                                    children: 'View Attendance History',
+                                    style: {
+                                        whiteSpace: 'nowrap'
                                     }
                                 }
                             }
