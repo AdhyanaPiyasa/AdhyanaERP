@@ -90,23 +90,6 @@ const CourseFocusPanel = ({ course, onEdit, onDelete }) => {
       props: {
         style: styles.focusPanel,
         children: [
-          // Focus Header
-          {
-            type: "div",
-            props: {
-              style: styles.focusHeader,
-              children: [
-                {
-                  type: "span",
-                  props: {
-                    style: styles.focusIcon,
-                    children: ["📚"],
-                  },
-                },
-                "Focus",
-              ],
-            },
-          },
           // No selection message
           {
             type: "div",
@@ -164,24 +147,6 @@ const CourseFocusPanel = ({ course, onEdit, onDelete }) => {
     props: {
       style: styles.focusPanel,
       children: [
-        // Focus Header
-        {
-          type: "div",
-          props: {
-            style: styles.focusHeader,
-            children: [
-              {
-                type: "span",
-                props: {
-                  style: styles.focusIcon,
-                  children: ["📚"],
-                },
-              },
-              "Focus",
-            ],
-          },
-        },
-
         // Course fields
         ...courseFields.map((field) => ({
           type: "div",
@@ -261,8 +226,5 @@ const CourseFocusPanel = ({ course, onEdit, onDelete }) => {
 };
 
 window.CourseFocusPanel = CourseFocusPanel;
-
-components / Admin / courses / CourseFocusPanel.js;
-components / Admin / courses / CourseFocusPanel.js;
 
 components / Admin / courses / CourseFocusPanel.js;
