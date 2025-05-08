@@ -189,49 +189,50 @@ INSERT INTO semesters (semester_id, batch_id, academic_year, semester_num, start
 INSERT INTO courses (course_id, name, year, credits, duration) VALUES
                                                                    ('CS1101', 'Introduction to Programming', 1, 3, 45),
                                                                    ('CS2101', 'Data Structures', 1, 4, 60),
-                                                                   ('ENG1001', 'Calculus I', 1, 3, 45);
+                                                                   ('ENG1001', 'Calculus I', 1, 3, 45),
+                                                                   ('1205', 'Advanced Programming', 2, 4, 60);
 
 -- =============================================
 -- Insert students data with consistent IDs
 -- =============================================
 INSERT INTO students (student_index, registration_number, name, email, batch_id) VALUES
-                                                                                     (2024001, '2024CS001', 'Janith Perera', 'janith.p@student.adhyana.lk', 'CS24F'),
-                                                                                     (2024002, '2024CS002', 'Aisha Khan', 'aisha.k@student.adhyana.lk', 'CS24F'),
-                                                                                     (2023010, '2023BM010', 'Ravi Sharma', 'ravi.s@student.adhyana.lk', 'BM23S');
+                                                                                     (20240001, '2024CS001', 'Janith Perera', 'janith.p@student.adhyana.lk', 'CS24F'),
+                                                                                     (20240002, '2024CS002', 'Aisha Khan', 'aisha.k@student.adhyana.lk', 'CS24F'),
+                                                                                     (20230010, '2023BM010', 'Ravi Sharma', 'ravi.s@student.adhyana.lk', 'BM23S');
 
 -- =============================================
 -- Insert enrolled_students data with matching student_index
 -- =============================================
 INSERT INTO enrolled_students (student_index, registration_number, batch_id, name, national_id, email, phone, gender, date_of_birth, address, guardian_name, guardian_national_id, guardian_relation, guardian_contact_number, guardian_email, hostel_required) VALUES
-                                                                                                                                                                                                                                                                    (2024001, '2024CS001', 'CS24F', 'Janith Perera', '19980515234V', 'janith.p@student.adhyana.lk', '0771234567', 'Male', '1998-05-15', '123 Main Street, Colombo', 'Kamal Perera', '19701020567V', 'Father', '0719876543', 'kamal.p@example.com', 'No'),
-                                                                                                                                                                                                                                                                    (2024002, '2024CS002', 'CS24F', 'Aisha Khan', '20001102876V', 'aisha.k@student.adhyana.lk', '0765432109', 'Female', '2000-11-02', '45 Flower Road, Kandy', 'Farah Khan', '19750318901V', 'Mother', '0721122334', 'farah.k@example.com', 'Yes'),
-                                                                                                                                                                                                                                                                    (2023010, '2023BM010', 'BM23S', 'Ravi Sharma', '19990728123V', 'ravi.s@student.adhyana.lk', '0759876543', 'Male', '1999-07-28', '78 Lake View Avenue, Galle', 'Priya Sharma', '19730905432V', 'Mother', '0705556667', 'priya.s@example.com', 'No');
+                                                                                                                                                                                                                                                                    (20240001, '2024CS001', 'CS24F', 'Janith Perera', '19980515234V', 'janith.p@student.adhyana.lk', '0771234567', 'Male', '1998-05-15', '123 Main Street, Colombo', 'Kamal Perera', '19701020567V', 'Father', '0719876543', 'kamal.p@example.com', 'No'),
+                                                                                                                                                                                                                                                                    (20240002, '2024CS002', 'CS24F', 'Aisha Khan', '20001102876V', 'aisha.k@student.adhyana.lk', '0765432109', 'Female', '2000-11-02', '45 Flower Road, Kandy', 'Farah Khan', '19750318901V', 'Mother', '0721122334', 'farah.k@example.com', 'Yes'),
+                                                                                                                                                                                                                                                                    (20230010, '2023BM010', 'BM23S', 'Ravi Sharma', '19990728123V', 'ravi.s@student.adhyana.lk', '0759876543', 'Male', '1999-07-28', '78 Lake View Avenue, Galle', 'Priya Sharma', '19730905432V', 'Mother', '0705556667', 'priya.s@example.com', 'No');
 
 -- =============================================
 -- Insert student_semester_courses data with consistent student_index values
 -- =============================================
 INSERT INTO student_semester_courses (student_index, semester_id, course_id) VALUES
-                                                                                 (2024001, 'y24s1', 'CS1101'),
-                                                                                 (2024001, 'y24s2', 'ENG1001'),
-                                                                                 (2024002, 'y25s1', 'CS2101'),
-                                                                                 (2023010, 'y24s1', 'CS1101'),
-                                                                                 (2024002, 'y24s1', 'CS1101');
+                                                                                 (20240001, 'y24s1', 'CS1101'),
+                                                                                 (20240001, 'y24s2', 'ENG1001'),
+                                                                                 (20240002, 'y25s1', 'CS2101'),
+                                                                                 (20230010, 'y24s1', 'CS1101'),
+                                                                                 (20240002, 'y24s1', 'CS1101');
 
 -- =============================================
 -- Insert attendance data with consistent student_index values
 -- =============================================
-INSERT INTO attendance (attendance_id, student_index, course_id, date, present) VALUES
-                                                                                        (1, '20240001', 'CS1101', '2025-04-15', 1),
-                                                                                        (2, '20240001', 'CS1101', '2025-04-17', 1),
-                                                                                        (3, '20240002', 'CS1101', '2025-04-15', 0),
-                                                                                        (4, '20240001', 'ENG1001', '2025-04-16', 1),
-                                                                                        (5, '20240002', 'ENG1001', '2025-04-26', 1),
-                                                                                        (36, '20240001', '1205', '2025-05-05', 0),
-                                                                                        (37, '20240002', '1205', '2025-05-05', 0),
-                                                                                        (38, '20230010', '1205', '2025-05-05', 0),
-                                                                                        (39, '20240001', '1205', '2025-05-08', 1),
-                                                                                        (40, '20240002', '1205', '2025-05-08', 1),
-                                                                                        (41, '20230010', '1205', '2025-05-08', 0);
+INSERT INTO attendance (student_index, course_id, date, present) VALUES
+                                                                                        (20240001, 'CS1101', '2025-04-15', 1),
+                                                                                        (20240001, 'CS1101', '2025-04-17', 1),
+                                                                                        (20240002, 'CS1101', '2025-04-15', 0),
+                                                                                        (20240001, 'ENG1001', '2025-04-16', 1),
+                                                                                        (20240002, 'ENG1001', '2025-04-26', 1),
+                                                                                        (20240001, '1205', '2025-05-05', 0),
+                                                                                        (20240002, '1205', '2025-05-05', 0),
+                                                                                        (20230010, '1205', '2025-05-05', 0),
+                                                                                        (20240001, '1205', '2025-05-08', 1),
+                                                                                        (20240002, '1205', '2025-05-08', 1),
+                                                                                        (20230010, '1205', '2025-05-08', 0);
 
 -- =============================================
 -- Insert scholarships data
@@ -246,5 +247,5 @@ INSERT INTO scholarships (name, description, min_gpa, amount, application_deadli
 -- Insert scholarship_applications data with consistent student_index values
 -- =============================================
 INSERT INTO scholarship_applications (student_index, scholarship_id, student_batch, student_degree, student_gpa, status, comments) VALUES
-                                                                                                                                       (2024001, 1, 'CS24F', 'Computer Science', 3.85, 'Pending', 'Attaching Year 1 results transcript.'),
-                                                                                                                                       (2024002, 3, 'CS24F', 'Computer Science', 3.60, 'Pending', 'Submitting financial need documentation separately.');
+                                                                                                                                       (20240001, 1, 'CS24F', 'Computer Science', 3.85, 'Pending', 'Attaching Year 1 results transcript.'),
+                                                                                                                                       (20240002, 3, 'CS24F', 'Computer Science', 3.60, 'Pending', 'Submitting financial need documentation separately.');
