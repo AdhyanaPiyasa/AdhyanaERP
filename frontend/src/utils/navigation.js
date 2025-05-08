@@ -56,7 +56,7 @@ const navigation = {
 
     menuItems: {
         student: [
-            { label: 'Dashboard', path: 'dashboard' },
+            { label: 'Dashboard', path: 'courses' },
             { label: 'Courses', path: 'courses' },
             { label: 'Events', path: 'events' },
             { label: 'Profile', path: 'profile' },

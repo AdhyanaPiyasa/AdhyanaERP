@@ -137,8 +137,8 @@ const TeacherHeader = () => {
 
     // Navigation items with icons
     const navItems = [
-        { label: 'Dashboard', path: 'dashboard', icon: '⌂' },
-        { label: 'Courses', path: 'courses', icon: '📚' },
+        { label: 'Course Dashboard', path: 'dashboard', icon: '⌂' },
+       // { label: 'Courses', path: 'courses', icon: '📚' },
         { label: 'Timetable', path: 'timetable', icon: '⏰' },
         { label: 'Calendar', path: 'calendar', icon: '📅' }
     ];
